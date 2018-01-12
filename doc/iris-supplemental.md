@@ -7,7 +7,7 @@ author:
 - Qin Ma
 date:       
 - 2018-01-12 at 10:36:52
-Last Modified: 2018-01-12 at 12:05:17
+Last Modified: 2018-01-12 at 12:46:27
 ---
 
 # Accessibility 
@@ -51,3 +51,10 @@ sample4 untreated  24h
 **NOTE 1:** When loading metadata into IRIS, make sure that the first column is your sample names and that column names and treatment levels are short, concise, and avoid the use of mathematical operators (`+`, `-`, `/`, `*`, `^`, etc.) and spaces between words. If a space is necessary for legibility, please consider using an underscore (`_`) 
 
 **NOTE 2:** Metadata can be expanded to fit the nature of your experiment (i.e. multiple factors can be added). The only thing that must remain consistent between these two matrices, is the sample information. Column names in count data **must** be the same as row names in the metadata.
+
+
+# Expedited analysis
+
+## Submit and QC
+
+## Data export
