@@ -4,7 +4,7 @@ Author:
 - Brandon Monier
 - Adam McDermaid
 Created:       2018-01-12 at 10:36:52
-Last Modified: 2018-01-12 at 10:50:53
+Last Modified: 2018-01-12 at 10:52:23
 ---
 
 % Iris Supplemental Info
@@ -20,7 +20,7 @@ Last Modified: 2018-01-12 at 10:50:53
 	* [DGE Analysis](#dge-analysis)
 
 # Accessibility 
-IRIS can be freely accessed directly through bmbl.sdstate.edu/VIDGER (**change link later**) or through R using the following commands (**not available yet**):
+IRIS can be freely accessed directly through this [link]( bmbl.sdstate.edu/VIDGER) (**change link later**) or through R using the following commands (**not available yet**):
 
 ```
 if (!require("shiny")) install.packages("shiny")
