@@ -2,13 +2,13 @@
  Title:         IRIS Documentation
  Author:        Brandon Monier
  Created:       2018-01-12 at 09:56:43
- Last Modified: 2018-01-12 at 12:19:58
+ Last Modified: 2018-01-12 at 12:22:22
 ---
 
 # IRIS
 
 ## Link
-[bmbl.sdstate.edu](http://bmbl.sdstate.edu/VIDGER/) (*change name*)
+[bmbl.sdstate.edu/VIDGER/](http://bmbl.sdstate.edu/VIDGER/) (*change name*)
 
 ## About
 IRIS (**I**nteractive **R**NA-seq analysis and **I**nterpretation using **S**hiny), is a web-based tool for the analysis of RNA-seq count data. This tool’s purpose is to provide users with a comprehensive and user-friendly method for performing differential gene expression (DGE) analysis regardless of their computational experience. IRIS also has integrated experimental design options to cater to users with non-traditional DGE requirements, such as interaction terms or paired data. This tool is designed in a way for usable results to be generated in around one minute or for users to invest more time into detailed investigations of their data. IRIS is a **user-friendly** and **interactive** Shiny app for gene expression analysis. This app takes advantage of several popular DGE tools (*DESeq2*, *edgeR*, and *limma*) available through Bioconductor in conjunction with the Plotly and DataTable API libraries for R. 
@@ -23,6 +23,6 @@ shiny::runGitHub("iris", "btmonier")
 ```
 
 ## To-do
-- [ ] Finish supplemental information
+- [ ] Finish supplemental information (`/doc/iris.supplemental.pdf`)
 - [ ] Transfer source code to new directory
 - [ ] Finish paper
