@@ -2,9 +2,12 @@
 Title:         Iris Supplemental Info
 Author:        
 - Brandon Monier
+- Adam McDermaid
 Created:       2018-01-12 at 10:36:52
-Last Modified: 2018-01-12 at 10:47:52
+Last Modified: 2018-01-12 at 10:50:53
 ---
+
+% Iris Supplemental Info
 
 # Table of Contents
 1. [Accessibility](#accessibility)
