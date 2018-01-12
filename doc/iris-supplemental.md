@@ -3,8 +3,9 @@ Title:         Iris Supplemental Info
 Author:        
 - Brandon Monier
 - Adam McDermaid
+- Qin Ma
 Created:       2018-01-12 at 10:36:52
-Last Modified: 2018-01-12 at 10:54:09
+Last Modified: 2018-01-12 at 10:55:49
 ---
 
 % Iris Supplemental Info
@@ -22,7 +23,7 @@ Last Modified: 2018-01-12 at 10:54:09
 # Accessibility 
 IRIS can be freely accessed directly through this [link](http://bmbl.sdstate.edu/VIDGER/) (**change link later**) or through R using the following commands (**not available yet**):
 
-```
+```{r}
 if (!require("shiny")) install.packages("shiny")
 shiny::runGitHub("vidger-shiny", "btmonier")
 ```
