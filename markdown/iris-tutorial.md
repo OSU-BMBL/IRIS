@@ -10,7 +10,7 @@
 	* [Preliminary Analsysis](#ia-prelim-analysis)
 	* [DGE Analysis](#ia-dge-analysis)
 
-***
+- - -
 
 ### Accessibility <a id="accessibility"></a>
 IRIS can be freely accessed directly through [bmbl.sdstate.edu/IRIS/](http://bmbl.sdstate.edu/IRIS/) or through R using the following commands:
