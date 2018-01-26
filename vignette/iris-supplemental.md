@@ -7,7 +7,7 @@ author:
 - Qin Ma
 date:       
 - 2018-01-12 at 10:36:52
-Last Modified: 2018-01-25 at 17:56:07
+Last Modified: 2018-01-26 at 13:15:55
 ---
 
 # Accessibility 
@@ -88,6 +88,58 @@ data **must** be the same as row names in the metadata.
 
 # Expedited analysis
 
-## Submit and QC
+## Overview
+Expedited analysis is for users who want a quick and efficient method of
+producing DGE results using the default parameters and tools in IRIS. 
+
+## Submit and QC / DGE Analysis
+1. Load user data by selecting “Load my own data”
+    * User data requires one count matrix and one condition matrix
+
+2. Click “Submit” to load the data.
+    * **insert image**
+
+3. After submitting the data, proceed to the “DGE Analysis” tab at the top.
+    * If a specific experimental design other than the basic two-group
+      comparison is required, select it accordingly.  
+
+4. Select the factor of interest and check the boxes for the comparisons of
+interest.  
+
+    **NOTE:** you must choose at least one comparison for "two-group
+comparisons" or "multiple factor comparisons" experimental design options or
+else an error will occur!
+
+5. Submit the parameters to perform DGE analysis.
+    * **insert image here**
+
+6. Select the “Plots” subtab to view the DGE results table towards the bottom.
+
 
 ## Data export
+1. To export results data from the "DGE Analysis" tab, click on the "Download
+   All Data" button at the bottom of the page to download the results file. 
+    * **inser image here** 
+
+
+# In-depth Analysis
+
+## Overview
+By choosing the in-depth analysis route, you will be given more information
+about your data including:
+
+* Count data distribution;
+* Total number of reads/sample;
+* Sample correlation analysis;
+* Biclustering;
+* Principal components and multidimensional scaling;
+* Identifiication of most variable IDs in data.
+
+## Submit and QC
+
+
+## Preliminary Analysis
+
+
+## Differential Expression Analysis 
+
