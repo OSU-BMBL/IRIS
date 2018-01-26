@@ -1,10 +1,10 @@
 ## **F**requently **A**sked **Q**uestions
 
 #### Table of Contents
-* [What does VIDGER stand for?](#vidname)
+* [What does IRIS stand for?](#vidname)
 * [What web browser(s) can I use?](#web-browser)
 * [What does DEG/DGE mean?](#deg)
-* [What methods does VIDGER use for differential gene expression?](#dgemethods)
+* [What methods does IRIS use for differential gene expression?](#dgemethods)
 * [What is count data?](#count-mat)
 * [What is metadata?](#metadata)
 * [What do you mean by "filter cutoff"?](#filtercutoff)
@@ -15,23 +15,22 @@
 * [What is MDS?](#vis-mds)
 * [What are heatmaps?](#heatmaps)
 * [What is Biclustering?](#biclustering)
-* [What experimental designs does VIDGER currently allow?](#expdesign)
+* [What experimental designs does IRIS currently allow?](#expdesign)
 * [What is a Adj. $p$-value cutoff?](#adjpval)
 * [What is a Min. fold change value?](#minlfc)
 * [What is an MA plot?](#maplot)
 * [What is a volcano plot?](#volplot)
 * [Where can I download a local version of the app?](#localapp)
-* [Where can I download the ViDGER package?](#vidgerpackage)
 * [References](#refs)
 
 ***
-#### What does VIDGER stand for? <a id="vidname"></a>
-VIDGER stands for **V**isualization and **I**nterpretation of **D**ifferential **G**ene **E**xpression using **R**. This web application is based off of our prior package [ViDGER](https://github.com/btmonier/vidger) which stands for **Vi**sualization of **D**ifferential **G**ene **E**xpression using **R**
+#### What does IRIS stand for? <a id="vidname"></a>
+IRIS stands for **I**nteractive **R**NA-seq analysis and **I**nterpretation using **S**hiny. This web application is based off of our prior package [ViDGER](https://github.com/btmonier/vidger) which stands for **Vi**sualization of **D**ifferential **G**ene **E**xpression using **R**
 
 <br>
 
 #### What web browser(s) can I use? <a id="web-browser"></a>
-VIDGER has been properly tested on both [Firefox](https://www.mozilla.org/en-US/firefox/) and [Chrome](https://www.google.com/chrome/browser/desktop/index.html), so we recommend using either of these browsers.
+IRIS has been properly tested on both [Firefox](https://www.mozilla.org/en-US/firefox/), [Chrome](https://www.google.com/chrome/browser/desktop/index.html), and [qutebroswer](https://www.qutebrowser.org/), so we recommend using either of these browsers.
 
 <br>
 
@@ -40,8 +39,8 @@ DEG and DGE simply mean **d**ifferential **e**xpression of **g**enes, and **d**i
 
 <br>
 
-#### What methods does VIDGER use for differential gene expression? <a id="dgemethods"></a>
-VIDGER currently uses [DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html), [edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html), and [limma](http://bioconductor.org/packages/release/bioc/html/limma.html) (Love et al. 2014; McCarthy et al. 2012; Ritchie et al. 2015; Robinson et al. 2010)
+#### What methods does IRIS use for differential gene expression? <a id="dgemethods"></a>
+IRIS currently uses [DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html), [edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html), and [limma](http://bioconductor.org/packages/release/bioc/html/limma.html) (Love et al. 2014; McCarthy et al. 2012; Ritchie et al. 2015; Robinson et al. 2010)
 
 <br>
 
@@ -55,7 +54,7 @@ gene002       6       7       7       8
 gene003       0      34       3      42
 ```
 
-**NOTE:** When loading count data into VIDGER, make sure that the first column is your gene IDs and that sample names are short, concise, and avoid the use of mathematical operators (`+`, `-`, `/`, `*`, `^`, etc.) and spaces between words. If a space is necessary for legibility, please consider using an underscore (`_`) 
+**NOTE:** When loading count data into IRIS, make sure that the first column is your gene IDs and that sample names are short, concise, and avoid the use of mathematical operators (`+`, `-`, `/`, `*`, `^`, etc.) and spaces between words. If a space is necessary for legibility, please consider using an underscore (`_`) 
 
 <br>
 
@@ -70,7 +69,7 @@ sample3   treated  24h
 sample4 untreated  24h
 ```
 
-**NOTE 1:** When loading metadata into VIDGER, make sure that the first column is your sample names and that column names and treatment levels are short, concise, and avoid the use of mathematical operators (`+`, `-`, `/`, `*`, `^`, etc.) and spaces between words. If a space is necessary for legibility, please consider using an underscore (`_`) 
+**NOTE 1:** When loading metadata into IRIS, make sure that the first column is your sample names and that column names and treatment levels are short, concise, and avoid the use of mathematical operators (`+`, `-`, `/`, `*`, `^`, etc.) and spaces between words. If a space is necessary for legibility, please consider using an underscore (`_`) 
 
 **NOTE 2:** Metadata can be expanded to fit the nature of your experiment (i.e. multiple factors can be added). The only thing that must remain consistent between these two matrices, is the sample information. Column names in count data **must** be the same as row names in the metadata.
 
@@ -82,7 +81,7 @@ A "filter cutoff" is a numerical parameter ($n$) will be implemented in your cou
 <br>
 
 #### On the 'Submit and QC' page, what are the transformation methods for counts? <a id="subqctran"></a>
-VIDGER can transform count using the transformation functions from the [DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html) package (Love et al. 2014). Currently there are four options:
+IRIS can transform count using the transformation functions from the [DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html) package (Love et al. 2014). Currently there are four options:
 
 * **Normal log: log2(n + pseudocount)**  
   The most common transformation technique is the logarithm, defined as "Normal log" in the parameters. This is implemented using the following formula:  
@@ -136,12 +135,12 @@ Since this interactive, you can hover over cells for additional information and 
 <br>
 
 #### What is biclustering? <a id="biclustering"></a>
-Biclustering is a clustering technique which allows for clustering of both gene IDs and samples in a count data matrix. Biclustering in VIDGER performs a biclustering analysis using one of the selected biclustering tools with a maximum bicluster size of the indicated cutoff value. 
+Biclustering is a clustering technique which allows for clustering of both gene IDs and samples in a count data matrix. Biclustering in IRIS performs a biclustering analysis using one of the selected biclustering tools with a maximum bicluster size of the indicated cutoff value. 
 
 <br>
 
-#### What experimental designs does VIDGER currently allow? <a id="expdesign"></a>
-One of the motivations when designing VIDGER was to allow for a variety of commonly used experimental designs employed in RNA-seq experiments. Currently, our application allows for:
+#### What experimental designs does IRIS currently allow? <a id="expdesign"></a>
+One of the motivations when designing IRIS was to allow for a variety of commonly used experimental designs employed in RNA-seq experiments. Currently, our application allows for:
 
 * Comparisons between two factor levels (groups) amongst one treatment factor; 
 * Comparisons between level combinations between two treatment factors; 
@@ -178,20 +177,7 @@ You can download the latest (*and experimental*) version of the web application 
 
 ```{r}
 if (!require("shiny")) install.packages("shiny")
-shiny::runGitHub("vidger-shiny", "btmonier")
-```
-
-<br>
-
-#### Where can I download the ViDGER package? <a id="vidgerpackage"></a>
-
-**GitHub**
-
-You can download the latest (*and experimental*) GitHub repo this web application was based on using this script in an up-to-date version of `R`:
-
-```{r}
-if (!require("devtools")) install.packages("devtools")
-devtools::install_github("btmonier/vidger")
+shiny::runGitHub("iris", "btmonier")
 ```
 
 <br>
