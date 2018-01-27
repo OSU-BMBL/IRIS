@@ -5,7 +5,7 @@
 	Bioinformatics and Mathematical Biosciences Lab  
   *South Dakota State University*
 
-***
+- - -
 
 ### Team Members
 * **Mr. Adam McDermaid** ([adam.mcdermaid@sdstate.edu](mailto:adam.mcdermaid@sdstate.edu))  
@@ -19,7 +19,7 @@
 * **Dr. Jing Zhao** ([jing.zhao@sanfordhealth.org](mailto:jing.zhao@SanfordHealth.org))  
   *Sanford Research*
 
-***
+- - -
 
 <p float="left">
 	<a href="https://www.sdstate.edu/">
