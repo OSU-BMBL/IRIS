@@ -23,7 +23,8 @@
 * [Where can I download a local version of the app?](#localapp)
 * [References](#refs)
 
-***
+- - -
+
 #### What does IRIS stand for? <a id="vidname"></a>
 IRIS stands for **I**nteractive **R**NA-seq analysis and **I**nterpretation using **S**hiny. This web application is based off of our prior package [ViDGER](https://github.com/btmonier/vidger) which stands for **Vi**sualization of **D**ifferential **G**ene **E**xpression using **R**
 
