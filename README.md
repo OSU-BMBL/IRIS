@@ -2,13 +2,13 @@
  Title:         IRIS Documentation
  Author:        Brandon Monier
  Created:       2018-01-12 at 09:56:43
- Last Modified: 2018-01-25 at 17:52:18
+ Last Modified: 2018-01-30 at 15:20:04
 ---
 
 # IRIS
 
 ## Link
-[bmbl.sdstate.edu/VIDGER/](http://bmbl.sdstate.edu/VIDGER/) (*change name*)
+[bmbl.sdstate.edu/IRIS/](http://bmbl.sdstate.edu/IRIS/)
 
 ## About
 IRIS (**I**nteractive **R**NA-seq analysis and **I**nterpretation using
@@ -36,6 +36,6 @@ shiny::runGitHub("iris", "btmonier")
 ```
 
 ## To-do
-- [ ] Finish supplemental information (`/doc/iris.supplemental.pdf`)
+- [ ] Finish supplemental information (`/vignette/iris-supplemental.pdf`)
 - [ ] Transfer source code to new directory
 - [ ] Finish paper
