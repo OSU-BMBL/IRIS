@@ -30,7 +30,6 @@ To run the the application locally, you can install the `shiny` package in
 **R**, and use the function `runGithub()`:
 
 ``` r
-# Placeholder only!
 if (!require("shiny")) install.packages("shiny")
 shiny::runGitHub("iris", "btmonier")
 ```
