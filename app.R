@@ -8,7 +8,7 @@
 # Package logic ----
 
 ## Set working directory (FOR LOCAL TESTING ONLY)
-# setwd("D:/Box Sync/misc-github-repos/shiny-tests/14-iris-me")
+# setwd("D:/Box Sync/misc-github-repos/iris/")
 
 ## CRAN
 source("iris-functions.R")

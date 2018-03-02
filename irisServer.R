@@ -1161,17 +1161,17 @@ irisServer <- function(input, output) {
       need(input$dgemethod != "", "")
     ) 
     if (input$goqc == 0) {
-      return()
-    } else {
-      fileInput(
-        inputId = "mod.matrix", 
-        label = "Submit model matrix (CSV)",
-        accept = c(
-          "text/csv",
-          "text/comma-separated-values,text/plain",
-          ".csv"
-        )
-      )      
+		return()
+    } else if (input$dgeexpsetup == "exp7") {
+		fileInput(
+			inputId = "mod.matrix", 
+			label = "Submit model matrix (CSV)",
+			accept = c(
+				"text/csv",
+				"text/comma-separated-values,text/plain",
+				".csv"
+			)
+		)      
     }
   })    
   
