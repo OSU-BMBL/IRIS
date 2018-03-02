@@ -1,0 +1,8 @@
+,Intercept,conditionuntreated,typesingle.read,conditionuntreated:typesingle.read
+treated1,1,0,1,0
+treated2,1,0,0,0
+treated3,1,0,0,0
+untreated1,1,1,1,1
+untreated2,1,1,1,1
+untreated3,1,1,0,0
+untreated4,1,1,0,0

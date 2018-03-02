@@ -688,9 +688,36 @@ irisServer <- function(input, output) {
 
 
 
-  ##### ブ レ ー ク  B R E A K  ブ レ ー ク #####
+  ##### B R E A K #####
 
 
+
+  ## DEG - Choose analytical methods
+  output$dgemethod <- renderUI({
+    validate(
+      need(input$dgeexpsetup != "", "")
+    )
+    if (input$dgeexpsetup != "exp5" & input$dgeexpsetup != "exp6") {
+      selectInput(
+        inputId = "dgemethod",
+        label = "Choose method",
+        choices = c(
+          "DESeq2" = "deseq",
+          "edgeR" = "edger",
+          "limma-voom" = "limma"
+        )
+      )
+    } else {
+      selectInput(
+        inputId = "dgemethod",
+        label = "Choose method",
+        choices = c(
+          "DESeq2" = "deseq",
+          "edgeR" = "edger"
+        )
+      )
+    }
+  })
 
   ## DEG - exp. setup 1 - two group comparisons - factor choice
   output$dgeexp1a <- renderUI({
@@ -956,6 +983,198 @@ irisServer <- function(input, output) {
     }
   })
 
+  ## DEG - exp. setup 5 - main effect (ME) - choose ME
+  output$dgeexp5a <- renderUI({
+    if (input$goqc == 0) {
+      return()
+    } else {
+      if (input$dgeexpsetup == "exp5") {
+        tmp <- ddsout()[[2]]
+        tmp <- unique(colnames(tmp))
+        selectInput(
+          inputId = "dgeexp5a",
+          label = "Choose main effect",
+          choices = tmp
+        )
+      }
+    }
+  })
+
+  ## DEG - exp. setup 5 - ME - choose ME reference
+  output$dgeexp5b <- renderUI({
+    if (input$goqc == 0) {
+      return()
+    } else {
+      if (input$dgeexpsetup == "exp5") {
+        tmp <- ddsout()[[2]]
+        tmp <- levels(tmp[, input$dgeexp5a])
+        selectInput(
+          inputId = "dgeexp5b",
+          label = "Choose main effect reference level",
+          choices = tmp
+        )
+      }
+    }
+  })
+
+  ## DEG - exp. setup 5 - ME - choose contrasts
+  output$dgeexp5c <- renderUI({
+    if (input$goqc == 0) {
+      return()
+    } else {
+      if (input$dgeexpsetup == "exp5") {
+        tmp1 <- ddsout()[[2]]
+        tmp2 <- input$dgeexp5a 
+        tmp3 <- levels(tmp1[, tmp2])
+        tmp3 <- tmp3[which(tmp3 != input$dgeexp5b)]
+        tmp3 <- paste0(tmp3, "_VS_", input$dgeexp5b)
+        checkboxGroupInput(
+          inputId = "dgeexp5c",
+          label = "Choose comparisons you want made",
+          choices = as.list(tmp3)
+        )        
+      }
+    }
+  })     
+
+  ## DEG - exp. setup 6 - ME + group fact - choose ME
+  output$dgeexp6a <- renderUI({
+    validate(
+      need(input$dgemethod != "", "")
+    )    
+    if (input$goqc == 0) {
+      return()
+    } else {
+      if (input$dgeexpsetup == "exp6" & ncol(ddsout()[[2]]) < 2) {
+        return()
+      } else if (input$dgeexpsetup == "exp6") { 
+        tmp <- ddsout()[[2]]
+        tmp <- unique(colnames(tmp))
+        selectInput(
+          inputId = "dgeexp6a",
+          label = "Choose grouping factor",
+          choices = tmp
+        )
+      }
+    }
+  })
+
+  ## DEG - exp. setup 6 - ME + group fact - choose group fact
+  output$dgeexp6b <- renderUI({
+    validate(
+      need(input$dgemethod != "", "")
+    )    
+    if (input$goqc == 0) {
+      return()
+    } else {
+      if (input$dgeexpsetup == "exp6" & ncol(ddsout()[[2]]) < 2) {
+        return()
+      } else if (input$dgeexpsetup == "exp6") { 
+        tmp <- ddsout()[[2]]
+        tmp <- levels(tmp[, input$dgeexp6a])
+        selectInput(
+          inputId = "dgeexp6b",
+          label = "Choose grouping factor level",
+          choices = tmp
+        )
+      }
+    }
+  })
+
+  ## DEG - exp. setup 6 - ME + group fact - choose ME reference
+  output$dgeexp6c <- renderUI({
+    validate(
+      need(input$dgemethod != "", "")
+    )    
+    if (input$goqc == 0) {
+      return()
+    } else {
+      if (input$dgeexpsetup == "exp6") {
+        tmp <- ddsout()[[2]]
+        tmp <- unique(colnames(tmp))
+        selectInput(
+          inputId = "dgeexp6c",
+          label = "Choose main effect",
+          choices = tmp
+        )
+      }
+    }
+  })
+
+  ## DEG - exp. setup 6 - ME + group fact - choose group fact level
+  output$dgeexp6d <- renderUI({
+    validate(
+      need(
+        expr = !is.null(input$dgeexp6a),
+        message = ""   
+      )
+    )  
+    if (input$goqc == 0) {
+      return()
+    } else {
+      if (input$dgeexpsetup == "exp6" & ncol(ddsout()[[2]]) < 2) {
+        return()
+      } else if (input$dgeexpsetup == "exp6") { 
+        tmp <- ddsout()[[2]]
+        tmp <- tmp[which(tmp[, input$dgeexp6a] == input$dgeexp6b), ]
+        tmp[] <- lapply(tmp, function(x) if(is.factor(x)) factor(x) else x)
+        tmp <- levels(tmp[, input$dgeexp6c])
+        selectInput(
+          inputId = "dgeexp6d",
+          label = "Choose main effect reference level",
+          choices = tmp
+        )
+      }
+    }
+  })
+
+  ## DEG - exp. setup 6 - ME group fact - choose contrasts
+  output$dgeexp6e <- renderUI({
+    validate(
+      need(
+        expr = !is.null(input$dgeexp6a),
+        message = ""   
+      )
+    )  
+    if (input$goqc == 0) {
+      return()
+    } else {
+      if (input$dgeexpsetup == "exp6") {
+        tmp1 <- ddsout()[[2]]
+        tmp2 <- tmp1[which(tmp1[, input$dgeexp6a] == input$dgeexp6b), ]
+        tmp2[] <- lapply(tmp2, function(x) if(is.factor(x)) factor(x) else x)
+        tmp2 <- levels(tmp2[, input$dgeexp6c])
+        tmp2 <- tmp2[which(tmp2 != input$dgeexp6d)]
+        tmp3 <- paste0(tmp2, "_VS_", input$dgeexp6d)
+        checkboxGroupInput(
+          inputId = "dgeexp6e",
+          label = "Choose comparisons you want made",
+          choices = as.list(tmp3)
+        )        
+      }
+    }
+  })   
+
+  ## DEG - exp. setup 7 - user input
+  output$dgeexp7a <- renderUI({
+    validate(
+      need(input$dgemethod != "", "")
+    ) 
+    if (input$goqc == 0) {
+      return()
+    } else {
+      fileInput(
+        inputId = "mod.matrix", 
+        label = "Submit model matrix (CSV)",
+        accept = c(
+          "text/csv",
+          "text/comma-separated-values,text/plain",
+          ".csv"
+        )
+      )      
+    }
+  })    
+  
   ## DEG - exp. setup - formula - header
   output$dgeexpformhead <- renderUI({
     if (input$goqc == 0) {
@@ -967,6 +1186,8 @@ irisServer <- function(input, output) {
         h5(
           strong("Your linear model will look like this:")
         )
+      } else if (input$dgeexpsetup == "exp7") { 
+        return()
       } else {
         h5(
           strong("Your linear model will look like this:")
@@ -1038,8 +1259,86 @@ irisServer <- function(input, output) {
     }
   })
 
+  ## DEG - exp. setup 5 - ME - formula layout
+  output$dgeexpform5 <- renderUI({
+    if (input$goqc == 0) {
+      return()
+    } else {
+      if (input$dgeexpsetup == "exp5") {
+        code(
+          paste0(" ~ ", input$dgeexp5a, " (as main effect)")
+        )
+      }
+    }
+  })
+
+  ## DEG - exp. setup 6A - ME + group fact. - formula layout
+  output$dgeexpform6a <- renderUI({
+    if (input$goqc == 0) {
+      return()
+    } else {
+      if (input$dgeexpsetup == "exp6") {
+        code(
+          paste0(
+            " ~ ", input$dgeexp6c, " (as main effect)"
+          )
+        )
+      }
+    }
+  })  
+
+  ## DEG - exp. setup 6B - ME + group fact. - formula layout
+  output$dgeexpform6b <- renderUI({
+    if (input$goqc == 0) {
+      return()
+    } else {
+      if (input$dgeexpsetup == "exp6") {
+        code(
+          paste0(
+            "* Limited by: "
+          )
+        )
+      }
+    }
+  })
+
+  ## DEG - exp. setup 6C - ME + group fact. - formula layout
+  output$dgeexpform6c <- renderUI({
+    if (input$goqc == 0) {
+      return()
+    } else {
+      if (input$dgeexpsetup == "exp6") {
+        code(
+          paste(
+            "...factor: ", 
+            input$dgeexp6a
+          )
+        )
+      }
+    }
+  })
+
+  ## DEG - exp. setup 6D - ME + group fact. - formula layout
+  output$dgeexpform6d <- renderUI({
+    if (input$goqc == 0) {
+      return()
+    } else {
+      if (input$dgeexpsetup == "exp6") {
+        code(
+          paste(
+            "...factor level: ", input$dgeexp6b
+          )
+        )
+      }
+    }
+  })
+
+
   ## DEG - edgeR normalization option
   output$dgeexpedgernorm <- renderUI({
+    validate(
+      need(input$dgemethod != "", "")
+    )
     if (input$dgemethod != "edger") {
       return()
     } else {
@@ -1071,6 +1370,26 @@ irisServer <- function(input, output) {
       )
     }
   })
+
+  ## DEG - user input for model matrix
+  mod.matrix <- eventReactive(input$godge, {
+    mod.matrix <- input$mod.matrix
+    mod.matrix <- as.matrix(
+      read.csv(
+        mod.matrix$datapath, header = TRUE, row.names = 1
+      )
+    )
+    return(list(mod.matrix))
+  })
+
+  # ## DEBUG ##
+  # output$debugdge2 <- renderPrint({
+  #   if (input$godge == 0) {
+  #     return()
+  #   } else {
+  #     mod.matrix()[[1]]
+  #   }
+  # })
 
   ## DEG - analysis - reactive
   dgeout1 <- eventReactive(input$godge, {
@@ -1129,6 +1448,17 @@ irisServer <- function(input, output) {
             coldata = coldata,
             fact1.rlvl = input$dgeexp4c,
             fact2.rlvl = input$dgeexp4d
+          )
+          fit.names <- de.genes[[2]]
+          fit.cont <- de.genes[[1]]
+          incProgress(2/2)
+        })
+      } else if (input$dgeexpsetup == "exp7") {
+        withProgress(message = "Running limma-voom...", value = 0, {
+          incProgress(1/2)
+          de.genes <- limma.exp7(
+            cts = cts,
+            mod.matrix = mod.matrix()[[1]]
           )
           fit.names <- de.genes[[2]]
           fit.cont <- de.genes[[1]]
@@ -1197,6 +1527,50 @@ irisServer <- function(input, output) {
           fit.cont <- de.genes[[1]]
           incProgress(2/2)
         })
+      } else if (input$dgeexpsetup == "exp5") {
+        withProgress(message = "Running edgeR...", value = 0, {
+          incProgress(1/2)
+          de.genes <- edger.exp5(
+            fact = input$dgeexp5a,
+            fact.levl = input$dgeexp5b,
+            cts = cts,
+            coldata = coldata,
+            perm.h = input$dgeexp5c,
+            norm = input$dgeexpedgernorm
+          )
+          fit.names <- de.genes[[2]]
+          fit.cont <- de.genes[[1]]
+          incProgress(2/2)
+        })
+      } else if (input$dgeexpsetup == "exp6") {
+        withProgress(message = "Running edgeR...", value = 0, {
+          incProgress(1/2)
+          de.genes <- edger.exp6(
+            me.fact = input$dgeexp6c,
+            me.levl = input$dgeexp6d,
+            gp.fact = input$dgeexp6a,
+            gp.levl = input$dgeexp6b,
+            cts = cts,
+            coldata = coldata,
+            perm.h = input$dgeexp6e,
+            norm = input$dgeexpedgernorm
+          )
+          fit.names <- de.genes[[2]]
+          fit.cont <- de.genes[[1]]
+          incProgress(2/2)
+        })        
+      } else if (input$dgeexpsetup == "exp7") {
+        withProgress(message = "Running edgeR...", value = 0, {
+          incProgress(1/2)
+          de.genes <- edger.exp7(
+            cts = cts,
+            mod.matrix = mod.matrix()[[1]],
+            norm = input$dgeexpedgernorm
+          )
+          fit.names <- de.genes[[2]]
+          fit.cont <- de.genes[[1]]
+          incProgress(2/2)
+        })        
       }
     } else if (input$dgemethod == "deseq") {
       if (input$dgeexpsetup == "exp1") {
@@ -1256,6 +1630,48 @@ irisServer <- function(input, output) {
           fit.cont <- de.genes[[1]]
           incProgress(2/2)
         })
+      } else if (input$dgeexpsetup == "exp5") {
+        withProgress(message = "Running DESeq2...", value = 0, {
+          incProgress(1/2)
+          de.genes <- deseq.exp5(
+            fact = input$dgeexp5a,
+            fact.levl = input$dgeexp5b,
+            cts = cts,
+            coldata = coldata,
+            perm.h = input$dgeexp5c
+          )
+          fit.names <- de.genes[[2]]
+          fit.cont <- de.genes[[1]]
+          incProgress(2/2)
+        })
+      } else if (input$dgeexpsetup == "exp6") {
+        withProgress(message = "Running DESeq2...", value = 0, {
+          incProgress(1/2)
+          de.genes <- deseq.exp6(
+            me.fact = input$dgeexp6c,
+            me.levl = input$dgeexp6d,
+            gp.fact = input$dgeexp6a,
+            gp.levl = input$dgeexp6b,
+            cts = cts,
+            coldata = coldata,
+            perm.h = input$dgeexp6e
+          )
+          fit.names <- de.genes[[2]]
+          fit.cont <- de.genes[[1]]
+          incProgress(2/2)
+        })
+      } else if (input$dgeexpsetup == "exp7") {
+        withProgress(message = "Running DESeq2...", value = 0, {
+          incProgress(1/2)
+          de.genes <- deseq.exp7(
+            cts = cts,
+            coldata = coldata,
+            mod.matrix = mod.matrix()[[1]]
+          )
+          fit.names <- de.genes[[2]]
+          fit.cont <- de.genes[[1]]
+          incProgress(2/2)
+        })        
       }
     } 
     return(list(fit.cont, fit.names))
@@ -1305,7 +1721,9 @@ irisServer <- function(input, output) {
         cts = ddsout()[[3]],
         expset = expset,
         design = dgeout1()[[2]],
-        fact = input$dgeexp1a
+        fact = input$dgeexp1a,
+        fact5 = input$dgeexp5a,
+        fact6 = input$dgeexp6c
       )
       return(list(contTable))
     }
@@ -1595,7 +2013,9 @@ irisServer <- function(input, output) {
           cts = ddsout()[[3]],
           expset = expset,
           design = dgeout1()[[2]],
-          fact = input$dgeexp1a
+          fact = input$dgeexp1a,
+          fact5 = input$dgeexp5a,
+          fact6 = input$dgeexp6c
         )
       }
       return(list(cont.ls))
@@ -1613,20 +2033,6 @@ irisServer <- function(input, output) {
     return(list(test))
   })
   
-  # output$debugdge2 <- renderPrint({
-  #   if (input$godge == 0) {
-  #     return()
-  #   } else {
-  #     p <- as.numeric(input$dgepadjcutoff)
-  #     lf <- as.numeric(input$dgefcmin)
-  #     tmp <- dgeOverTbl(
-  #       cont.ls = dgeover0()[[1]],
-  #       lf = lf,
-  #       p = p
-  #     )
-  #     tmp
-  #   }
-  # })
 
   ## DGE - visualization - DGE overview
   output$dgeplot2 <- renderPlotly({
@@ -1999,6 +2405,12 @@ irisServer <- function(input, output) {
   
   ### HEAT - select input - choose factor - HEATMAP
   output$heatfactor <- renderUI({
+    s <- event_data("plotly_click", source = "heatplot")
+    validate(
+      need(
+        s != "", 
+        message = "")
+    )    
     tmp <- ddsout()[[2]]
     selectInput(
       inputId = "heatfactor",
@@ -2013,6 +2425,12 @@ irisServer <- function(input, output) {
       return()
     } else {
       s <- event_data("plotly_click", source = "heatplot")
+      validate(
+        need(
+          s != "", 
+          message = "Click on one of the heatmap cells to view this plot!"
+        )
+      )
       rc.data <- counts(ddsout()[[1]])
       test <- getGenes(
         rc.data = rc.data, 
@@ -2039,7 +2457,7 @@ irisServer <- function(input, output) {
         title = paste(s[["y"]], "Counts"),
         xaxis = list(title = paste(input$fact)),
         yaxis = list(title = "Normalized counts")
-      )
+      )      
     }
   })
 
@@ -2459,6 +2877,12 @@ irisServer <- function(input, output) {
 
   ## COR - visaulization - correlation matrix (Plotly)
   output$corplot1 <- renderPlotly({
+    validate(
+      need(
+        expr = !is.null(corout()),
+        message = ""   
+      )
+    )
     withProgress(message = "Rendering correlation matrix...", value = 0, {
       if (input$goqc == 0) {
         return()
@@ -2543,6 +2967,12 @@ irisServer <- function(input, output) {
       withProgress(message = "Rendering count plot...", value = 0, {
         incProgress()
         s.cor <- event_data("plotly_click", source = "corplot")
+        validate(
+          need(
+            s.cor != "", 
+            message = "Click on one of the heatmap cells to view this plot!"
+          )
+        )        
         cts.tran <- corout()[[2]]
         cts.tran <- as.data.frame(cts.tran)
         x <- s.cor[["x"]]

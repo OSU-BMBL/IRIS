@@ -8,15 +8,15 @@
 # Package logic ----
 
 ## Set working directory (FOR LOCAL TESTING ONLY)
-# setwd("D:/Box Sync/misc-github-repos/iris-shiny")
+# setwd("D:/Box Sync/misc-github-repos/shiny-tests/14-iris-me")
 
 ## CRAN
 source("iris-functions.R")
 packages <- c(
 	"crosstalk", "dplyr", "DT", "gtools", "plotly", "shiny", "plyr",
 	"shinyBS", "shinycssloaders", "shinythemes", "tibble", "tidyr",
-	"Rcpp", "Hmisc", "ggplot2", "geneplotter", "locfit", "GGally", "pheatmap",
-	"reshape2", "backports", "digest", "fields", "psych"
+	"Rcpp", "Hmisc", "ggplot2", "geneplotter", "locfit", "GGally", 
+	"pheatmap",	"reshape2", "backports", "digest", "fields", "psych"
 )
 pack.man(packages)
 

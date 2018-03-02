@@ -56,7 +56,8 @@ getGenes <- function(rc.data, id, coldata) {
 }
 
 ## Get contrast tables from different object classes
-getContTable <- function(de.genes, coef, cts, expset, design, fact) {
+getContTable <- function(
+  de.genes, coef, cts, expset, design, fact, fact5, fact6) {
   if (class(de.genes) == "MArrayLM") {
     de.genes2 <- topTable(
       fit = de.genes,
@@ -117,6 +118,43 @@ getContTable <- function(de.genes, coef, cts, expset, design, fact) {
       de.genes2 <- subset(de.genes2, baseMean != 0)
       de.genes2 <- de.genes2 %>% tibble::rownames_to_column()
       names(de.genes2)[1] <- "id"      
+    } else if (expset == "exp5" | expset == "exp6") {
+      de.genes2 <- glmLRT(
+        glmfit = de.genes,
+        contrast = design[, coef]
+      )
+      de.genes2 <- topTags(de.genes2, n = nrow(cts), sort.by = "none")
+      de.genes2 <- as.data.frame(de.genes2)
+      de.genes2$baseMean <- rowMeans(cts)
+      names(de.genes2) <- c(
+        "log2FoldChange",
+        "logCPM",
+        "LR",
+        "pvalue",
+        "padj",
+        "baseMean"
+      )
+      de.genes2 <- subset(de.genes2, baseMean != 0)
+      de.genes2 <- de.genes2 %>% tibble::rownames_to_column()
+      names(de.genes2)[1] <- "id"
+    } else if (expset == "exp7") {
+      de.genes2 <- glmLRT(
+        glmfit = de.genes,
+        coef = coef
+      )
+      de.genes2 <- topTags(de.genes2, n = nrow(cts), sort.by = "none")
+      de.genes2 <- as.data.frame(de.genes2)
+      de.genes2$baseMean <- rowMeans(cts)
+      names(de.genes2) <- c(
+        "log2FoldChange",
+        "logCPM",
+        "LR",
+        "pvalue",
+        "padj",
+        "baseMean"
+      )
+      de.genes2 <- subset(de.genes2, baseMean != 0)
+      de.genes2 <- de.genes2 %>% tibble::rownames_to_column()      
     }
   } else if (class(de.genes) == "DESeqDataSet") {
     if (expset == "exp1") {
@@ -154,6 +192,34 @@ getContTable <- function(de.genes, coef, cts, expset, design, fact) {
       de.genes2 <- subset(de.genes2, baseMean != 0)
       de.genes2 <- de.genes2 %>% tibble::rownames_to_column()
       names(de.genes2)[1] <- "id"         
+    } else if (expset == "exp5") {
+      coef2 <- strsplit(coef, "_VS_", fixed = TRUE)
+      coef2 <- unlist(coef2)
+      de.genes2 <- results(
+        object = de.genes,
+        contrast = c(fact5, coef2[1], coef2[2])
+      )
+      de.genes2 <- as.data.frame(de.genes2)
+      de.genes2 <- subset(de.genes2, baseMean != 0)
+      de.genes2 <- de.genes2 %>% tibble::rownames_to_column()
+    } else if (expset == "exp6") {
+      coef2 <- strsplit(coef, "_VS_", fixed = TRUE)
+      coef2 <- unlist(coef2)
+      de.genes2 <- results(
+        object = de.genes,
+        contrast = c(fact6, coef2[1], coef2[2])
+      )
+      de.genes2 <- as.data.frame(de.genes2)
+      de.genes2 <- subset(de.genes2, baseMean != 0)
+      de.genes2 <- de.genes2 %>% tibble::rownames_to_column()
+    } else if (expset == "exp7") {
+      de.genes2 <- results(
+        object = de.genes,
+        name = coef
+      )
+      de.genes2 <- as.data.frame(de.genes2)
+      de.genes2 <- subset(de.genes2, baseMean != 0)
+      de.genes2 <- de.genes2 %>% tibble::rownames_to_column()
     }
   }
   return(de.genes2)
@@ -237,6 +303,14 @@ limma.exp4 <- function(fact1, fact2, coldata, cts, fact1.rlvl, fact2.rlvl) {
   fit <- lmFit(cts, design)
   fit.cont <- eBayes(fit)
   return(list(fit.cont, design))
+}
+
+## LIMMA - EXP 7 - user inputs
+limma.exp7 <- function(cts, mod.matrix) {
+  design <- mod.matrix
+  fit <- lmFit(cts, design)
+  fit <- eBayes(fit)
+  return(list(fit, design))
 }
 
 
@@ -332,6 +406,66 @@ edger.exp4 <- function(fact1, fact2, coldata, cts, fact1.rlvl, fact2.rlvl,
   return(list(fit.edger, design))
 }
 
+## EDGER - EXP5 - main effects only
+edger.exp5 <- function(fact, fact.levl, cts, coldata, perm.h, norm) {
+
+  coldata[, fact] <- relevel(x = coldata[, fact], ref = fact.levl)
+
+  design <- model.matrix(~ 0 + coldata[, fact])
+  rownames(design) <- rownames(coldata)
+  colnames(design) <- levels(coldata[, fact])
+  perm.c <- gsub(pattern = "_VS_", replacement = "-", perm.h)
+  cont <- makeContrasts(contrasts = perm.c, levels = design)
+  colnames(cont) <- perm.h
+
+  dge <- DGEList(counts = cts)
+  dge <- calcNormFactors(dge, method = norm)
+  dge <- estimateGLMCommonDisp(dge, design)
+  dge <- estimateGLMTrendedDisp(dge, design)
+  # dge <- estimateGLMTagwiseDisp(dge, design)
+  fit.edger <- glmFit(dge, design)
+
+  return(list(fit.edger, cont))
+}
+
+## EDGER - EXP6 - main effects + grouping factor
+edger.exp6 <- function(
+  me.fact, me.levl, gp.fact, gp.levl, cts, coldata, perm.h, norm) {
+  
+  cts <- cts[, which(coldata[, gp.fact] == gp.levl)]
+  coldata <- coldata[which(coldata[, gp.fact] == gp.levl), ]
+  
+  coldata[] <- lapply(coldata, function(x) if(is.factor(x)) factor(x) else x)
+  coldata[, me.fact] <- relevel(x = coldata[, me.fact], ref = me.levl)
+  
+  design <- model.matrix(~ 0 + coldata[, me.fact])
+  rownames(design) <- rownames(coldata)
+  colnames(design) <- levels(coldata[, me.fact])
+  perm.c <- gsub(pattern = "_VS_", replacement = "-", perm.h)
+  cont <- makeContrasts(contrasts = perm.c, levels = design)
+  colnames(cont) <- perm.h
+
+  dge <- DGEList(counts = cts)
+  dge <- calcNormFactors(dge, method = norm)
+  dge <- estimateGLMCommonDisp(dge, design)
+  dge <- estimateGLMTrendedDisp(dge, design)
+  # dge <- estimateGLMTagwiseDisp(dge, design)
+  fit.edger <- glmFit(dge, design)
+
+  return(list(fit.edger, cont))
+}
+
+## EDGER - EXP7 - user input
+edger.exp7 <- function(cts, mod.matrix) {
+  design <- mod.matrix
+  dge <- DGEList(counts = cts)
+  dge <- calcNormFactors(dge, method = norm)
+  dge <- estimateDisp(dge, design)
+  fit <- glmQLFit(dge, design)
+  return(list(fit, design))
+}
+
+
 
 
 # DESeq2
@@ -377,7 +511,7 @@ deseq.exp2 <- function(fact1, fact2, coldata, cts, perm.h) {
   return(list(dds, cont))
 }
 
-## EDGER - EXP3 - classical interactions
+## DESeq2 - EXP3 - classical interactions
 deseq.exp3 <- function(fact1, fact2, coldata, cts, fact1.rlvl, fact2.rlvl) {
   f1n <- length(levels(coldata[, fact1]))
   coldata[, fact1] <- relevel(x = coldata[, fact1], ref = fact1.rlvl)
@@ -407,7 +541,7 @@ deseq.exp3 <- function(fact1, fact2, coldata, cts, fact1.rlvl, fact2.rlvl) {
   return(list(dds, design))
 }
 
-## EDGER - EXP4 - added effects blocking and paired
+## DESeq2 - EXP4 - added effects blocking and paired
 deseq.exp4 <- function(fact1, fact2, coldata, cts, fact1.rlvl, fact2.rlvl) {
   f1n <- length(levels(coldata[, fact1]))
   coldata[, fact1] <- relevel(x = coldata[, fact1], ref = fact1.rlvl)
@@ -433,6 +567,64 @@ deseq.exp4 <- function(fact1, fact2, coldata, cts, fact1.rlvl, fact2.rlvl) {
   dds <- DESeq(dds)
   return(list(dds, design))
 }
+
+## DESeq2 - EXP5 - main effects only
+deseq.exp5 <- function(fact, fact.levl, cts, coldata, perm.h) {
+  coldata[, fact] <- relevel(x = coldata[, fact], ref = fact.levl)
+  design0 <- model.matrix(~ 0 + coldata[, fact])
+  rownames(design0) <- rownames(coldata)
+  colnames(design0) <- levels(coldata[, fact])
+  perm.c <- gsub(pattern = "_VS_", replacement = "-", perm.h)
+  cont0 <- makeContrasts(contrasts = perm.c, levels = design0)
+  colnames(cont0) <- perm.h
+  design.dds <- paste("~", fact)
+  design.dds <- as.formula(design.dds)
+  dds <- DESeqDataSetFromMatrix(
+    countData = cts,
+    colData = coldata,
+    design = design.dds
+  )
+  dds <- DESeq(dds, test = "LRT", reduced = ~1)
+  return(list(dds, cont0))
+}
+
+## DESeq2 - EXP6 - main effects only + grouping factor
+deseq.exp6 <- function(
+  me.fact, me.levl, gp.fact, gp.levl, cts, coldata, perm.h) {
+  cts <- cts[, which(coldata[, gp.fact] == gp.levl)]
+  coldata <- coldata[which(coldata[, gp.fact] == gp.levl), ]
+  coldata[] <- lapply(coldata, function(x) if(is.factor(x)) factor(x) else x)
+  coldata[, me.fact] <- relevel(x = coldata[, me.fact], ref = me.levl)
+  design0 <- model.matrix(~ 0 + coldata[, me.fact])
+  rownames(design0) <- rownames(coldata)
+  colnames(design0) <- levels(coldata[, me.fact])
+  perm.c <- gsub(pattern = "_VS_", replacement = "-", perm.h)
+  cont0 <- makeContrasts(contrasts = perm.c, levels = design0)
+  colnames(cont0) <- perm.h
+  design.dds <- paste("~", me.fact)
+  design.dds <- as.formula(design.dds)
+  dds <- DESeqDataSetFromMatrix(
+    countData = cts,
+    colData = coldata,
+    design = design.dds
+  )
+  dds <- DESeq(dds, test = "LRT", reduced = ~1)
+  return(list(dds, cont0))
+}
+
+## DESeq2 - EXP7 - user input
+deseq.exp7 <- function(cts, coldata, mod.matrix) {
+  design <- mod.matrix
+  dds <- DESeqDataSetFromMatrix(
+    countData = cts,
+    colData = coldata,
+    design = ~ 1
+  )
+  dds <- DESeq(dds, full = design, modelMatrixType = "standard")
+  return(list(dds, design))
+}
+
+
 
 
 
