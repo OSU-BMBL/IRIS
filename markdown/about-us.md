@@ -23,10 +23,10 @@
 
 <p float="left">
 	<a href="https://www.sdstate.edu/">
-  <img src="../img/logo-sdsu.png" style="height:98px;">
+  <img src="../vignette/img/logo-sdsu.png" style="height:98px;">
 	</a>
 	<a href="https://www.sdstate.edu/agronomy-horticulture-plant-science/bioinformatics-and-mathematical-biosciences-lab">
-  <img src="../img/logo-bmbl.png">
+  <img src="../vignette/img/logo-bmbl.png">
 	</a>
 </p>
 
