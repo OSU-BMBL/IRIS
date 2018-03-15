@@ -48,6 +48,7 @@ You will also need several Bioconductor packages. Run this code to get the
 necessary packages from the Bioconductor repository:
 
 ``` r
+# Bioconductor
 bioc.packages <- c("DESeq2", "edgeR", "limma", "QUBIC")
 np <- packages[!(bioc.packages %in% installed.packages()[,"Package"])]
 source("https://bioconductor.org/biocLite.R")
