@@ -106,7 +106,7 @@ np <- packages[!(packages %in% installed.packages()[, "Package"])]
 if(length(np)) install.packages(np)
 ```
 
-## S2.1: Install Bioconductor packages
+## S2.2: Install Bioconductor packages
 You will also need several Bioconductor packages. Similar to the prior section,
 the following code will check and install any missing Bioconductor packages 
 into your R library:
@@ -119,7 +119,7 @@ source("https://bioconductor.org/biocLite.R")
 if (length(np)) biocLite(np)
 ```
 
-## S2.2: Run the Shiny application
+## S2.3: Run the Shiny application
 Once you have installed all of the necessary packages, you can now run the 
 application locally by entering the following code into an R terminal:
 
