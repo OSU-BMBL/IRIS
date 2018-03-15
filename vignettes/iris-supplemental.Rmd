@@ -10,13 +10,21 @@ author:
   affiliation: 
   - *id
   - &id2 Bioinformatics and Mathematical Biosciences Lab
+  - &id3 Department of Mathematics and Statistics
 - name: Jing Zhao
   affiliation:
-  - Sanford Research
+  - Population Health Group, Sanford Research
+  - Department of Internal Medicine, Sanford School of Medicine
+- name: Anne Fennell
+  affiliation:
+  - *id
+  - &id4 Department of Agronomy, Horticulture, and Plant Science
 - name: Qin Ma
   affiliation:
   - *id
   - *id2
+  - *id4
+  - BioSNTR
 date: "`r format(Sys.Date(), '%m/%d/%Y')`"
 abstract: >
     Next-Generation Sequencing has made available much more large-scale genomic 
@@ -53,12 +61,69 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# S1: Accessibility 
+# S1: Citation information
+
+**Table 1:** A comparative overview of citation counts for DGE tools and DGE 
+servers. DGE analytical tools (*Tool*) are compared based on the 
+following criteria: Current number of citations (*Citations*), percentage of 
+total citations from the analytical tools presented (*Citation %*), year
+the analytical tool was published (*Year*), approximate citations per year
+based on data accrued through 2017 (*Citations/Year*), and if the analytical
+tool has an R-based application (*R-based*).
+
+| Tool                             | Citations | Citation %  | Year | Citations/Year (through 2017) | R-based? |
+|----------------------------------|-----------|-------------|------|-------------------------------|----------|
+| edgeR (Robinson et al. 2010)     | 7093      | 32.39700375 | 2010 | 1013.285714                   | Yes      |
+| Cuffdiff (Trapnell et al. 2012)  | 4533      | 20.70430255 | 2012 | 906.6                         | No       |
+| Cuffdiff2 (Trapnell et al. 2013) | 1508      | 6.887731799 | 2013 | 377                           | No       |
+| DESeq2 (Love et al. 2014)        | 4249      | 19.40714351 | 2014 | 1416.333333                   | Yes      |
+| limma (Ritchie et al. 2015)      | 2399      | 10.95733991 | 2015 | 1199.5                        | Yes      |
+| DEGseq (Wang et al. 2009)        | 1237      | 5.649949758 | 2009 | 154.625                       | Yes      |
+| baySeq (Hardcastle et al. 2010)  | 562       | 2.56691331  | 2010 | 80.28571429                   | Yes      |
+| SAMseq (Li et al. 2013)          | 275       | 1.256051886 | 2013 | 68.75                         | Yes      |
+| NOIseq (Tarazona et al. 2012)    | 38        | 0.173563533 | 2012 | 7.6                           | Yes      |
+
+# S2: Accessibility 
 IRIS-DGE can be freely accessed directly through this
-[link](http://bmbl.sdstate.edu/IRIS/) or through R using the following commands:
+[link](http://bmbl.sdstate.edu/IRIS/) or through R using the following code
+in the proceeding sections.
+
+## S2.1: Install CRAN packages
+IRIS-DGE requires several packages to operate. To get these pacakages, the
+following commands can be entereed into an R terminal to check if you
+already have the necessary packages. If not, the following code will install
+any missing packages:
 
 ```{r, eval=FALSE}
-if (!require("shiny")) install.packages("shiny")
+# CRAN
+packages <- c(
+	"crosstalk", "dplyr", "DT", "gtools", "plotly", "shiny", "plyr",
+	"shinyBS", "shinycssloaders", "shinythemes", "tibble", "tidyr",
+	"Rcpp", "Hmisc", "ggplot2", "geneplotter", "locfit", "GGally", 
+	"pheatmap", "reshape2", "backports", "digest", "fields", "psych"
+)
+np <- packages[!(packages %in% installed.packages()[, "Package"])]
+if(length(np)) install.packages(np)
+```
+
+## S2.1: Install Bioconductor packages
+You will also need several Bioconductor packages. Similar to the prior section,
+the following code will check and install any missing Bioconductor packages 
+into your R library:
+
+```{r, eval=FALSE}
+# Bioconductor
+bioc.packages <- c("DESeq2", "edgeR", "limma", "QUBIC")
+np <- packages[!(bioc.packages %in% installed.packages()[,"Package"])]
+source("https://bioconductor.org/biocLite.R")
+if (length(np)) biocLite(np)
+```
+
+## S2.2: Run the Shiny application
+Once you have installed all of the necessary packages, you can now run the 
+application locally by entering the following code into an R terminal:
+
+```{r, eval=FALSE}
 shiny::runGitHub("iris", "btmonier")
 ```
 
@@ -67,7 +132,7 @@ circumstances where internet connections will be limited (such as during
 travel), loading IRIS-DGE through R while internet is still available will allow
 users to utilize IRIS-DGE without an internet connection later on.
 
-# S2: A note about input data
+# S3: A note about input data
 IRIS-DGE requires two pieces of information for analysis. The first is an
 expression estimation matrix, also referred to as a count matrix, displaying
 the gene expression estimates for each sample. The format requires a CSV file
@@ -82,7 +147,7 @@ For the following tutorial, the data used for this tutorial are derived from
 (Rootstock, row, and block). This data can viewed as the "big" example data set
 found under the `Submit and QC` tab under `1. Submission Parameters`.
 
-## S2.1: Expression matrices
+## S3.1: Expression matrices
 Typically, an expression matrix, also known as count data or a count matrix
 refers to data where every $i$-th row and $j$-th column refer to how many
 reads are assigned to gene (ID) $i$ in sample $j$. For example, if we have
@@ -102,7 +167,7 @@ mathematical operators (`+`, `-`, `/`, `*`, `^`, etc.) and spaces between
 words. If a space is necessary for legibility, please consider using an
 underscore (`_`)
 
-## S2.2: Condition matrices
+## S3.2: Condition matrices
 Condition matrices, also known as metadata,  details the design of your
 experiment. In this type of matrix, every $i$-th row and $j$-th column refer to
 factor levels assigned to sample $i$ and factor $j$. For example, if were to
@@ -129,13 +194,13 @@ between these two matrices, is the sample information. Column names in count
 data **must** be the same as row names in the metadata.
 
 
-# S3: Expedited analysis
+# S4: Expedited analysis
 
-## S3.1: Overview
+## S4.1: Overview
 Expedited analysis is for users who want a quick and efficient method of
 producing DGE results using the default parameters and tools in IRIS-DGE. 
 
-## S3.2: Submit and QC
+## S4.2: Submit and QC
 1. Click on the `Submit and QC` tab:
 
 ![](img/subqc-01.png)
@@ -176,7 +241,7 @@ producing DGE results using the default parameters and tools in IRIS-DGE.
 ![](img/subqc-06.png)
 
 
-## S3.3: Data export
+## S4.3: Data export
 1. To export results data from the `DGE Analysis` tab, click on the 
    `Download All Data` button at the bottom of the page to download the 
    results file:
@@ -186,9 +251,9 @@ producing DGE results using the default parameters and tools in IRIS-DGE.
 
 
 
-# S4: In-depth analysis
+# S5: In-depth analysis
 
-## S4.1: Overview
+## S5.1: Overview
 By choosing the in-depth analysis route, you will be given more information
 about your data including:
 
@@ -199,7 +264,7 @@ about your data including:
 * Principal components and multidimensional scaling;
 * Identification of most variable IDs in data.
 
-## S4.2: Submit and QC
+## S5.2: Submit and QC
 1. Click on the `Submit and QC` tab near the top-left corner of the application: 
 
 ![](img/subqc-01.png)
@@ -231,7 +296,7 @@ about your data including:
 5. After you click `Submit`, the main page will now be populated with several
    pieces of information in two sub-tabs, `File Summary` and `Count Summary`.
    
-### S4.2.1: File Summary
+### S5.2.1: File Summary
 `File Summary` provides a glimpse into the submitted data. This subtab includes
 three main components.
 
@@ -251,7 +316,7 @@ three main components.
 
    ![](img/subqc-12.png)
    
-### S4.2.2: Count Summary
+### S5.2.2: Count Summary
 `Count summary` provides three interactive, downloadable visualizations based
 on the file for each sample.
 
@@ -291,7 +356,7 @@ on the file for each sample.
    
    ![](img/subqc-16.png)
    
-## S4.3: Preliminary Analysis
+## S5.3: Preliminary Analysis
 1.  After examining your results on the `Submit and QC` tab, you may proceed to 
     the `Preliminary Analysis` tab:
    
@@ -415,7 +480,7 @@ on the file for each sample.
    ![](img/prelim-14.png)    
 
 
-## S4.4: DGE Analysis
+## S5.4: DGE Analysis
 1.  After uploading the user data or selecting the example data, users can go 
     directly to the `DGE Analysis` tab, preceding the `Preliminary Analysis` 
     functions:
@@ -431,7 +496,7 @@ on the file for each sample.
     
    ![](img/dge-02.png)    
 
-### S4.4.1: An overview of experimental designs
+### S5.4.1: An overview of experimental designs
 1.  The `Two-group comparisons` options is the traditional approach for DGE and 
     compares two factors levels for the selected factor type. *With the example
     data, selecting "Two group comparisons" for the experimental design and
@@ -523,7 +588,7 @@ on the file for each sample.
    ![](img/dge-09.png)    
     
 
-### S4.4.2: Setting up an experiment
+### S5.4.2: Setting up an experiment
 1.  Following experimental design selection, the user can then select the 
     desired tool for performing differential gene expression analysis. This 
     will be found under `2. DGE Parameters`. Options for this purpose are 
@@ -599,30 +664,6 @@ on the file for each sample.
    this specific comparison (C3309 vs. OWN):* 
     
   ![](img/dge-17.png)
-
-
-
-# S5: Citation information
-
-**Table 1:** A comparative overview of citation counts for DGE tools and DGE 
-servers. DGE analytical tools (*Tool*) are compared based on the 
-following criteria: Current number of citations (*Citations*), percentage of 
-total citations from the analytical tools presented (*Citation %*), year
-the analytical tool was published (*Year*), approximate citations per year
-based on data accrued through 2017 (*Citations/Year*), and if the analytical
-tool has an R-based application (*R-based*).
-
-| Tool                             | Citations | Citation %  | Year | Citations/Year (through 2017) | R-based? |
-|----------------------------------|-----------|-------------|------|-------------------------------|----------|
-| edgeR (Robinson et al. 2010)     | 7093      | 32.39700375 | 2010 | 1013.285714                   | Yes      |
-| Cuffdiff (Trapnell et al. 2012)  | 4533      | 20.70430255 | 2012 | 906.6                         | No       |
-| Cuffdiff2 (Trapnell et al. 2013) | 1508      | 6.887731799 | 2013 | 377                           | No       |
-| DESeq2 (Love et al. 2014)        | 4249      | 19.40714351 | 2014 | 1416.333333                   | Yes      |
-| limma (Ritchie et al. 2015)      | 2399      | 10.95733991 | 2015 | 1199.5                        | Yes      |
-| DEGseq (Wang et al. 2009)        | 1237      | 5.649949758 | 2009 | 154.625                       | Yes      |
-| baySeq (Hardcastle et al. 2010)  | 562       | 2.56691331  | 2010 | 80.28571429                   | Yes      |
-| SAMseq (Li et al. 2013)          | 275       | 1.256051886 | 2013 | 68.75                         | Yes      |
-| NOIseq (Tarazona et al. 2012)    | 38        | 0.173563533 | 2012 | 7.6                           | Yes      |
 
 
 
