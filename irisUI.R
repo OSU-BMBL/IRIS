@@ -12,17 +12,19 @@ source("tabs.R")
 
 # User interface ----
 irisUI <- navbarPage(
-	theme = shinytheme("cerulean"),
-	title = "IRIS",
-  tab.welcome,
-  tab.submit,
-	tab.prelim,
-  tab.deg,
-	navbarMenu(
-	  title = "More",
-    tab.tutorial,
-    tab.faq,
-	  tab.about,
-	  tab.sessinfo
-	)
+    theme = shinytheme("cerulean"),
+    title = "IRIS",
+    id = "tab_structure",
+    tab.welcome,
+    tab.submit,
+    tab.prelim,
+    tab.deg,
+    tab.geo,
+    navbarMenu(
+        title = "More",
+        tab.tutorial,
+        tab.faq,
+        tab.about,
+        tab.sessinfo
+    )
 )
