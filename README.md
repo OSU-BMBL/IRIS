@@ -1,20 +1,20 @@
 ---
  title:         IRIS README
  author:        Brandon Monier
- created:       2018-01-12 at 09:56:43
- last modified: 2018-03-15 at 16:47:31
+ created:       2018-01-12 09:56:43 CDT
+ last modified: 2018-05-22 15:33:15 CDT
 ---
 
 # IRIS
 <http://bmbl.sdstate.edu/IRIS/>
 
 ## About
-IRIS-DGE (**I**nteractive **R**NA-seq analysis and **I**nterpretation using
-**S**hiny-**D**ifferential **G**ene **E**xpression), is a web-based tool for
+IRIS-EDA (**I**nteractive **R**NA-seq analysis and **I**nterpretation using
+**S**hiny-**E**xploratory **D**riven **A**nalysis), is a web-based tool for
 the analysis of RNA-seq count data. This tool’s purpose is to provide users 
 with a comprehensive and user-friendly method for performing differential gene 
 expression (DGE) analysis regardless of their computational experience. 
-IRIS-DGE also has integrated experimental design options to cater to users 
+IRIS-EDA also has integrated experimental design options to cater to users 
 with non-traditional DGE requirements, such as interaction terms or paired 
 data. This tool is designed in a way for usable results to be generated in 
 around one minute or for users to invest more time into detailed 
@@ -37,7 +37,8 @@ packages <- c(
 	"crosstalk", "dplyr", "DT", "gtools", "plotly", "shiny", "plyr",
 	"shinyBS", "shinycssloaders", "shinythemes", "tibble", "tidyr",
 	"Rcpp", "Hmisc", "ggplot2", "geneplotter", "locfit", "GGally", 
-	"pheatmap", "reshape2", "backports", "digest", "fields", "psych"
+	"pheatmap", "reshape2", "backports", "digest", "fields", "psych",
+    "stringr", "tools", "openxlsx"
 )
 np <- packages[!(packages %in% installed.packages()[, "Package"])]
 if(length(np)) install.packages(np)
