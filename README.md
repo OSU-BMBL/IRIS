@@ -34,10 +34,10 @@ necessary packages from the CRAN repository:
 ``` r
 # CRAN
 packages <- c(
-	"crosstalk", "dplyr", "DT", "gtools", "plotly", "shiny", "plyr",
-	"shinyBS", "shinycssloaders", "shinythemes", "tibble", "tidyr",
-	"Rcpp", "Hmisc", "ggplot2", "geneplotter", "locfit", "GGally", 
-	"pheatmap", "reshape2", "backports", "digest", "fields", "psych",
+    "crosstalk", "dplyr", "DT", "gtools", "plotly", "shiny", "plyr",
+    "shinyBS", "shinycssloaders", "shinythemes", "tibble", "tidyr",
+    "Rcpp", "Hmisc", "ggplot2", "geneplotter", "locfit", "GGally", 
+    "pheatmap", "reshape2", "backports", "digest", "fields", "psych",
     "stringr", "tools", "openxlsx"
 )
 np <- packages[!(packages %in% installed.packages()[, "Package"])]
