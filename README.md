@@ -10,7 +10,7 @@
 
 ## About
 IRIS-EDA (**I**nteractive **R**NA-seq analysis and **I**nterpretation using
-**S**hiny-**E**xploratory **D**riven **A**nalysis), is a web-based tool for
+**S**hiny-**E**xpression **D**ata **A**nalysis), is a web-based tool for
 the analysis of RNA-seq count data. This tool’s purpose is to provide users 
 with a comprehensive and user-friendly method for performing differential gene 
 expression (DGE) analysis regardless of their computational experience. 
