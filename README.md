@@ -36,9 +36,9 @@ necessary packages from the CRAN repository:
 packages <- c(
     "crosstalk", "dplyr", "DT", "gtools", "plotly", "shiny", "plyr",
     "shinyBS", "shinycssloaders", "shinythemes", "tibble", "tidyr",
-    "Rcpp", "Hmisc", "ggplot2", "geneplotter", "locfit", "GGally", 
-    "pheatmap", "reshape2", "backports", "digest", "fields", "psych",
-    "stringr", "tools", "openxlsx"
+    "Rcpp", "Hmisc", "ggplot2", "locfit", "GGally", "pheatmap", 
+    "reshape2", "backports", "digest", "fields", "psych", "stringr", 
+    "tools", "openxlsx"
 )
 np <- packages[!(packages %in% installed.packages()[, "Package"])]
 if(length(np)) install.packages(np)
@@ -50,7 +50,7 @@ necessary packages from the Bioconductor repository:
 
 ``` r
 # Bioconductor
-bioc.packages <- c("DESeq2", "edgeR", "limma", "QUBIC")
+bioc.packages <- c("DESeq2", "edgeR", "limma", "QUBIC", "geneplotter")
 np <- packages[!(bioc.packages %in% installed.packages()[,"Package"])]
 source("https://bioconductor.org/biocLite.R")
 if (length(np)) biocLite(np)
