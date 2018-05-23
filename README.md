@@ -51,7 +51,7 @@ necessary packages from the Bioconductor repository:
 ``` r
 # Bioconductor
 bioc.packages <- c("DESeq2", "edgeR", "limma", "QUBIC", "geneplotter")
-np <- packages[!(bioc.packages %in% installed.packages()[,"Package"])]
+np <- bioc.packages[!(bioc.packages %in% installed.packages()[,"Package"])]
 source("https://bioconductor.org/biocLite.R")
 if (length(np)) biocLite(np)
 ```
