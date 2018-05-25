@@ -48,7 +48,7 @@ abstract: >
 output: 
     BiocStyle::pdf_document:
         toc: true
-        fig_caption: false
+        # fig_caption: false
         # toc_float: true
         number_sections: false
 vignette: >
@@ -58,7 +58,10 @@ vignette: >
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(
+  echo = TRUE,
+  fig.pos="H"
+)
 ```
 
 # S1: Citation information
@@ -115,7 +118,7 @@ into your R library:
 ```{r, eval=FALSE}
 # Bioconductor
 bioc.packages <- c("DESeq2", "edgeR", "limma", "QUBIC")
-np <- packages[!(bioc.packages %in% installed.packages()[,"Package"])]
+np <- bioc.packages[!(bioc.packages %in% installed.packages()[,"Package"])]
 source("https://bioconductor.org/biocLite.R")
 if (length(np)) biocLite(np)
 ```
@@ -138,10 +141,93 @@ Installing the local application via
 access to more "developmental" versions of IRIS-EDA. Be warned though; 
 using developmental versions of this application may be "cutting edge", 
 however, this could potentially break various features in the application. 
-Therefore, using the server (<http://bmbl.sdstate.edu/IRIS-EDA/>) will provide a 
+Therefore, using the server (<http://bmbl.sdstate.edu/IRIS/>) will provide a 
 more "stable", peer-reviewed release of the application.
 
-# S3: A note about input data
+# S3: Single-cell RNA-seq
+
+## S3.1: Overview
+Upon sample submission to IRIS-EDA, you have two options: 
+(1) Perform analyses on a normal RNA-seq experiment or 
+(2) run single-cell RNA-seq analysis. 
+
+If you choose the latter option, you will need to provide a file 
+containing ID lengths to help reduce variability. This is crucial since
+filtration of low TPM (transcripts per million) reads can lead to better 
+results. In order to calculate TPM, ID length approximations are needed
+in conjunction with raw count data. To submit this information to IRIS-EDA, 
+**you will need to provide ID data that follows the proceeding criteria**:
+
+```
+id        id_len_kbp
+gene001          1.4
+gene002          5.6
+gene003          0.8
+...              ...
+```
+
+**Note**:
+This file must be in a comma seperated value (CSV) format, where column 1
+is the ID (e.g. gene, transcript, etc.) and column 2 is the approximation
+of length in **kilobase pairs**.
+
+
+
+## S3.2: A method to obtain this data
+There are many ways to obtain these values. A common procedure would be to
+parse the respective general fearture format version 3 (GFF3) file and 
+determine the length through calculating the difference between the 
+start and end locations. 
+
+If you need help parsing this information, a primitive `R` function has been
+made, which you can find 
+[here](https://gist.github.com/btmonier/409856fe22280603ca19345fdd4e5e22).
+To run this function, you will need to install and load 
+3 packages into your R library:
+
+  * `ape`
+  * `stringr`
+  * `dplyr`
+
+All of these packages can be found on the 
+[CRAN repository](https://cran.r-project.org/), or by using the
+`install.packages()` function provided in the base package of `R`. 
+
+This function has four parameters:
+
+  * `gff`: the location to the GFF3 file on your computer
+
+  * `cts`: your raw count matrix that you will provide to IRIS-EDA. **Note**:
+    this object must be a `matrix` type and have the same format that is
+    found in the first section of this walkthrough (*A note about input data*).
+
+  * `type`: the GFF3 type column identifier (e.g. gene, transcript, exon,
+    CDS, etc.)
+
+  * `attribute`: the GFF3 attribute (e.g. `ID`, `gene_id`, 
+    `transcript_id`, `gene_name`, or `transcript_name`)
+
+Depending on the size of this file, this may take some time. This function
+will return a `tibble` data frame, so make sure you assign it to an object
+before you use `write.csv()`. After you perform this task, the file can
+successfully be submitted to IRIS-EDA. 
+
+
+
+## S3.3: TPM filtration
+Once you have submitted the data, you will notice that the `Filter cutoff`
+changes from `count data row sums` to `TPM`:
+
+
+![](img/geo-tpm-01.png)\
+
+
+The default is set to a value of `1`, however, this can be changed at the
+user's discretion. **Note (1)**: this value corresponds to which rowsums
+(i.e. ID sums) will be filtered out if they have a value that is less than
+the user parameter.
+
+# S4: A note about input data
 IRIS-EDA requires two pieces of information for analysis. The first is an
 expression estimation matrix, also referred to as a count matrix, displaying
 the gene expression estimates for each sample. The format requires a CSV file
@@ -156,7 +242,7 @@ samples with three distinct factors (Rootstock, row, and block). This data can
 viewed as the "big" example data set found under the `Submit and QC` tab under 
 `1. Submission Parameters`.
 
-## S3.1: Expression matrices
+## S4.1: Expression matrices
 Typically, an expression matrix, also known as count data or a count matrix
 refers to data where every $i$-th row and $j$-th column refer to how many
 reads are assigned to gene (ID) $i$ in sample $j$. For example, if we have
@@ -170,13 +256,18 @@ gene002       6       7       7       8
 gene003       0      34       3      42
 ```
 
-**Note:** When loading count data into IRIS-EDA, make sure that the first column is
+**Note^1^:** When loading count data into IRIS-EDA, make sure that the 
+first column is
 your gene IDs and that sample names are short, concise, and avoid the use of
 mathematical operators (`+`, `-`, `/`, `*`, `^`, etc.) and spaces between
 words. If a space is necessary for legibility, please consider using an
 underscore (`_`)
 
-## S3.2: Condition matrices
+**Note^2^:** For sample names, **avoid starting any entries with numerical
+elements** (e.g. `1sample`, `2_human`, `42_amf`, etc.). This may potentially 
+cause unexpected errors in downstream analyses!
+
+## S4.2: Condition matrices
 Condition matrices, also known as metadata,  details the design of your
 experiment. In this type of matrix, every $i$-th row and $j$-th column refer to
 factor levels assigned to sample $i$ and factor $j$. For example, if were to
@@ -195,137 +286,71 @@ sample4 untreated  24h
 your sample names and that column names and treatment levels are short,
 concise, and avoid the use of mathematical operators (`+`, `-`, `/`, `*`, `^`,
 etc.) and spaces between words. If a space is necessary for legibility, please
-consider using an underscore (`_`) 
+consider using an underscore (`_`).
 
-**Note^2^:** Metadata can be expanded to fit the nature of your experiment (i.e.
+**Note^2^:** For this data, **avoid starting any entries with numerical
+elements** (e.g. 1, 2, 42, etc.). This may potentially cause unexpected 
+errors in downstream analyses!
+
+**Note^3^:** Metadata can be expanded to fit the nature of your experiment (i.e.
 multiple factors can be added). The only thing that must remain consistent
 between these two matrices, is the sample information. Column names in count
 data **must** be the same as row names in the metadata.
 
 
-# S4: Expedited analysis
-
-## S4.1: Overview
-Expedited analysis is for users who want a quick and efficient method of
-producing DGE results using the default parameters and tools in IRIS-EDA. 
-
-## S4.2: Submit and QC
-1. Click on the `Submit and QC` tab:
-
-![](img/subqc-01.png)
-
-2. Load user data by selecting `Load my own data` under 
-   `1. Submission Parameters`. User data requires one count matrix and one 
-   condition matrix. **Note:** you must supply both forms of data:
-   
-![](img/subqc-02.png)
-
-3. Click `Submit` to load the data under `3. Launch Overview`:
-
-![](img/subqc-03.png)
-
-4. After submitting the data, proceed to the `DGE Analysis` tab at the top. 
-   **Note:** if a specific experimental design other than the basic two-group 
-   comparison is required, select it accordingly:
-    
-![](img/subqc-04.png)
-
-5. Select the factor of interest and check the boxes for the comparisons of
-   interest under `3. Experimental Parameters`. **Note^1^:** you must choose at 
-   least one comparison for whatever experimental design you choose under 
-   `1. Experimental Setup`! **Note^2^:** If you do not want to use `DESeq2`, 
-   feel free to change this method to either `edgeR` or `limma-voom` under 
-   `2. DGE Paramters`. Also, feel free to change adjusted $p$-values and
-   minimum fold change if these defaults do not fit your analysis:
-   
-![](img/subqc-05.png)
-
-5. Submit the parameters to perform DGE analysis under `4. Launch Analysis`:
-
-![](img/subqc-03.png)
-
-6. Select the newly formed `Plots` subtab on the main page to view the DGE 
-   results table towards the bottom:
-   
-![](img/subqc-06.png)
-
-
-## S4.3: Data export
-1. To export results data from the `DGE Analysis` tab, click on the 
-   `Download All Data` button at the bottom of the page to download the 
-   results file:
-
-![](img/subqc-07.png)
-
-
-
-
-# S5: In-depth analysis
-
-## S5.1: Overview
-By choosing the in-depth analysis route, you will be given more information
-about your data including:
-
-* Count data distribution;
-* Total number of reads/sample;
-* Sample correlation analysis;
-* Biclustering;
-* Principal components and multidimensional scaling;
-* Identification of most variable IDs in data.
-
-## S5.2: Submit and QC
+# S5: Quality Control
 1. Click on the `Submit and QC` tab near the top-left corner of the application: 
 
-![](img/subqc-01.png)
+![](img/subqc-01.png)\
 
 2. Under `1. Submission Paramters`, select either 
    `Start with a small example data set`, `Start with a big example data set`, 
    or `Load my own data` to upload user data. **Note:** User data requires one 
    count matrix and one condition matrix:
    
-![](img/subqc-02.png)
+![](img/subqc-02.png)\
    
 2. Under `2. Data Processing`, select a filter cutoff to simplify and 
    expedite computations by eliminating any rows that have below specified 
    expression totals. The default argument for our application is `10`:
    
-![](img/subqc-08.png)
+![](img/subqc-08.png)\
 
 3. Right below the filter cutoff parameter, select a transformation method for
    the count data for displaying the expression estimate. **Note:** For more 
    information about any of these topics, take a look at the *FAQ* section at 
    the bottom of this document:
    
-![](img/subqc-09.png)
+![](img/subqc-09.png)\
 
 4. Click `Submit` to load the data under `3. Launch Overview`: 
 
-![](img/subqc-03.png)
+![](img/subqc-03.png)\
 
 5. After you click `Submit`, the main page will now be populated with several
    pieces of information in two sub-tabs, `File Summary` and `Count Summary`.
    
-### S5.2.1: File Summary
+## S5.1: File Summary
 `File Summary` provides a glimpse into the submitted data. This subtab includes
 three main components.
 
 1. The `count data` section will detail the first and last five rows of the 
    count data and also include the total number of IDs and samples:
    
-   ![](img/subqc-10.png)
+   ![](img/subqc-10.png)\
 
 2. The second portion includes an overview of the condition data this is 
    simply an `R` console-based output of this submitted CSV file:
 
-   ![](img/subqc-11.png)
+   ![](img/subqc-11.png)\
 
 3. Finally, pre- and post-filtered gene ID counts gives a "before-and-after"
    count of the number of IDs that were filtered using the filter cutoff 
    parameter under `2. Data Processing`:
 
-   ![](img/subqc-12.png)
+   ![](img/subqc-12.png)\
    
-### S5.2.2: Count Summary
+## S5.2: Count Summary
 `Count summary` provides three interactive, downloadable visualizations based
 on the file for each sample.
 
@@ -337,7 +362,7 @@ on the file for each sample.
    specific sample in terms of the number of raw reads provided and proportion 
    of reads aligned.*
 
-   ![](img/subqc-13.png)
+   ![](img/subqc-13.png)\
    
 2. Count Data Distribution plot showing the frequency of transformed count 
    data by sample with interactivity displaying the value and frequency. 
@@ -349,8 +374,8 @@ on the file for each sample.
    may indicate a required investigation into the raw read counts or read 
    alignment statistics.*
    
-   ![](img/subqc-14.png)
-   ![](img/subqc-15.png)
+   ![](img/subqc-14.png)\
+   ![](img/subqc-15.png)\
 
    
 3. Total Reads displays a histogram of total reads by sample with 
@@ -363,20 +388,20 @@ on the file for each sample.
    lower total reads count than the other samples. This may be reflected in 
    further comparative analyses.*
    
-   ![](img/subqc-16.png)
+   ![](img/subqc-16.png)\
    
-## S5.3: Discovery-Driven Analyses
+# S6: Discovery-Driven Analyses
 1.  After examining your results on the `Submit and QC` tab, you may proceed to 
     the `Discovery-Driven Analyses` tab:
    
-   ![](img/prelim-01.png)
+   ![](img/prelim-01.png)\
 
 2.  The `Discovery-Driven Analyses` tab will be populated with several subtabs, 
     similar to the `Submit and QC` tab. The first subtab you will see is the 
     `Correlation` tab. This tab provides correlation analysis of the expression
     matrix by sample:
    
-   ![](img/prelim-02.png)
+   ![](img/prelim-02.png)\
    
 3.  Under the `Correlation` subtab you will see several visualizations. 
     `Interactive Correlation Analysis` displays a heatmap of the correlation 
@@ -389,7 +414,7 @@ on the file for each sample.
     of gene IDs with similar or identical expression estimates will cause
     correlations to be large, even for dissimilar genetic expression profiles:* 
 
-   ![](img/prelim-03.png)
+   ![](img/prelim-03.png)\
 
 4.  Clicking on a cell will provided a scatterplot of the two intersecting 
     samples with each data point representing one gene ID. A scatterplot with 
@@ -400,7 +425,7 @@ on the file for each sample.
     points that fall far from the diagonal line represent genes with dissimilar
     expression levels between the select samples:*
    
-   ![](img/prelim-04.png)
+   ![](img/prelim-04.png)\
    
 5.  The Sample Distance Matrix provides a heatmap of the Euclidean distance 
     between the gene expression vectors for each sample pair. The larger 
@@ -412,13 +437,13 @@ on the file for each sample.
     with a darker color indicate a more dissimilar pair of samples based on 
     genetic expression:*
    
-   ![](img/prelim-05.png)
+   ![](img/prelim-05.png)\
 
 6.  The next visualization will be under the `PCA` subtab. This subtab 
     provides Principal Component Analysis (PCA) for the expression estimation 
     matrix:
     
-   ![](img/prelim-06.png)
+   ![](img/prelim-06.png)\
    
 7.  This analysis has the option of selecting a factor of interest. *With the 
     example data, selecting "Rootstock" as the factor of interest provides a
@@ -433,26 +458,26 @@ on the file for each sample.
     component accounts for 37% of the variance between samples, whereas the 
     second principal component accounts for 7%:*
 
-   ![](img/prelim-07.png)
+   ![](img/prelim-07.png)\
 
 8.  The next visualization will be under the `MDS` subtab. This subtab 
     provides multi dimensional scaling for the expression estimation matrix. 
     This is similar to PCA except is develops components through non-linear
     transformations of the gene expressions:
    
-   ![](img/prelim-08.png)
+   ![](img/prelim-08.png)\
    
 9.  *Looking back at our sample data, we observe similar results to that of the 
     PCA results, with similar potential interpretations if any sample or groups 
     of samples were to differentiate from the others:*
 
-   ![](img/prelim-09.png)
+   ![](img/prelim-09.png)\
 
 10. The next visualization will be under the `Heatmap` subtab. This subtab 
     provides an interactive heatmap with rows representing the gene IDs and 
     columns representing sample IDs:
    
-   ![](img/prelim-10.png)
+   ![](img/prelim-10.png)\
    
 11. This heatmap requires an ID cutoff to select the indicated number of gene 
     IDs with the highest mean expression values for display. Selecting a cell
@@ -465,14 +490,14 @@ on the file for each sample.
     rootstock seems to have a higher expression level for that ID, with the
     exception of one sample:*
     
-   ![](img/prelim-11.png)
-   ![](img/prelim-12.png)
+   ![](img/prelim-11.png)\
+   ![](img/prelim-12.png)\
    
 12. On the next subtab (1), `Biclustering` performs a biclustering analysis 
     using one of the selected biclustering tools (3) with a maximum bicluster size 
     of the indicated cutoff value (2):
 
-   ![](img/prelim-13.png)
+   ![](img/prelim-13.png)\
    
 13. Launching the analysis results in display of the first bicluster. 
     Alternative clusters can be selected from the dropdown menu and the IDs 
@@ -486,15 +511,15 @@ on the file for each sample.
     under the isolated gene IDs. Interpretations can be made similarly for 
     each subsequent bicluster:*
     
-   ![](img/prelim-14.png)    
+   ![](img/prelim-14.png)\    
 
+# S7: Differential Gene Expression
 
-## S5.4: DGE Analysis
 1.  After uploading the user data or selecting the example data, users can go 
     directly to the `DGE Analysis` tab, preceding the `Discovery-Driven Analyses` 
     functions:
     
-   ![](img/dge-01.png)
+   ![](img/dge-01.png)\
    
 2.  Once you are on this tab, you will be greeted with several options. 
     `1. Experimental Setup` will allow users to select an experimental design 
@@ -503,9 +528,9 @@ on the file for each sample.
     blocking designs), Main effects, Main effects with grouping factors, or 
     Custom design:
     
-   ![](img/dge-02.png)    
+   ![](img/dge-02.png)\    
 
-### S5.4.1: An overview of experimental designs
+## S7.1: An overview of experimental designs
 1.  The `Two-group comparisons` options is the traditional approach for DGE and 
     compares two factors levels for the selected factor type. *With the example
     data, selecting "Two group comparisons" for the experimental design and
@@ -517,7 +542,7 @@ on the file for each sample.
     selected. The linear model is also displayed for users interested in the 
     model used for comparisons:*
     
-   ![](img/dge-03.png)    
+   ![](img/dge-03.png)\    
     
 2.  The `Multiple factor comparisons` design has users select two factor levels 
     and performs all crosswise comparisons for the two chosen factor levels. 
@@ -530,7 +555,7 @@ on the file for each sample.
     insight into the locations and possibly time (due to time requirements for
     sampling) for this specific rootstock:*
     
-   ![](img/dge-04.png)    
+   ![](img/dge-04.png)\    
     
 3.  The `Classical interaction design` allows the user to select two factor 
     levels and one reference level for each of the selected factors. *With the 
@@ -540,7 +565,7 @@ on the file for each sample.
     comparison. The contrast levels selected upon submission will provide DEGs 
     with respect to these two levels:*
 
-   ![](img/dge-05.png)    
+   ![](img/dge-05.png)\    
 
 4.  The `Additive models` design is useful when samples are paired or blocked 
     into distinct groupings. This format requires selected factors, one for 
@@ -551,7 +576,7 @@ on the file for each sample.
     the blocking factor and the A15 Block is selected for the treatment 
     reference level:*
     
-   ![](img/dge-06.png)    
+   ![](img/dge-06.png)\    
 
 5.  `Main Effects` experimental design allows for testing the significance of a 
     factor across multiple factor levels. In this situation, any significant
@@ -570,7 +595,7 @@ on the file for each sample.
     $p$-values will be calculated with respect to the main effect of the 
     chosen factor:*
     
-   ![](img/dge-07.png)    
+   ![](img/dge-07.png)\    
 
 6.  `Main effects with grouping factors` design allows for a more detailed main
     effects testing to be performed. This design tests the indicated main 
@@ -585,7 +610,7 @@ on the file for each sample.
     analysis will indicate which genes are differentially expressed when 
     account for Block only for the C3309 samples:*
     
-   ![](img/dge-08.png)    
+   ![](img/dge-08.png)\    
 
 7.  Finally, `Custom design` provides advanced users with a method for 
     indicating their own design matrix. This method is provided so that users 
@@ -594,10 +619,10 @@ on the file for each sample.
     with advanced knowledge of the modeling process to use this option, as the 
     required design matrix may not be intuitive to use appropriately:
     
-   ![](img/dge-09.png)    
+   ![](img/dge-09.png)\    
     
 
-### S5.4.2: Setting up an experiment
+## S7.2: Setting up an experiment
 1.  Following experimental design selection, the user can then select the 
     desired tool for performing differential gene expression analysis. This 
     will be found under `2. DGE Parameters`. Options for this purpose are 
@@ -605,7 +630,7 @@ on the file for each sample.
     effects design options, the only options for DGE tools are `DESeq2` and 
     `edgeR`:
     
-   ![](img/dge-10.png)
+   ![](img/dge-10.png)\
 
 2.  Also under `2. DGE Parameters`, adjusted $p$-value and log-fold change 
     cutoffs can be specified to filter the results provided. The default values 
@@ -613,7 +638,7 @@ on the file for each sample.
     provide all gene comparisons, select 1 for adjusted $p$-value cutoff and 0 
     for the minimum log-fold change: 
 
-   ![](img/dge-11.png)
+   ![](img/dge-11.png)\
 
 3.  Upon indication of the experimental design, DGE tool and cutoffs, the 
     parameters and comparisons for the specified analysis must be provided. 
@@ -621,7 +646,7 @@ on the file for each sample.
     on the selected experimental design, the required parameters and 
     comparisons will vary:
 
-   ![](img/dge-12.png)
+   ![](img/dge-12.png)\
 
 4.  Launching the analysis will perform the DGE analysis and provide results. 
     This is found under `4. Launch Analysis`. **Note:** Be mindful that this 
@@ -629,7 +654,7 @@ on the file for each sample.
     values after submission will automatically update the generated 
     visualizations and results table:
     
-   ![](img/dge-13.png)
+   ![](img/dge-13.png)\
    
 5.  If you haven't crashed your computer or our server, the main page will now
     be populated with data in the two subtabs: `Overview` and `Plots`.
@@ -644,7 +669,7 @@ on the file for each sample.
     showing limited clustering of samples from the PCA and MDS and high
     correlation values between samples:*
     
-   ![](img/dge-14.png)
+   ![](img/dge-14.png)\
    
 7.  The `Plots` subtab (1) will provides interactive visualizations based on the
     differential expression analysis as well as the actual results file from 
@@ -655,13 +680,13 @@ on the file for each sample.
     figure. Additionally, the gene ID can be selected from the results table, 
     which will highlight the location of that gene ID on the figure:
    
-  ![](img/dge-15.png)
+  ![](img/dge-15.png)\
     
 8.  The Volcano plot shows a comparison of the transformed $p$-value compared 
     with the transformed log-fold change. As with the MA plot, the Volcano plot 
     is interactively connected with the results table found below the figure:
     
-  ![](img/dge-16.png)
+  ![](img/dge-16.png)\
   
 9. Finally, the results table is generated in coordination with the above plots 
    and displays the output file of the selected tool's differential gene 
@@ -672,13 +697,11 @@ on the file for each sample.
    $p$-value (padj) shows that there are no differentially expressed genes for 
    this specific comparison (C3309 vs. OWN):* 
     
-  ![](img/dge-17.png)
+  ![](img/dge-17.png)\
 
+# S8: GEO Usage
 
-
-# S6: GEO Usage
-
-## S6.1: Overview
+## S8.1: Overview
 GEO (**G**ene **E**xpression **O**mnibus) is a public data repository that
 accepts array- and high throughput sequence-based data. To submit data to GEO,
 you will need three components:
@@ -705,9 +728,9 @@ information on the `Submit and QC` tab. If you do not and head
 directly to the `GEO` tab, you will be greeted with a page that looks
 like this:
 
-![](img/geo-series-01.png)
+![](img/geo-series-01.png)\
 
-## S6.2: Series
+## S8.2: Series
 After you have successfully submitted your sample data and sample
 information, the first section that you will need to fill out is the
 **Series** section. This section describes the overall experiment.
@@ -743,7 +766,7 @@ Specifically, there are six major components:
 
 
 
-## S6.3: Samples
+## S8.3: Samples
 This section lists and describes each of the biological Samples
 under investgation, as well as any protocols that are specific
 to individual Samples. Additional "processed data files" or "raw files"
@@ -755,7 +778,7 @@ submitted for analysis. For example, the "small example data set"
 has seven samples, therefore the number of tabs that would have to
 be filled out would be seven:
 
-![](img/geo-samples-01.png)
+![](img/geo-samples-01.png)\
 
 **It is mandatory that you fill out all samples.** In order for the
 spreadsheet to properly be formatted, all of these sample tabs need to
@@ -807,7 +830,7 @@ levels for each condition.
 
 
 
-## S6.4: Protocols
+## S8.4: Protocols
 This section provides the public with information about what protocols
 were used to conduct this experiment. This section has the following criteria:
 
@@ -830,7 +853,7 @@ were used to conduct this experiment. This section has the following criteria:
 
 
 
-## S6.5: Data processing pipeline
+## S8.5: Data processing pipeline
 This section includes steps for various data processing techniques.
 Base-calling, alignment, filtering, peak-calling, generation of normalized,
 abundance measurements, etc.
@@ -848,7 +871,7 @@ abundance measurements, etc.
 
 
 
-## S6.6: Processed data files
+## S8.6: Processed data files
 For each file that you provided additional processed data in the 
 `Samples` section, you will need to provide additional information about 
 these files below:
@@ -862,7 +885,7 @@ these files below:
 
 
 
-## S6.7: Raw files
+## S8.7: Raw files
 Similar to the `Processed data files` section above, for each file listed
 in the "raw files" of the `Samples` section, provide additional information
 about these files below:
@@ -891,7 +914,7 @@ about these files below:
 
 
 
-## S6.8: Paired-end experiments / SOLiD data
+## S8.8: Paired-end experiments / SOLiD data
 This section will only need to be filled out if your raw files used
 paired-end or SOLiD-based sequencing technologies. For paired-end experiments,
 list the 2 associated raw files, along with some additional information:
@@ -911,7 +934,7 @@ paired-end read sets only. If your raw reads used SOLiD technology, this
 section will may appear void of any information (see example):
 
 
-![](img/geo-pair-01.png)
+![](img/geo-pair-01.png)\
 
 Instead of 2 reads, you will need to provide 4 (due to the basis of this 
 technology) In the final section before the downloads portion. Therfore, 
@@ -920,7 +943,7 @@ corresponding to their respective read.
 
 
 
-## S6.9: Downloads
+## S8.9: Downloads
 After you have submitted all of your information, you can download two items:
   
   * An Excel spreadsheet of the metadata;
@@ -928,96 +951,7 @@ After you have submitted all of your information, you can download two items:
 
 
 
-
-
-# S7: Sing-cell RNA-seq
-
-## S7.1: Overview
-Upon sample submission to IRIS-EDA, you have two options: 
-(1) Perform analyses on a normal RNA-seq experiment or 
-(2) run single-cell RNA-seq analysis. 
-
-If you choose the latter option, you will need to provide a file 
-containing ID lengths to help reduce variability. This is crucial since
-filtration of low TPM (transcripts per million) reads can lead to better 
-results. In order to calculate TPM, ID length approximations are needed
-in conjunction with raw count data. To submit this information to IRIS-EDA, 
-**you will need to provide ID data that follows the proceeding criteria**:
-
-```
-id        id_len_kbp
-gene001          1.4
-gene002          5.6
-gene003          0.8
-...              ...
-```
-
-**Note**:
-This file must be in a comma seperated value (CSV) format, where column 1
-is the ID (e.g. gene, transcript, etc.) and column 2 is the approximation
-of length in **kilobase pairs**.
-
-
-
-## S7.2: A method to obtain this data
-There are many ways to obtain these values. A common procedure would be to
-parse the respective general fearture format version 3 (GFF3) file and 
-determine the length through calculating the difference between the 
-start and end locations. 
-
-If you need help parsing this information, a primitive `R` function has been
-made, which you can find 
-[here](https://gist.github.com/btmonier/409856fe22280603ca19345fdd4e5e22).
-To run this function, you will need to install and load 
-3 packages into your R library:
-
-  * `ape`
-  * `stringr`
-  * `dplyr`
-
-All of these packages can be found on the 
-[CRAN repository](https://cran.r-project.org/), or by using the
-`install.packages()` function provided in the base package of `R`. 
-
-This function has four parameters:
-
-  * `gff`: the location to the GFF3 file on your computer
-
-  * `cts`: your raw count matrix that you will provide to IRIS-EDA. **Note**:
-    this object must be a `matrix` type and have the same format that is
-    found in the first section of this walkthrough (*A note about input data*).
-
-  * `type`: the GFF3 type column identifier (e.g. gene, transcript, exon,
-    CDS, etc.)
-
-  * `attribute`: the GFF3 attribute (e.g. `ID`, `gene_id`, 
-    `transcript_id`, `gene_name`, or `transcript_name`)
-
-Depending on the size of this file, this may take some time. This function
-will return a `tibble` data frame, so make sure you assign it to an object
-before you use `write.csv()`. After you perform this task, the file can
-successfully be submitted to IRIS-EDA. 
-
-
-
-## S7.3: TPM filtration
-Once you have submitted the data, you will notice that the `Filter cutoff`
-changes from `count data row sums` to `TPM`:
-
-
-![](img/geo-tpm-01.png)
-
-
-The default is set to a value of `1`, however, this can be changed at the
-user's discretion. **Note (1)**: this value corresponds to which rowsums
-(i.e. ID sums) will be filtered out if they have a value that is less than
-the user parameter.
-
-
-
-
-
-# S8: References
+# S9: References
 Hardcastle TJ, Kelly KA. baySeq: empirical Bayesian methods for identifying differential expression in sequence count data, BMC Bioinformatics 2010;11:422                                
 
 Li J, Tibshirani R. Finding consistent patterns: a nonparametric approach for identifying differential expression in RNA-Seq data, Statistical methods in medical research 2013;22:519-536
