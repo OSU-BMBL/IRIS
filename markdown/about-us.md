@@ -19,6 +19,9 @@
 * **Dr. Jing Zhao** ([jing.zhao@sanfordhealth.org](mailto:jing.zhao@SanfordHealth.org))  
   *Sanford Research*
 
+* **Dr. Anne Fennell**</br>
+  Department of Agronomy, Horticulture & Plant Science</br>
+  *South Dakota State University*
 - - -
 
 <p float="left">
