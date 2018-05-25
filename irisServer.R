@@ -2,7 +2,7 @@
 # Title:         IRIS - Server Script
 # Author:        Brandon Monier
 # Created:       2018-01-26 11:32:02 CDT
-# Last Modified: 2018-05-25 11:23:46 CDT
+# Last Modified: 2018-05-25 14:54:20 CDT
 #---------------------------------------------------------------------
 
 #---------------------------------------------------------------------
@@ -5436,7 +5436,14 @@ irisServer <- function(input, output, session) {
                             "questionnaire in an Excel file format.</li>",
                             "<li><b>Download Processed Data</b> will return a",
                             ".zip file of raw counts for each sample that",
-                            "you have submitted to IRIS.</li></ul>"
+                            "you have submitted to IRIS.</li></ul>",
+                            "</br>",
+                            "<b>Note</b>: If you are having issues with",
+                            "downloading the data, please try the local",
+                            "version of the web server. More instructions",
+                            "can be found",
+                            "<a href=\"https://github.com/btmonier/iris#get-local-application\">here.</a>",
+                            "</br></br>"
                         )
                     )
                 )
