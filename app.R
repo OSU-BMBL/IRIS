@@ -17,6 +17,7 @@ source("pack-load.R")
 source("iris-functions.R")
 source("iris-xlsx.R")
 source("tabs.R")
+source("irisServer.R")
 
 
 # Run shiny ----
