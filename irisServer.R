@@ -2,7 +2,7 @@
 # Title:         IRIS - Server Script
 # Author:        Brandon Monier
 # Created:       2018-01-26 11:32:02 CDT
-# Last Modified: 2018-05-17 14:37:43 CDT
+# Last Modified: 2018-05-25 11:23:46 CDT
 #---------------------------------------------------------------------
 
 #---------------------------------------------------------------------
@@ -127,12 +127,6 @@ irisServer <- function(input, output, session) {
     ### SECTION 01 - DATA LOAD (DATA)
     ###################################################################
     ###################################################################
-
-    ## DATA - Source exp. method functions
-    source("iris-functions.R")
-    source("iris-xlsx.R")
-    source("irisUI.R")
-    source("tabs.R")
 
     ## DATA - Data load option - count data
     output$file1 <- renderUI({
@@ -282,6 +276,9 @@ irisServer <- function(input, output, session) {
                 header = TRUE,
                 row.names = 1
             )
+
+            cols <- colnames(coldata)
+            coldata[cols] <- lapply(coldata[cols], factor)
 
             cts.nam <- row.names(cts)
             gen.len <- gen.len[order(
@@ -1457,6 +1454,8 @@ irisServer <- function(input, output, session) {
         )
         if (input$goqc == 0) {
             return()
+        } else if (input$dgeexpsetup != "exp7") {
+            return()
         } else {
             fileInput(
                 inputId = "mod.matrix",
@@ -2070,7 +2069,20 @@ irisServer <- function(input, output, session) {
         )
         check <- dgeout3()
         check <- nrow(check)
-        if (input$godge == 0 | check < 1) {
+        validate(
+            need(
+                expr = check > 1,
+                message = paste(
+                    "Note:",
+                    "It seems that you have no differentially",
+                    "expressed IDs. There are zero differentially",
+                    "expressed points to plot. You may still download",
+                    "static images of the entire dataset as either",
+                    "PDF or PNG files."
+                )
+            )
+        )
+        if (input$godge == 0) {
             return()
         } else {
             s <- input$mytable_rows_selected
