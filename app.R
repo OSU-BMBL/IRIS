@@ -18,7 +18,7 @@ source("iris-functions.R")
 source("iris-xlsx.R")
 source("tabs.R")
 source("irisServer.R")
-
+source("irisUI.R")
 
 # Run shiny ----
 shinyApp(irisUI, irisServer)
