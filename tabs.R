@@ -2,7 +2,7 @@
 # Title:         IRIS - Tabs
 # Author:        Brandon Monier
 # Created:       2018-01-26 11:34:53 CDT
-# Last Modified: 2018-05-16 14:34:54 CDT
+# Last Modified: 2018-05-25 11:23:41 CDT
 #---------------------------------------------------------------------
 
 # Welcome page ----
@@ -699,7 +699,7 @@ tab.tutorial <- tabPanel(
     sidebarLayout(
         sidebarPanel = NULL,
         mainPanel = mainPanel(
-            includeMarkdown("./markdown/iris-tutorial.md")
+            includeMarkdown("./vignettes/iris-tutorial.md")
         )
     )
 )
