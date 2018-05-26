@@ -24,11 +24,11 @@ popular DGE tools (*DESeq2*, *edgeR*, and *limma*) available through
 Bioconductor in conjunction with the Plotly and DataTable API libraries for R.
 
 ## Get local application
-To get a local version of IRIS-DGE, simply copy and paste the follwing code
+To get a local version of IRIS-EDA, simply copy and paste the follwing code
 chunks into an R terminal:
 
 ### Install CRAN packages
-IRIS-DGE requires several packages to operate. Run this code to get the
+IRIS-EDA requires several packages to operate. Run this code to get the
 necessary packages from the CRAN repository:
 
 ``` r
