@@ -1,6 +1,6 @@
 
-IRIS <img src="www/logo.png" align="right" />
-=============================================
+IRIS <img src="www/logo.svg" align="right" height="120"/>
+=========================================================
 
 <http://bmbl.sdstate.edu/IRIS/>
 
@@ -53,4 +53,4 @@ shiny::runGitHub("iris", "btmonier")
 
 ------------------------------------------------------------------------
 
-*Last updated:* 2018-05-31
+*Last updated:* 2018-07-01

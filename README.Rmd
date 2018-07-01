@@ -9,7 +9,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# IRIS <img src="www/logo.png" align="right" />
+# IRIS <img src="www/logo.svg" align="right" height="120"/>
 
 http://bmbl.sdstate.edu/IRIS/
 
