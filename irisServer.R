@@ -262,7 +262,7 @@ irisServer <- function(input, output, session) {
             )            
         } else if (input$examplechoice == "yes3") { # scRNA example
             cts <- read.csv(
-                "./data/count-data-scrna-sub.csv",
+                "./data/count-data-scrna.csv",
                 header = TRUE,
                 row.names = 1
             )
@@ -272,7 +272,7 @@ irisServer <- function(input, output, session) {
                 row.names = 1
             )
             gen.len <- read.csv(
-                "./data/gen-len-scrna-sub.csv",
+                "./data/gen-len-scrna.csv",
                 header = TRUE,
                 row.names = 1
             )
