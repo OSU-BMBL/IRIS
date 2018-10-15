@@ -530,6 +530,10 @@ tab.deg <- tabPanel(
                     br(),
                     br(),
                     br()
+                ),
+                tabPanel(
+                    title = "Functional Enrichment",
+                    includeMarkdown("./markdown/functional-enrichment.md")
                 )
             )
         )
