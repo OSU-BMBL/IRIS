@@ -2268,9 +2268,12 @@ irisServer <- function(input, output, session) {
             )
         },
         content = function(file) {
+            filtData <- dgeout3() %>% mutate_if(is.numeric, round, digits = 4)
+            filtData <- filtData[complete.cases(filtData), ]
             write.csv(
-                dgeout3()[input[["mytable_rows_all"]], ],
-                file, row.names = FALSE
+                filtData,
+                file, 
+                row.names = FALSE
             )
         }
     )
