@@ -1,9 +1,9 @@
 # IRIS Bug Fixes
 
 ## Adam
--   [ ] Fix GEO metadata download error
--   [ ] Fix GEO zip file download error
 -   [ ] Disconnect from server single-cell data count summary
+-   [x] Fix GEO metadata download error
+-   [x] Fix GEO zip file download error
 -   [x] Update tutorial
 -   [x] Add Dr. Fennell to `About Us` tab
 -   [x] Summary data formatting
@@ -18,3 +18,14 @@
 
 ## Cankun
 -   [ ] Windows 7 issues
+
+
+## Brandon
+-   [x] Fix download filtered DGE data bug
+
+## Reviewers
+-   [ ] Integrate new clustering methods (WGCNA, MCL, k-medoids)
+-   [ ] Integrate `scRNA - 10X` option into start page
+-   [ ] Add `t-SNE` tab to `Discovery Driven Analysis`
+-   [x] Create static page discussing functional enrichment
+
