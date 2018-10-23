@@ -989,7 +989,7 @@ irisServer <- function(input, output, session) {
         }
     })
     
-    ## QC - select input - choose factor - MDS
+    ## QC - select input - choose factor - tSNE
     output$tsnefact <- renderUI({
       tmp <- ddsout()[[2]]
       selectInput(
@@ -997,8 +997,131 @@ irisServer <- function(input, output, session) {
         label = "Choose factor",
         choices = colnames(tmp)
       )
-    })    
+    })
+    
+    ## QC - select dimensionality - tSNE
+    # output$tsneDim <- renderUI({
+    #     if (input$goqc == 0) {
+    #         return()
+    #     } else {
+    #         radioButtons(
+    #             inputId = "tsneDim",
+    #             label = "Choose dimensions",
+    #             choices = c(2, 3),
+    #             inline = TRUE
+    #         )
+    #     }
+    # })
+    
+    ## QC - select perplexity - tSNE
+    output$tsnePerp <- renderUI({
+        if (input$goqc == 0) {
+            return()
+        } else {
+            textInput(
+                inputId = "tsnePerp",
+                label = "Enter perplexity",
+                value = 1,
+                width = "100%"
+            )
+        }
+    })
 
+    # QC - visualize - tSNE
+    tsneout <- reactive({
+        if (input$goqc == 0) {
+            return()
+        } else {
+            tmp <- ddstran()[[1]]
+            lab <- ddstran()[[2]]
+            coldata <- colData(tmp)
+            validate(
+                need(
+                    expr = class(tmp) == "DESeqTransform",
+                    message = "Please transform raw counts to visualize tSNE."
+                )
+            )
+            tsne <- as.matrix(assay(tmp))
+            tsne <- dist(t(tsne))
+            req(input$tsnePerp)
+            tmp1 <- nrow(coldata) - 1
+            tmp2 <- 3 * as.numeric(input$tsnePerp)
+            if (tmp1 < tmp2) {
+                tsneOut <- "na"
+            } else {
+                ### Maybe change verbose to TRUE later...
+                tsneOut <- Rtsne::Rtsne(
+                    X = tsne,
+                    dims = 3,
+                    perplexity = as.numeric(input$tsnePerp),
+                    is_distance = TRUE,
+                    verbose = FALSE,
+                    pca = FALSE
+                )
+                tsneOut <- tsneOut$Y
+            }
+
+            return(list(tsneOut))
+        }
+    })
+        
+    output$tsnePerpCheck <- renderUI({
+        tsneOut <- tsneout()[[1]]
+
+        if (tsneOut == "na") {
+            p(
+                em(
+                    paste0(
+                        "Your perplexity value is too large. Please ",
+                        "try another value that is lower!"
+                    )
+                ),
+                style = "color:grey"
+            )
+        } else {
+            return()
+        }
+    })
+        
+    output$tsnePlot <- renderPlotly({
+        tsneOut <- tsneout()[[1]]
+        
+        if (tsneOut == "na") {
+            return()
+        } else {
+            tmp <- ddstran()[[1]]
+            lab <- ddstran()[[2]]
+            coldata <- colData(tmp)
+            
+            colors = grDevices::rainbow(
+                length(unique(coldata[, input$tsnefact]))
+            )
+            names(colors) = unique(coldata[, input$tsnefact])
+    
+            tsneOutDF <- as.data.frame(tsneOut)
+            plot_ly(
+                data = tsneOutDF,
+                type = "scatter",
+                mode = "markers",
+                x = tsneOutDF$V1,
+                y = tsneOutDF$V2,
+                symbol = names(colors[coldata[, input$tsnefact]]),
+                marker = list(size = 9)
+                # text = tooltips,
+                # hoverinfo = "text"
+            ) %>%
+                layout(
+                    xaxis = list(title = "tSNE coordinate 1"),
+                    yaxis = list(title = "tSNE coordinate 2")
+                )
+        }
+    })
+        
+
+
+    output$tsneDebug <- renderPrint({
+        tsneout()[[1]]
+    })
 
 
 
@@ -3007,7 +3130,9 @@ irisServer <- function(input, output, session) {
 
             out <- paste0(
                 "This algorithm found ", ids, " IDs amongst ", samp,
-                " samples in cluster ", clust, ". To see what IDs were found in this cluster, click on the 'Download Cluster IDs' button at the bottom of the page."
+                " samples in cluster ", clust, 
+                ". To see what IDs were found in this cluster, click on the", 
+                "'Download Cluster IDs' button at the bottom of the page."
             )
             p(paste(out))
         }

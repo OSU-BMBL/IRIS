@@ -155,13 +155,6 @@ tab.submit <- tabPanel(
             br(),
             h4("2. Data Processing"),
             uiOutput("filter_choice"),
-            # textInput(
-            #     inputId = "prefilt",
-            #     label = withMathJax(
-            #         "Filter cutoff (count data row sums \\( < n\\))"
-            #     ),
-            #     value = as.numeric(10)
-            # ),
             selectInput(
                 inputId = "transform",
                 label = "Choose transformation method for counts",
@@ -330,7 +323,10 @@ tab.prelim <- tabPanel(
             tabPanel(
                 title = "tSNE",
                 uiOutput("headTSNE"),
-                uiOutput("tsnefact")
+                uiOutput("tsnefact"),
+                uiOutput("tsnePerp"),
+                uiOutput("tsnePerpCheck"),
+                plotlyOutput("tsnePlot")
             ),
             tabPanel(
                 title = "Heatmap",
