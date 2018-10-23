@@ -24,6 +24,8 @@
 -   [ ] t-SNE option - use `Rtsne` package
 -   [ ] t-SNE option - add perplexity parameter
 -   [ ] t-SNE option - add 2d and 3d option
+-   [ ] t-SNE option - add distance parameters
+-   [ ] t-SNE option - add download options
 -   [x] Fix download filtered DGE data bug
 
 ## Reviewers
