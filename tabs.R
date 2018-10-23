@@ -328,11 +328,6 @@ tab.prelim <- tabPanel(
                 br()
             ),
             tabPanel(
-                title = "tSNE",
-                uiOutput("headTSNE"),
-                uiOutput("tsnefact")
-            ),
-            tabPanel(
                 title = "Heatmap",
                 uiOutput("headheat"),
                 uiOutput("heatnumber"),
