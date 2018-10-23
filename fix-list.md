@@ -21,16 +21,15 @@
 
 
 ## Brandon
--   [ ] t-SNE option - use `Rtsne` package
--   [ ] t-SNE option - add perplexity parameter
--   [ ] t-SNE option - add 2d and 3d option
--   [ ] t-SNE option - add distance parameters
--   [ ] t-SNE option - add download options
+-   [ ] t-SNE option - add 2d and 3d option (*in progress*)
+-   [ ] t-SNE option - add download options (*in progress*)
+-   [x] t-SNE option - use `Rtsne` package
+-   [x] t-SNE option - add perplexity parameter
 -   [x] Fix download filtered DGE data bug
 
 ## Reviewers
 -   [ ] Integrate new clustering methods (WGCNA, MCL, k-medoids)
 -   [ ] Integrate `scRNA - 10X` option into start page
--   [ ] Add `t-SNE` tab to `Discovery Driven Analysis`
+-   [x] Add `t-SNE` tab to `Discovery Driven Analysis`
 -   [x] Create static page discussing functional enrichment
 
