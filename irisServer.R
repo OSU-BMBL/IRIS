@@ -973,6 +973,31 @@ irisServer <- function(input, output, session) {
             dev.off()
         }
     )
+    
+    ## QC - header (2) - tSNE
+    output$headTSNE <- renderUI({
+        if(input$goqc == 0) {
+            p(
+                br(),
+                em(
+                    "Load data and click the 'submit' button on the 'Submit and QC' tab to see the results."
+                ),
+                style = "color:grey"
+            )
+        } else {
+            h4("T-Distributed Stochastic Neighbor Embedding")
+        }
+    })
+    
+    ## QC - select input - choose factor - MDS
+    output$tsnefact <- renderUI({
+      tmp <- ddsout()[[2]]
+      selectInput(
+        inputId = "tsnefact",
+        label = "Choose factor",
+        choices = colnames(tmp)
+      )
+    })    
 
 
 
