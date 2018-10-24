@@ -999,19 +999,19 @@ irisServer <- function(input, output, session) {
       )
     })
     
-    ## QC - select dimensionality - tSNE
-    # output$tsneDim <- renderUI({
-    #     if (input$goqc == 0) {
-    #         return()
-    #     } else {
-    #         radioButtons(
-    #             inputId = "tsneDim",
-    #             label = "Choose dimensions",
-    #             choices = c(2, 3),
-    #             inline = TRUE
-    #         )
-    #     }
-    # })
+    # QC - select dimensionality - tSNE
+    output$tsneDim <- renderUI({
+        if (input$goqc == 0) {
+            return()
+        } else {
+            radioButtons(
+                inputId = "tsneDim",
+                label = "Choose dimensions",
+                choices = c(2, 3),
+                inline = TRUE
+            )
+        }
+    })
     
     ## QC - select perplexity - tSNE
     output$tsnePerp <- renderUI({
@@ -1084,36 +1084,70 @@ irisServer <- function(input, output, session) {
     })
         
     output$tsnePlot <- renderPlotly({
+        req(tsneout())
         tsneOut <- tsneout()[[1]]
         
         if (tsneOut == "na") {
             return()
         } else {
-            tmp <- ddstran()[[1]]
-            lab <- ddstran()[[2]]
-            coldata <- colData(tmp)
-            
-            colors = grDevices::rainbow(
-                length(unique(coldata[, input$tsnefact]))
-            )
-            names(colors) = unique(coldata[, input$tsnefact])
-    
-            tsneOutDF <- as.data.frame(tsneOut)
-            plot_ly(
-                data = tsneOutDF,
-                type = "scatter",
-                mode = "markers",
-                x = tsneOutDF$V1,
-                y = tsneOutDF$V2,
-                symbol = names(colors[coldata[, input$tsnefact]]),
-                marker = list(size = 9)
-                # text = tooltips,
-                # hoverinfo = "text"
-            ) %>%
-                layout(
-                    xaxis = list(title = "tSNE coordinate 1"),
-                    yaxis = list(title = "tSNE coordinate 2")
+            req(input$tsneDim)
+            if (as.numeric(input$tsneDim) == 2) {
+                tmp <- ddstran()[[1]]
+                lab <- ddstran()[[2]]
+                coldata <- colData(tmp)
+                
+                colors = grDevices::rainbow(
+                    length(unique(coldata[, input$tsnefact]))
                 )
+                names(colors) = unique(coldata[, input$tsnefact])
+        
+                tsneOutDF <- as.data.frame(tsneOut)
+                plot_ly(
+                    data = tsneOutDF,
+                    type = "scatter",
+                    mode = "markers",
+                    x = tsneOutDF$V1,
+                    y = tsneOutDF$V2,
+                    symbol = names(colors[coldata[, input$tsnefact]]),
+                    marker = list(size = 9)
+                    # text = tooltips,
+                    # hoverinfo = "text"
+                ) %>%
+                    layout(
+                        xaxis = list(title = "tSNE coordinate 1"),
+                        yaxis = list(title = "tSNE coordinate 2")
+                    )
+            } else if (as.numeric(input$tsneDim) == 3) {
+                tmp <- ddstran()[[1]]
+                lab <- ddstran()[[2]]
+                coldata <- colData(tmp)
+                
+                colors = grDevices::rainbow(
+                    length(unique(coldata[, input$tsnefact]))
+                )
+                names(colors) = unique(coldata[, input$tsnefact])
+                
+                tsneOutDF <- as.data.frame(tsneOut)
+                plot_ly(
+                    data = tsneOutDF,
+                    mode = "markers",
+                    x = tsneOutDF$V1,
+                    y = tsneOutDF$V2,
+                    z = tsneOutDF$V3,
+                    symbol = names(colors[coldata[, input$tsnefact]]),
+                    marker = list(size = 9)
+                    # text = tooltips,
+                    # hoverinfo = "text"
+                ) %>%
+                    add_markers() %>%
+                    layout(
+                        scene = list(
+                            xaxis = list(title = "tSNE coordinate 1"),
+                            yaxis = list(title = "tSNE coordinate 2"),
+                            zaxis = list(title = "tSNE coordinate 3")
+                        )
+                    )
+            }
         }
     })
         

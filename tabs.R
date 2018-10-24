@@ -324,6 +324,7 @@ tab.prelim <- tabPanel(
                 title = "tSNE",
                 uiOutput("headTSNE"),
                 uiOutput("tsnefact"),
+                uiOutput("tsneDim"),
                 uiOutput("tsnePerp"),
                 uiOutput("tsnePerpCheck"),
                 plotlyOutput("tsnePlot")
