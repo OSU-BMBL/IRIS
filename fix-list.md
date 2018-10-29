@@ -1,7 +1,7 @@
 # IRIS Bug Fixes
 
 ## Adam
--   [ ] Disconnect from server single-cell data count summary
+-   [ ] Disconnect from server single-cell data count summary - large data
 -   [x] Fix GEO metadata download error
 -   [x] Fix GEO zip file download error
 -   [x] Update tutorial
@@ -18,18 +18,21 @@
 
 ## Cankun
 -   [ ] Windows 7 issues
+-   [ ] Install `Rtsne` package
+-   [ ] Install `WGCNA` package
+-   [ ] Install `MCL` package
+-   [ ] Install `k-medoids` package
 
 
 ## Brandon
--   [ ] t-SNE option - add 2d and 3d option (*in progress*)
 -   [ ] t-SNE option - add download options (*in progress*)
+-   [x] t-SNE option - add 2d and 3d option
 -   [x] t-SNE option - use `Rtsne` package
 -   [x] t-SNE option - add perplexity parameter
 -   [x] Fix download filtered DGE data bug
 
 ## Reviewers
--   [ ] Integrate new clustering methods (WGCNA, MCL, k-medoids)
+-   [ ] Integrate new clustering methods (`WGCNA`, `MCL`, `k-medoids`)
 -   [ ] Integrate `scRNA - 10X` option into start page
 -   [x] Add `t-SNE` tab to `Discovery Driven Analysis`
 -   [x] Create static page discussing functional enrichment
-
