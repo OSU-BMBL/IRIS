@@ -391,6 +391,13 @@ tab.prelim <- tabPanel(
                 br(),
                 br(),
                 br()
+            ),
+            tabPanel(
+                title = "Clustering",
+                uiOutput("headclust"),
+                br(),
+                br(),
+                br()
             )
         )
     )

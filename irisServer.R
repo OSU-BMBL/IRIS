@@ -2,7 +2,7 @@
 # Title:         IRIS - Server Script
 # Author:        Brandon Monier
 # Created:       2018-01-26 11:32:02 CDT
-# Last Modified: 2018-05-25 14:54:20 CDT
+# Last Modified: 2018-10-29 at 11:01:10
 #---------------------------------------------------------------------
 
 #---------------------------------------------------------------------
@@ -34,8 +34,10 @@
 #           |-  Correlation
 #           |-  PCA
 #           |-  MDS
+#           |-  tSNE
 #           |-  Heatmap
 #           |-  Biclustering
+#           |-  Clustering
 #       |-  DGE Analysis
 #           |-  Overview
 #           |-  Plots
@@ -1157,6 +1159,21 @@ irisServer <- function(input, output, session) {
         tsneout()[[1]]
     })
 
+    
+    ## QC - header (2) - clustering
+    output$headclust <- renderUI({
+        if(input$goqc == 0) {
+            p(
+                br(),
+                em(
+                    "Load data and click the 'submit' button on the 'Submit and QC' tab to see the results."
+                ),
+                style = "color:grey"
+            )
+        } else {
+            h4("Clustering Algorithms")
+        }
+    })
 
 
 
