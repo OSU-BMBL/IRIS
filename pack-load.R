@@ -10,7 +10,8 @@ packages <- c(
 	"shinyBS", "shinycssloaders", "shinythemes", "tibble", "tidyr",
 	"Rcpp", "Hmisc", "ggplot2", "geneplotter", "locfit", "GGally", 
 	"pheatmap",	"reshape2", "backports", "digest", "fields", "psych",
-	"DESeq2", "edgeR", "limma", "QUBIC", "stringr", "tools", "openxlsx"
+	"DESeq2", "edgeR", "limma", "QUBIC", "stringr", "tools", "openxlsx",
+	"Rtsne", "WGCNA", "flashClust"
 )
 
 lapply(packages, require, character.only = TRUE)
