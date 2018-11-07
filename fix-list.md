@@ -11,11 +11,11 @@
 
 
 ## Brandon
--   [ ] Fix tutorial TOC links (*in progress*)
--   [ ] Integrate `MCL` clustering algorithm
+-   [ ] Integrate `MCL` clustering algorithm (*in progress*)
 -   [ ] Disconnect from server single-cell data count summary - large data
 -   [ ] Color palettes for `Discovery-Driven Analysis` tab
 -   [ ] Windows 7 issues - Cankun
+-   [x] Fix tutorial TOC links
 -   [x] Fix scRNA user loading bug 
 -   [x] Integrate `scRNA - 10X` option into start page
 -   [x] Add tutorial statement to `Submit & QC` page
