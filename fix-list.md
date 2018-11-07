@@ -10,12 +10,12 @@
 
 
 ## Brandon
--   [ ] t-SNE option - add download options (*in progress*)
--   [ ] Integrate `MCL` clustering algorithm
+-   [ ] Integrate `MCL` clustering algorithm (*in progress*)
 -   [ ] Integrate `scRNA - 10X` option into start page
 -   [ ] Disconnect from server single-cell data count summary - large data
 -   [ ] Color palettes for `Discovery-Driven Analysis` tab
 -   [ ] Windows 7 issues - Cankun
+-   [x] t-SNE option - add download options
 -   [x] `kmed` - add download options
 -   [x] Integrate `kmed` clustering algorithm
 -   [x] `WGCNA` - add download options
