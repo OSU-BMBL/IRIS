@@ -977,6 +977,7 @@ irisServer <- function(input, output, session) {
             dev.off()
         }
     )
+
     
     ## QC - header (2) - tSNE
     output$headTSNE <- renderUI({
@@ -1156,7 +1157,83 @@ irisServer <- function(input, output, session) {
     })
         
 
-
+    ## QC - Show download button - tSNE (PDF)
+    output$dlqctsnepdf <- renderUI({
+        if(input$goqc == 0) {
+            return()
+        } else {
+            downloadButton("dlqctsnepdfimg", "Download Static R Plot (PDF)")
+        }
+    })
+    
+    ## QC - Download plot - tSNE (PDF)
+    output$dlqctsnepdfimg <- downloadHandler(
+        filename =  function() {
+            paste("qc-tsne.pdf")
+        },
+        content = function(file) {
+            tsneOut <- tsneout()[[1]]
+            tmp <- ddstran()[[1]]
+            lab <- ddstran()[[2]]
+            coldata <- colData(tmp)
+            
+            colors = grDevices::rainbow(
+                length(unique(coldata[, input$tsnefact]))
+            )
+            names(colors) = unique(coldata[, input$tsnefact])
+            tsneOutDF <- as.data.frame(tsneOut)
+            
+            pdf(file, width = 7, height = 6.5, onefile = FALSE) # open the pdf device
+            qcTSNEPlot(
+                tsneDF = tsneOutDF,
+                col = colors,
+                coldata = coldata,
+                tsnefact = input$tsnefact
+            )
+            dev.off()
+        }
+    )
+    
+    
+    
+    ## QC - Show download button - tsne (PNG)
+    output$dlqctsnepng <- renderUI({
+        if(input$goqc == 0) {
+            return()
+        } else {
+            downloadButton("dlqctsnepngimg", "Download Static R Plot (PNG)")
+        }
+    })
+    
+    ## QC - Download plot - tsne (PNG)
+    output$dlqctsnepngimg <- downloadHandler(
+        filename =  function() {
+            paste("qc-tsne.png")
+        },
+        content = function(file) {
+            tsneOut <- tsneout()[[1]]
+            tmp <- ddstran()[[1]]
+            lab <- ddstran()[[2]]
+            coldata <- colData(tmp)
+            
+            colors = grDevices::rainbow(
+                length(unique(coldata[, input$tsnefact]))
+            )
+            names(colors) = unique(coldata[, input$tsnefact])
+            tsneOutDF <- as.data.frame(tsneOut)
+            
+            png(file, width = 700, height = 650)
+            p <- qcTSNEPlot(
+                tsneDF = tsneOutDF,
+                col = colors,
+                coldata = coldata,
+                tsnefact = input$tsnefact
+            )
+            print(p)
+            dev.off()
+        }
+    )
+    
     output$tsneDebug <- renderPrint({
         tsneout()[[1]]
     })
@@ -3656,10 +3733,11 @@ irisServer <- function(input, output, session) {
         content = function(file) {
             pdf(file, width = 8, height = 6)
             consensusfastkmed <- clustout()[[1]]
-            clustheatmap(
+            p <- clustheatmap(
                 consensusfastkmed,
                 "K-Medoids Consensus Matrix Heatmap"
             )
+            print(p)
             dev.off()
         }
     )
