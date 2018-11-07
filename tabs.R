@@ -778,7 +778,7 @@ tab.tutorial <- tabPanel(
     sidebarLayout(
         sidebarPanel = NULL,
         mainPanel = mainPanel(
-            includeMarkdown("./vignettes/iris-tutorial.md")
+            includeMarkdown("./markdown/iris-tutorial.md")
         )
     )
 )
