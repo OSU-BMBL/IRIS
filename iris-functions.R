@@ -902,7 +902,7 @@ qcMDSPlot <- function(tmp, mdsfact) {
     mds <- as.data.frame(colData(tmp)) %>%
         cbind(cmdscale(mds))
     
-    p <- ggplot(mds, aes(mds[, "1"], mds["2"])) +
+    p <- ggplot(mds, aes(mds[, "1"], mds[, "2"])) +
         geom_point(aes(shape = mds[, mdsfact]), size = 2) +
         xlab("MDS coordinate 1") +
         ylab("MDS coordinate 2") +
