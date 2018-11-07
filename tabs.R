@@ -395,6 +395,49 @@ tab.prelim <- tabPanel(
             tabPanel(
                 title = "Clustering",
                 uiOutput("headclust"),
+                uiOutput("headclustwarn"),
+                uiOutput("clustalg"),
+                uiOutput("goclust"),
+                br(),
+                br(),
+                uiOutput("headclustplotW01"),
+                plotOutput("clustplotW01"),
+                div(
+                    style = "display:inline-block",
+                    uiOutput("downloadclustplotW01png")
+                ),
+                div(
+                    style = "display:inline-block",
+                    uiOutput("downloadclustplotW01pdf")
+                ),
+                div(
+                    style = "display:inline-block",
+                    uiOutput("downloadclustmodK")
+                ),
+                uiOutput("headclustplotW02"),
+                plotOutput("clustplotW02"),
+                div(
+                    style = "display:inline-block",
+                    uiOutput("downloadclustplotW02png")
+                ),
+                div(
+                    style = "display:inline-block",
+                    uiOutput("downloadclustplotW02pdf")
+                ),
+                uiOutput("headclustplotW03"),
+                plotOutput("clustplotW03"),
+                div(
+                    style = "display:inline-block",
+                    uiOutput("downloadclustplotW03png")
+                ),
+                div(
+                    style = "display:inline-block",
+                    uiOutput("downloadclustplotW03pdf")
+                ),
+                br(),
+                br(),
+                uiOutput("headclustmoddown"),
+                uiOutput("downloadclustmod"),
                 br(),
                 br(),
                 br()
