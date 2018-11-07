@@ -3708,23 +3708,6 @@ irisServer <- function(input, output, session) {
         }
     )
 
-    
-    ## CLUST - download (2) - consensus matrix
-    # output$downloadclustplotK01pngimg <- downloadHandler(
-    #     filename = function() {
-    #         paste("clust-kmed-consensus-matrix.png")
-    #     },
-    #     content = function(file) {
-    #         png(file, width = 800, height = 600)
-    #         consensusfastkmed <- clustout()[[1]]
-    #         clustheatmap(
-    #             consensusfastkmed,
-    #             "K-Medoids Consensus Matrix Heatmap"
-    #         )
-    #         dev.off()
-    #     }
-    # )
-
     ## CLUST - download (4) - consensus matrix
     output$downloadclustplotK01pdfimg <- downloadHandler(
         filename = function() {
