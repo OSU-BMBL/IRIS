@@ -396,6 +396,7 @@ tab.prelim <- tabPanel(
                 title = "Clustering",
                 uiOutput("headclust"),
                 uiOutput("headclustwarn"),
+                uiOutput("clustvarnumber"),
                 uiOutput("clustalg"),
                 uiOutput("goclust"),
                 br(),
