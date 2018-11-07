@@ -327,7 +327,13 @@ tab.prelim <- tabPanel(
                 uiOutput("tsneDim"),
                 uiOutput("tsnePerp"),
                 uiOutput("tsnePerpCheck"),
-                plotlyOutput("tsnePlot")
+                plotlyOutput("tsnePlot"),
+                br(),
+                div(style = "display:inline-block", uiOutput("dlqctsnepdf")),
+                div(style = "display:inline-block", uiOutput("dlqctsnepng")),
+                br(),
+                br(),
+                br()
             ),
             tabPanel(
                 title = "Heatmap",
