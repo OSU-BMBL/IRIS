@@ -912,6 +912,28 @@ qcMDSPlot <- function(tmp, mdsfact) {
     print(p)
 }
 
+# QC - tSNE plot
+qcTSNEPlot <- function(tsneDF, col, coldata, tsnefact) {
+    p <- ggplot(
+        data = tsneDF, 
+        aes(
+            x = tsneDF$V1, 
+            y = tsneDF$V2,
+            color = col[coldata[, tsnefact]]
+        )
+    ) +
+        geom_point() +
+        xlab("tSNE coordinate 1") +
+        ylab("tSNE coordinate 2") +
+        ggtitle("tSNE Analysis") +
+        theme_light() +
+        scale_color_discrete(
+            name = tsnefact,
+            breaks = col,
+            labels = names(col)
+        )
+    print(p)
+}
 
 
 #------------------------------------------------------------------
