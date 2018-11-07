@@ -42,7 +42,7 @@
 
 ## Reviewers (PLOS Computational Biology)
 -   [ ] Integrate new clustering methods (`MCL`) (*in progress*)
--   [ ] Integrate `scRNA - 10X` option into start page
+-   [x] Integrate `scRNA - 10X` option into start page
 -   [x] Integrate new clustering methods (`WGCNA`)
 -   [x] Integrate new clustering methods (`kmed`)
 -   [x] Add `t-SNE` tab to `Discovery Driven Analysis`
