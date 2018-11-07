@@ -1,7 +1,7 @@
 #---------------------------------------------------------------------
 # Title:         IRIS - Server Script
 # Author:        Brandon Monier
-# Created:       2018-01-26 11:32:02 CDT
+# Created:       2018-01-26 at 11:32:02
 # Last Modified: 2018-10-29 at 11:01:10
 #---------------------------------------------------------------------
 
@@ -951,6 +951,8 @@ irisServer <- function(input, output, session) {
             dev.off()
         }
     )
+    
+
 
     ## QC - Show download button - MDS (PNG)
     output$dlqcmdspng <- renderUI({
@@ -1159,21 +1161,7 @@ irisServer <- function(input, output, session) {
         tsneout()[[1]]
     })
 
-    
-    ## QC - header (2) - clustering
-    output$headclust <- renderUI({
-        if(input$goqc == 0) {
-            p(
-                br(),
-                em(
-                    "Load data and click the 'submit' button on the 'Submit and QC' tab to see the results."
-                ),
-                style = "color:grey"
-            )
-        } else {
-            h4("Clustering Algorithms")
-        }
-    })
+
 
 
 
@@ -3015,6 +3003,658 @@ irisServer <- function(input, output, session) {
 
     ###################################################################
     ###################################################################
+    ### SECTION TMP - CLUSTERING ALGORITHMS (CLUST)
+    ###################################################################
+    ###################################################################
+
+    ## CLUST - header (2) - clustering
+    output$headclust <- renderUI({
+        if(input$goqc == 0) {
+            p(
+                br(),
+                em(
+                    "Load data and click the 'submit' button on the 'Submit and QC' tab to see the results."
+                ),
+                style = "color:grey"
+            )
+        } else {
+            h4("Clustering Analysis")
+        }
+    })
+    
+    output$headclustwarn <- renderUI({
+        if (input$goqc == 0) {
+            p(
+                br(),
+                em(
+                    "Load data and click the 'submit' button on the 'Submit and QC' tab to see the results."
+                ),
+                style = "color:grey"
+            )
+        } else {
+            p(
+                br(),
+                em(
+                    paste0(
+                        "WARNING: running these algorithms may be very ",
+                        "slow, depending on the number of genes in analysis. ",
+                        "In case of server timeout, consider ",
+                        "downloading the IRIS source and run locally."
+                    )
+                )
+            )
+        }
+    })
+    
+    ## CLUST - input - Choose bicluster algorithm
+    output$clustalg <- renderUI({
+        if (input$goqc == 0) {
+            return()
+        } else {
+            selectInput(
+                inputId = "clustalg",
+                label = "Choose clustering algorithm",
+                choices = c(
+                    "WGCNA" = "wgcna",
+                    "K-Medoids" = "kmed",
+                    "MCL" = "mcl"
+                ),
+                selected = "WGCNA"
+            )
+        }
+    })
+    
+    ## CLUST - actionbutton - submit biclustering
+    output$goclust <- renderUI({
+        if (input$goqc == 0) {
+            return()
+        } else {
+            actionButton(
+                "goclust",
+                "Launch Analysis",
+                icon = icon("space-shuttle")
+            )
+        }
+    })
+    
+    ## CLUST - reactive - get variable counts
+    clustout <- eventReactive(input$goclust, {
+        cts <- ddsout()[[1]]
+        if (input$clustalg == "wgcna") {
+            withProgress(message = "Running WGCNA...", value = 0, {
+                incProgress(1/4)
+                enableWGCNAThreads()
+                
+                dds_mat <- as.matrix(counts(cts))
+                gene.names <- sort(rownames(dds_mat))
+                
+                datExpr <- t(log2(dds_mat + 1))
+                
+                incProgress(2/4)
+                # Run this to check if there are gene outliers
+                gsg <- goodSamplesGenes(datExpr, verbose = 3)
+                gsg$allOK
+                
+                # Create an object called "datTraits" that contains your trait data
+                datTraits <- colData(cts)
+                head(datTraits)
+                
+                # Form a data frame analogous to expression data that will hold the clinical traits.
+                table(rownames(datTraits) == rownames(datExpr)) #should return TRUE if datasets align correctly, otherwise your names are out of order
+                A <- adjacency(t(datExpr),type="signed") # this calculates the whole network connectivity
+                k <- as.numeric(apply(A,2,sum))-1 # standardized connectivity
+                Z.k <- scale(k)
+                thresholdZ.k <- -2.5 # often -2.5
+                outlierColor <- ifelse(Z.k<thresholdZ.k,"red","black")
+                sampleTree <- flashClust(as.dist(1-A), method = "average")
+                
+                # Convert traits to a color representation where red indicates high values
+                traitColors <- data.frame(labels2colors(datTraits))
+                dimnames(traitColors)[[2]] <- paste(names(datTraits))
+                datColors <- data.frame(outlier = outlierColor, traitColors)
+                
+                incProgress(3/4)
+                # TOM analysis - (computationally expensive)
+                enableWGCNAThreads()
+                softPower <- 18
+                adjacency <- adjacency(datExpr, power = softPower, type = "signed") #specify network type
+                TOM <- TOMsimilarity(adjacency, TOMType = "signed") # specify network type
+                dissTOM <- 1 - TOM
+                geneTree <- flashClust(as.dist(dissTOM), method="average")
+                
+                # This sets the minimum number of genes to cluster into a module
+                minModuleSize = 30
+                dynamicMods <- cutreeDynamic(
+                    dendro = geneTree, 
+                    distM = dissTOM, 
+                    deepSplit = 2, 
+                    pamRespectsDendro = FALSE, 
+                    minClusterSize = minModuleSize
+                )
+                
+                dynamicColors <- labels2colors(dynamicMods)
+                MEList <- moduleEigengenes(
+                    datExpr, 
+                    colors = dynamicColors, 
+                    softPower = 18
+                )
+                MEs <- MEList$eigengenes
+                MEDiss <- 1 - cor(MEs)
+                METree <- flashClust(as.dist(MEDiss), method = "average")
+                
+                # set a threhold for merging modules. In this example we are not merging so MEDissThres=0.0
+                MEDissThres <- 0.0
+                merge <- mergeCloseModules(
+                    datExpr, 
+                    dynamicColors, 
+                    cutHeight = MEDissThres, 
+                    verbose = 3
+                )
+                
+                mergedColors <- merge$colors
+                mergedMEs <- merge$newMEs
+
+                # Set the diagonal of the dissimilarity to NA 
+                diag(dissTOM) = NA;
+
+                # Export modules to data frame
+                module_colors= setdiff(unique(dynamicColors), "grey")
+                modlist <- list()
+                for (color in module_colors){
+                    module = gene.names[which(dynamicColors == color)]
+                    modlist[[color]] <- list(
+                        gene = module
+                    )
+                }
+                
+                moddf <- data.frame(unlist(modlist))
+                moddf$module <- gsub("\\..*", "", row.names(moddf))
+                colnames(moddf)[1] <- "gene"
+                rownames(moddf) <- seq_len(nrow(moddf))
+                moddf$gene <- as.character(moddf$gene)
+                moddf$module <- as.factor(moddf$module)
+                
+                return(
+                    list(
+                        sampleTree,
+                        datColors,
+                        geneTree,
+                        dynamicColors,
+                        mergedColors,
+                        dissTOM,
+                        moddf
+                    )
+                )
+                incProgress(4/4)
+            })
+        } else if (input$clustalg == "kmed") {
+            withProgress(message = "Running K-Medoids...", value = 0, {
+                incProgress(1/2)
+                num <- as.matrix(assay(cts))
+                mrwdist <- distNumeric(num, num, method = "mrw")
+                
+                # Detect cores of machine
+                nclust <- parallel::detectCores() - 1
+                message("Using ", nclust, " threads...")
+                result <- fastkmed(mrwdist, ncluster = nclust, iterate = 50)
+                
+                # a simple and fast k-medoids function for bootstrap evaluation
+                parkboot <- function(x, nclust) {
+                    res <- fastkmed(x, nclust, iterate = 50)
+                    return(res$cluster)
+                }
+                
+                fastkmedboot <- clustboot(mrwdist, nclust = nclust, parkboot, nboot = 50)
+                
+                # consensus matrix
+                wardorder <- function(x, nclust) {
+                    res <- fastcluster::hclust(x, method = "ward.D2")
+                    member <- cutree(res, nclust)
+                    return(member)
+                }
+                consensusfastkmed <- consensusmatrix(fastkmedboot, nclust = nclust, wardorder)
+                
+                # data frame generation
+                output <- data.frame(
+                    gene_id = rownames(num),
+                    cluster = result$cluster
+                )
+                rownames(output) <- seq_len(nrow(output))
+                output$gene_id <- as.character(output$gene_id)
+                output$cluster <- as.factor(output$cluster)
+                
+                return(
+                    list(
+                        consensusfastkmed,
+                        output
+                    )
+                )
+                incProgress(2/2)
+            })
+        } else if (input$clustalg == "mcl") {
+            withProgress(message = "Running MCL...", value = 0, {
+                incProgress(1/2)
+                
+                incProgress(2/2)
+            })
+        }
+    })
+    
+    ## CLUST - head (1) - sample dendrogram 
+    output$headclustplotW01 <- renderUI({
+        req(clustout())
+        if (input$clustalg == "wgcna") {
+            h5(strong("WGCNA - Sample Dendrogram"))
+        } else if (input$clustalg == "kmed") {
+            h5(strong("K-Medoids - Consensus Matrix Heatmap"))
+        }
+    })
+    
+    ## CLUST - visualize (WGCNA) - dendrogram plots 1
+    output$clustplotW01 <- renderPlot({
+        req(clustout())
+        if (input$clustalg == "wgcna") {
+            validate(
+                need(input$goqc != "", "")
+            )
+            sampleTree <- clustout()[[1]]
+            datColors <- clustout()[[2]]
+
+            plotDendroAndColors(
+                sampleTree,
+                groupLabels = names(datColors),
+                colors = datColors,
+                main = "Sample Dendrogram and Module Colors"
+            )
+        } else if (input$clustalg == "kmed") {
+            validate(
+                need(input$goqc != "", "")
+            )
+            consensusfastkmed <- clustout()[[1]]
+            clustheatmap(
+                consensusfastkmed,
+                "K-Medoids Consensus Matrix Heatmap"
+            )
+        }
+    })
+    
+    ## CLUST - sample dendrogram download (PNG) 1
+    output$downloadclustplotW01png <- renderUI({
+        req(clustout())
+        if (input$clustalg == "wgcna") {
+            downloadButton(
+                "downloadclustplotW01pngimg",
+                "Download Plot (PNG)"
+            )
+        } else if (input$clustalg == "kmed") {
+            downloadButton(
+                "downloadclustplotK01pngimg",
+                "Download Plot (PNG)"
+            )
+        }
+    })
+    
+    ## CLUST - sample dendrogram download (PNG) 2
+    output$downloadclustplotW01pngimg <- downloadHandler(
+        filename = function() {
+            paste("clust-wgcna-sample-dendrogram.png")
+        },
+        content = function(file) {
+            png(file, width = 800, height = 600)
+            sampleTree <- clustout()[[1]]
+            datColors <- clustout()[[2]]
+            
+            plotDendroAndColors(
+                sampleTree,
+                groupLabels = names(datColors),
+                colors = datColors,
+                main = "Sample Dendrogram and Module Colors"
+            )
+            dev.off()
+        }
+    )
+    
+    ## CLUST - sample dendrogram download (pdf) 1
+    output$downloadclustplotW01pdf <- renderUI({
+        req(clustout())
+        if (input$clustalg == "wgcna") {
+            downloadButton(
+                "downloadclustplotW01pdfimg",
+                "Download Plot (PDF)"
+            )
+        } else if (input$clustalg == "kmed") {
+            downloadButton(
+                "downloadclustplotK01pdfimg",
+                "Download Plot (PDF)"
+            )
+        }
+    })
+    
+    ## CLUST - sample dendrogram download (pdf) 2
+    output$downloadclustplotW01pdfimg <- downloadHandler(
+        filename = function() {
+            paste("clust-wgcna-sample-dendrogram.pdf")
+        },
+        content = function(file) {
+            pdf(file, width = 12, height = 8)
+            sampleTree <- clustout()[[1]]
+            datColors <- clustout()[[2]]
+            
+            plotDendroAndColors(
+                sampleTree,
+                groupLabels = names(datColors),
+                colors = datColors,
+                main = "Sample Dendrogram and Module Colors"
+            )
+            dev.off()
+        }
+    )
+
+    ## CLUST - head (2) - gene dendrogram 
+    output$headclustplotW02 <- renderUI({
+        req(clustout())
+        if (input$clustalg == "wgcna") {
+            h5(strong("WGCNA - Gene Dendrogram"))
+        } else {
+            return()
+        }
+    })
+
+    ## CLUST - visualize (WGCNA) - gene dendrogram
+    output$clustplotW02 <- renderPlot({
+        req(clustout())
+        if (input$clustalg == "wgcna") {
+            validate(
+                need(input$goqc != "", "")
+            )
+            geneTree <- clustout()[[3]]
+            dynamicColors <- clustout()[[4]]
+            mergedColors <- clustout()[[5]]
+
+            plotDendroAndColors(
+                geneTree, 
+                cbind(dynamicColors, mergedColors), 
+                c("Dynamic Tree Cut", "Merged dynamic"), 
+                dendroLabels = FALSE, 
+                hang = 0.03, 
+                addGuide = TRUE, 
+                guideHang = 0.05,
+                main = "Gene Dendrogram and Module Colors"
+            )
+        } else {
+            return()
+        }
+    })
+    
+    ## CLUST - gene dendrogram download (PNG) 1
+    output$downloadclustplotW02png <- renderUI({
+        req(clustout())
+        if (input$clustalg == "wgcna") {
+            downloadButton(
+                "downloadclustplotW02pngimg",
+                "Download Plot (PNG)"
+            )
+        } else {
+            return()
+        }
+    })
+    
+    ## CLUST - gene dendrogram download (PNG) 2
+    output$downloadclustplotW02pngimg <- downloadHandler(
+        filename = function() {
+            paste("clust-wgcna-gene-dendrogram.png")
+        },
+        content = function(file) {
+            png(file, width = 1000, height = 800)
+            geneTree <- clustout()[[3]]
+            dynamicColors <- clustout()[[4]]
+            mergedColors <- clustout()[[5]]
+            
+            plotDendroAndColors(
+                geneTree, 
+                cbind(dynamicColors, mergedColors), 
+                c("Dynamic Tree Cut", "Merged dynamic"), 
+                dendroLabels = FALSE, 
+                hang = 0.03, 
+                addGuide = TRUE, 
+                guideHang = 0.05,
+                main = "Gene Dendrogram and Module Colors"
+            )
+            dev.off()
+        }
+    )
+    
+    ## CLUST - gene dendrogram download (pdf) 1
+    output$downloadclustplotW02pdf <- renderUI({
+        req(clustout())
+        if (input$clustalg == "wgcna") {
+            downloadButton(
+                "downloadclustplotW02pdfimg",
+                "Download Plot (pdf)"
+            )
+        } else {
+            return()
+        }
+    })
+    
+    ## CLUST - gene dendrogram download (pdf) 2
+    output$downloadclustplotW02pdfimg <- downloadHandler(
+        filename = function() {
+            paste("clust-wgcna-gene-dendrogram.pdf")
+        },
+        content = function(file) {
+            pdf(file, width = 12, height = 8)
+            geneTree <- clustout()[[3]]
+            dynamicColors <- clustout()[[4]]
+            mergedColors <- clustout()[[5]]
+            
+            plotDendroAndColors(
+                geneTree, 
+                cbind(dynamicColors, mergedColors), 
+                c("Dynamic Tree Cut", "Merged dynamic"), 
+                dendroLabels = FALSE, 
+                hang = 0.03, 
+                addGuide = TRUE, 
+                guideHang = 0.05,
+                main = "Gene Dendrogram and Module Colors"
+            )
+            dev.off()
+        }
+    )
+
+    ## CLUST - head (3) - sample dendrogram 
+    output$headclustplotW03 <- renderUI({
+        req(clustout())
+        if (input$clustalg == "wgcna") {
+            h5(strong("WGCNA - Topological Overlap Matrix"))
+        } else {
+            return()
+        }
+    })
+    
+    ## CLUST - visualize (WGCNA) - TOM plot
+    output$clustplotW03 <- renderPlot({
+        req(clustout())
+        if (input$clustalg == "wgcna") {
+            validate(
+                need(input$goqc != "", "")
+            )
+            geneTree <- clustout()[[3]]
+            dynamicColors <- clustout()[[4]]
+            dissTOM <- clustout()[[6]]
+            
+            TOMplot(
+                dissTOM^4, 
+                geneTree, 
+                as.character(dynamicColors),
+                main = "TOM Plot"    
+            )
+        } else {
+            return()
+        }
+    })
+    
+    ## CLUST - TOM plot download (PNG) 1
+    output$downloadclustplotW03png <- renderUI({
+        req(clustout())
+        if (input$clustalg == "wgcna") {
+            downloadButton(
+                "downloadclustplotW03pngimg",
+                "Download Plot (PNG)"
+            )
+        } else {
+            return()
+        }
+    })
+    
+    ## CLUST - TOM plot download (PNG) 2
+    output$downloadclustplotW03pngimg <- downloadHandler(
+        filename = function() {
+            paste("clust-wgcna-tom-plot.png")
+        },
+        content = function(file) {
+            png(file, width = 800, height = 600)
+            geneTree <- clustout()[[3]]
+            dynamicColors <- clustout()[[4]]
+            dissTOM <- clustout()[[6]]
+            
+            TOMplot(
+                dissTOM^4, 
+                geneTree, 
+                as.character(dynamicColors),
+                main = "TOM Plot"    
+            )
+            dev.off()
+        }
+    )
+    
+    ## CLUST - TOM plot download (pdf) 1
+    output$downloadclustplotW03pdf <- renderUI({
+        req(clustout())
+        if (input$clustalg == "wgcna") {
+            downloadButton(
+                "downloadclustplotW03pdfimg",
+                "Download Plot (pdf)"
+            )
+        } else {
+            return()
+        }
+    })
+    
+    ## CLUST - TOM plot download (pdf) 2
+    output$downloadclustplotW03pdfimg <- downloadHandler(
+        filename = function() {
+            paste("clust-wgcna-tom-plot.pdf")
+        },
+        content = function(file) {
+            pdf(file, width = 8, height = 6)
+            geneTree <- clustout()[[3]]
+            dynamicColors <- clustout()[[4]]
+            dissTOM <- clustout()[[6]]
+            
+            TOMplot(
+                dissTOM^4, 
+                geneTree, 
+                as.character(dynamicColors),
+                main = "TOM Plot"    
+            )
+            dev.off()
+        }
+    )
+    
+    ## CLUST - head (4) - download gene modules
+    output$headclustmoddown <- renderUI({
+        req(clustout())
+        if (input$clustalg == "wgcna") {
+            h5(strong("WGCNA - Download Gene Modules"))
+        } else {
+            return()
+        }
+    })
+    
+    ## CLUST - gene module download 1
+    output$downloadclustmod <- renderUI({
+        req(clustout())
+        if (input$clustalg == "wgcna") {
+            downloadButton(
+                "downloadclustmod2",
+                "Download Modules (CSV)"
+            )
+        } else {
+            return()
+        }
+    })
+    
+    ## CLUST - gene module download 2
+    output$downloadclustmod2 <- downloadHandler(
+        filename = function() {
+            paste("clust-wgcna-gene-modules.csv")
+        },
+        content = function(file) {
+            moddf <- clustout()[[7]]
+            write.csv(moddf, file, row.names = FALSE, col.names = TRUE)
+        }
+    )
+
+    
+    ## CLUST - download (2) - consensus matrix
+    output$downloadclustplotK01pngimg <- downloadHandler(
+        filename = function() {
+            paste("clust-kmed-consensus-matrix.png")
+        },
+        content = function(file) {
+            png(file, width = 800, height = 600)
+            consensusfastkmed <- clustout()[[1]]
+            clustheatmap(
+                consensusfastkmed,
+                "K-Medoids Consensus Matrix Heatmap"
+            )
+            dev.off()
+        }
+    )
+
+    ## CLUST - download (4) - consensus matrix
+    output$downloadclustplotK01pdfimg <- downloadHandler(
+        filename = function() {
+            paste("clust-kmed-consensus-matrix.pdf")
+        },
+        content = function(file) {
+            pdf(file, width = 8, height = 6)
+            consensusfastkmed <- clustout()[[1]]
+            clustheatmap(
+                consensusfastkmed,
+                "K-Medoids Consensus Matrix Heatmap"
+            )
+            dev.off()
+        }
+    )
+    
+    ## CLUST - gene module download 1
+    output$downloadclustmodK <- renderUI({
+        req(clustout())
+        if (input$clustalg == "kmed") {
+            downloadButton(
+                "downloadclustmodK2",
+                "Download Clusters (CSV)"
+            )
+        } else {
+            return()
+        }
+    })
+    
+    ## CLUST - gene module download 2
+    output$downloadclustmodK2 <- downloadHandler(
+        filename = function() {
+            paste("clust-kmed-gene-clusters.csv")
+        },
+        content = function(file) {
+            clustdf <- clustout()[[2]]
+            write.csv(clustdf, file, row.names = FALSE, col.names = TRUE)
+        }
+    )
+
+    ###################################################################
+    ###################################################################
     ### SECTION 05 - BICLUSTERING ALGORITHMS (BIC)
     ###################################################################
     ###################################################################
@@ -3182,7 +3822,7 @@ irisServer <- function(input, output, session) {
             out <- paste0(
                 "This algorithm found ", ids, " IDs amongst ", samp,
                 " samples in cluster ", clust, 
-                ". To see what IDs were found in this cluster, click on the", 
+                ". To see what IDs were found in this cluster, click on the ", 
                 "'Download Cluster IDs' button at the bottom of the page."
             )
             p(paste(out))
