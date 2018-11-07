@@ -1,6 +1,7 @@
 # IRIS Bug Fixes
 
 ## Cankun
+-   [ ] Work on MCL algorithm pipeline (*in progress*)
 -   [ ] Install `Rtsne` package
 -   [ ] Install `WGCNA` package
 -   [ ] Install `MCL` package
@@ -10,11 +11,12 @@
 
 
 ## Brandon
--   [ ] Integrate `MCL` clustering algorithm (*in progress*)
--   [ ] Integrate `scRNA - 10X` option into start page
+-   [ ] Integrate `scRNA - 10X` option into start page (*in progress*)
+-   [ ] Integrate `MCL` clustering algorithm
 -   [ ] Disconnect from server single-cell data count summary - large data
 -   [ ] Color palettes for `Discovery-Driven Analysis` tab
 -   [ ] Windows 7 issues - Cankun
+-   [x] `WGCNA` - add sample download button
 -   [x] t-SNE option - add download options
 -   [x] `kmed` - add download options
 -   [x] Integrate `kmed` clustering algorithm
