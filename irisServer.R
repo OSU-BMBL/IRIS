@@ -3046,7 +3046,20 @@ irisServer <- function(input, output, session) {
         }
     })
     
-    ## CLUST - input - Choose bicluster algorithm
+    ## BIC - input - Choose number of variable genes
+    output$clustvarnumber <- renderUI({
+        if (input$goqc == 0) {
+            return()
+        } else {
+            textInput(
+                inputId = "clustvarnumber",
+                label = "Variable cutoff value",
+                value = 500
+            )
+        }
+    })
+    
+    ## CLUST - input - Choose clustering algorithm
     output$clustalg <- renderUI({
         if (input$goqc == 0) {
             return()
@@ -3064,7 +3077,7 @@ irisServer <- function(input, output, session) {
         }
     })
     
-    ## CLUST - actionbutton - submit biclustering
+    ## CLUST - actionbutton - submit clustering
     output$goclust <- renderUI({
         if (input$goqc == 0) {
             return()
@@ -3077,15 +3090,22 @@ irisServer <- function(input, output, session) {
         }
     })
     
-    ## CLUST - reactive - get variable counts
+    ## CLUST - reactive - get variable counts (WIP - very mess atm...)
     clustout <- eventReactive(input$goclust, {
+        num <- input$clustvarnumber
         cts <- ddsout()[[1]]
+        cts <- assay(cts)
+        tran <- ddstran()[[1]]
+        tran <- assay(tran)
+        topID <- order(rowVars(cts), decreasing = TRUE)
+        cts.var <- tran[topID, ]
+        dds_mat <- cts.var[1:num, ]
         if (input$clustalg == "wgcna") {
             withProgress(message = "Running WGCNA...", value = 0, {
                 incProgress(1/4)
                 enableWGCNAThreads()
                 
-                dds_mat <- as.matrix(counts(cts))
+                dds_mat <- as.matrix(dds_mat)
                 gene.names <- sort(rownames(dds_mat))
                 
                 datExpr <- t(log2(dds_mat + 1))
@@ -3096,7 +3116,7 @@ irisServer <- function(input, output, session) {
                 gsg$allOK
                 
                 # Create an object called "datTraits" that contains your trait data
-                datTraits <- colData(cts)
+                datTraits <- colData(ddsout()[[1]])
                 head(datTraits)
                 
                 # Form a data frame analogous to expression data that will hold the clinical traits.
@@ -3190,7 +3210,7 @@ irisServer <- function(input, output, session) {
         } else if (input$clustalg == "kmed") {
             withProgress(message = "Running K-Medoids...", value = 0, {
                 incProgress(1/2)
-                num <- as.matrix(assay(cts))
+                num <- as.matrix(dds_mat)
                 mrwdist <- distNumeric(num, num, method = "mrw")
                 
                 # Detect cores of machine
@@ -3314,6 +3334,21 @@ irisServer <- function(input, output, session) {
         }
     )
     
+    ## CLUST - download (2) - consensus matrix
+    output$downloadclustplotK01pngimg <- downloadHandler(
+        filename = function() {
+            paste("clust-kmed-consensus-matrix.png")
+        },
+        content = function(file) {
+            req(clustout())
+            png(file, width = 800, height = 600)
+            sample <- clustout()[[1]]
+            output <- clustheatmap(sample, "K-Medoids Consensus Matrix Heatmap")
+            print(output)
+            dev.off()
+        }
+    )
+
     ## CLUST - sample dendrogram download (pdf) 1
     output$downloadclustplotW01pdf <- renderUI({
         req(clustout())
@@ -3598,20 +3633,20 @@ irisServer <- function(input, output, session) {
 
     
     ## CLUST - download (2) - consensus matrix
-    output$downloadclustplotK01pngimg <- downloadHandler(
-        filename = function() {
-            paste("clust-kmed-consensus-matrix.png")
-        },
-        content = function(file) {
-            png(file, width = 800, height = 600)
-            consensusfastkmed <- clustout()[[1]]
-            clustheatmap(
-                consensusfastkmed,
-                "K-Medoids Consensus Matrix Heatmap"
-            )
-            dev.off()
-        }
-    )
+    # output$downloadclustplotK01pngimg <- downloadHandler(
+    #     filename = function() {
+    #         paste("clust-kmed-consensus-matrix.png")
+    #     },
+    #     content = function(file) {
+    #         png(file, width = 800, height = 600)
+    #         consensusfastkmed <- clustout()[[1]]
+    #         clustheatmap(
+    #             consensusfastkmed,
+    #             "K-Medoids Consensus Matrix Heatmap"
+    #         )
+    #         dev.off()
+    #     }
+    # )
 
     ## CLUST - download (4) - consensus matrix
     output$downloadclustplotK01pdfimg <- downloadHandler(
