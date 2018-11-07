@@ -127,6 +127,12 @@ tab.submit <- tabPanel(
     value = "val1",
     sidebarLayout(
         sidebarPanel(
+            em(
+                paste0(
+                    "Confused? Consider reading the tutorial under: "
+                )
+            ),
+            code("More -> Tutorial"),
             h4("1. Submission Parameters"),
             radioButtons(
                 inputId = "examplechoice",
@@ -136,7 +142,8 @@ tab.submit <- tabPanel(
                     "Start with an example data set (big)." = "yes2",
                     "Start with an example data set (scRNA)." = "yes3",
                     "Load my own data." = "no",
-                    "Load my own data (scRNA)." = "scrna"
+                    "Load my own data (scRNA)." = "scrna",
+                    "Load my own data (scRNA - 10X Genomics)." = "scrna10x"
                 )
             ),
             bsTooltip(
@@ -444,7 +451,14 @@ tab.prelim <- tabPanel(
                 br(),
                 br(),
                 uiOutput("headclustmoddown"),
-                uiOutput("downloadclustmod"),
+                div(
+                    style = "display:inline-block",
+                    uiOutput("downloadclustmod")
+                ),
+                div(
+                    style = "display:inline-block",
+                    uiOutput("downloadclustsample")
+                ),
                 br(),
                 br(),
                 br()

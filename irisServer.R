@@ -132,7 +132,7 @@ irisServer <- function(input, output, session) {
 
     ## DATA - Data load option - count data
     output$file1 <- renderUI({
-        if (input$examplechoice == "no" | input$examplechoice == "scrna") {
+        if (input$examplechoice == "no" | input$examplechoice == "scrna" | input$examplechoice == "scrna10x") {
             fileInput(
                 inputId = "file1",
                 label = "Submit count data (CSV)",
@@ -149,7 +149,7 @@ irisServer <- function(input, output, session) {
 
     ## DATA - Data load option - metadata
     output$file2 <- renderUI({
-        if (input$examplechoice == "no" | input$examplechoice == "scrna") {
+        if (input$examplechoice == "no" | input$examplechoice == "scrna" | input$examplechoice == "scrna10x") {
             fileInput(
                 inputId = "file2",
                 label = "Submit metadata (CSV)",
@@ -166,7 +166,7 @@ irisServer <- function(input, output, session) {
 
     ## DATA - Data load option - gene length
     output$file3 <- renderUI({
-        if (input$examplechoice == "scrna") {
+        if (input$examplechoice == "scrna" | input$examplechoice == "scrna10x") {
             fileInput(
                 inputId = "file3",
                 label = "Submit ID lengths (CSV)",
@@ -191,6 +191,14 @@ irisServer <- function(input, output, session) {
                 ),
                 value = as.numeric(1)
             )            
+        } else if (input$examplechoice == "scrna10x") {
+            textInput(
+                inputId = "prefilt",
+                label = withMathJax(
+                    "Filter cutoff (TPM \\( < n\\))"
+                ),
+                value = as.numeric(0)
+            )
         } else {
             textInput(
                 inputId = "prefilt",
@@ -331,16 +339,14 @@ irisServer <- function(input, output, session) {
                 colData = coldata,
                 design = ~ 1
             )            
-        } else if (input$examplechoice == "scrna") { # user input (scRNA)
+        } else if (input$examplechoice == "scrna" | input$examplechoice == "scrna10x") { # user input (scRNA)
             cts <- input$file1
             coldata <- input$file2
             gen_len <- input$file3
-            cts <- as.matrix(
-                read.csv(
-                    cts$datapath,
-                    header = TRUE,
-                    row.names = 1
-                )
+            cts <- read.csv(
+                cts$datapath,
+                header = TRUE,
+                row.names = 1
             )
             coldata <- read.csv(
                 coldata$datapath,
@@ -354,11 +360,11 @@ irisServer <- function(input, output, session) {
             )
 
             cts.nam <- row.names(cts)
-            gen.len <- gen.len[order(
-                match(row.names(gen.len), row.names(cts))), , drop = FALSE]
+            gen_len <- gen_len[order(
+                match(row.names(gen_len), row.names(cts))), , drop = FALSE]
 
             # Normalize for gene length (TPM)
-            x <- cts / as.matrix(gen.len)
+            x <- cts / as.matrix(gen_len)
 
             # Normalize for sequencing depth (TPM)
             tpm.mat <- t( t(x) * 1e6 / colSums(x) )
@@ -1261,7 +1267,8 @@ irisServer <- function(input, output, session) {
                     "DESeq2" = "deseq",
                     "edgeR" = "edger",
                     "limma-voom" = "limma"
-                )
+                ),
+                selected = "deseq"
             )
         } else {
             selectInput(
@@ -1270,7 +1277,8 @@ irisServer <- function(input, output, session) {
                 choices = c(
                     "DESeq2" = "deseq",
                     "edgeR" = "edger"
-                )
+                ),
+                selected = "deseq"
             )
         }
     })
@@ -3271,6 +3279,12 @@ irisServer <- function(input, output, session) {
                 moddf$gene <- as.character(moddf$gene)
                 moddf$module <- as.factor(moddf$module)
                 
+                sampleDF <- data.frame(
+                    sample = sampleTree$labels,
+                    outlier = datColors$outlier,
+                    cluster = datColors$Cluster
+                )
+                
                 return(
                     list(
                         sampleTree,
@@ -3279,7 +3293,8 @@ irisServer <- function(input, output, session) {
                         dynamicColors,
                         mergedColors,
                         dissTOM,
-                        moddf
+                        moddf,
+                        sampleDF
                     )
                 )
                 incProgress(4/4)
@@ -3690,7 +3705,7 @@ irisServer <- function(input, output, session) {
         if (input$clustalg == "wgcna") {
             downloadButton(
                 "downloadclustmod2",
-                "Download Modules (CSV)"
+                "Download Gene Modules (CSV)"
             )
         } else {
             return()
@@ -3705,6 +3720,30 @@ irisServer <- function(input, output, session) {
         content = function(file) {
             moddf <- clustout()[[7]]
             write.csv(moddf, file, row.names = FALSE, col.names = TRUE)
+        }
+    )
+    
+    ## CLUST - sample module download 1
+    output$downloadclustsample <- renderUI({
+        req(clustout())
+        if (input$clustalg == "wgcna") {
+            downloadButton(
+                "downloadclustsample2",
+                "Download Sample Modules (CSV)"
+            )
+        } else {
+            return()
+        }
+    })
+    
+    ## CLUST - sample module download 2
+    output$downloadclustsample2 <- downloadHandler(
+        filename = function() {
+            paste("clust-wgcna-sample-modules.csv")
+        },
+        content = function(file) {
+            sampledf <- clustout()[[8]]
+            write.csv(sampledf, file, row.names = FALSE, col.names = TRUE)
         }
     )
 
