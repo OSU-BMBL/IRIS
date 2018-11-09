@@ -1,13 +1,13 @@
 # IRIS Bug Fixes
 
 ## Cankun
--   [ ] Install `ape` package
--   [ ] Install `Rtsne` package
--   [ ] Install `WGCNA` package
--   [ ] Install `MCL` package
--   [ ] Install `kmed` package
--   [ ] Install `flashClust` package
--   [ ] Install `parallel` package
+-   [x] Install `ape` package
+-   [x] Install `Rtsne` package
+-   [x] Install `WGCNA` package
+-   [x] Install `MCL` package
+-   [x] Install `kmed` package
+-   [x] Install `flashClust` package
+-   [x] Install `parallel` package
 -   [x] Work on MCL algorithm pipeline
 
 
