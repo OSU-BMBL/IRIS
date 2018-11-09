@@ -12,16 +12,16 @@
   Bioinformatics and Mathematical Biosciences Lab  
   *South Dakota State University*
 
-* **Dr. Brandon Monier** ([brandon.monier@sdstate.edu](mailto:brandon.monier@sdstate.edu))  
-  Department of Biology and Microbiology  
-  *South Dakota State University*
+* **Dr. Brandon Monier** ([bm646@cornell.edu](mailto:bm646@cornell.edu))  
+  Institute of Biotechnology  
+  *Cornell University*
 
 * **Dr. Jing Zhao** ([jing.zhao@sanfordhealth.org](mailto:jing.zhao@SanfordHealth.org))  
   *Sanford Research*
 
 * **Dr. Anne Fennell**</br>
   Department of Agronomy, Horticulture & Plant Science</br>
-  *South Dakota State University*
+  *South Dakota State University*  
 - - -
 
 <p float="left">
