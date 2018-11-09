@@ -45,7 +45,8 @@ packages <- c(
     "shinyBS", "shinycssloaders", "shinythemes", "tibble", "tidyr",
     "Rcpp", "Hmisc", "ggplot2", "locfit", "GGally", "pheatmap", 
     "reshape2", "backports", "digest", "fields", "psych", "stringr", 
-    "tools", "openxlsx"
+    "tools", "openxlsx", "Rtsne", "WGCNA", "flashClust", "paraellel",
+    "MCL", "kmed", "ape"
 )
 np <- packages[!(packages %in% installed.packages()[, "Package"])]
 if(length(np)) install.packages(np)

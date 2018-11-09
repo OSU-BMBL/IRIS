@@ -25,7 +25,8 @@ packages <- c(
     "shinyBS", "shinycssloaders", "shinythemes", "tibble", "tidyr",
     "Rcpp", "Hmisc", "ggplot2", "locfit", "GGally", "pheatmap", 
     "reshape2", "backports", "digest", "fields", "psych", "stringr", 
-    "tools", "openxlsx"
+    "tools", "openxlsx", "Rtsne", "WGCNA", "flashClust", "paraellel",
+    "MCL", "kmed", "ape"
 )
 np <- packages[!(packages %in% installed.packages()[, "Package"])]
 if(length(np)) install.packages(np)
@@ -40,6 +41,8 @@ You will also need several Bioconductor packages. Run this code to get the neces
 bioc.packages <- c("DESeq2", "edgeR", "limma", "QUBIC", "geneplotter")
 np <- bioc.packages[!(bioc.packages %in% installed.packages()[,"Package"])]
 source("https://bioconductor.org/biocLite.R")
+#> Warning: 'BiocInstaller' and 'biocLite()' are deprecated, use the 'BiocManager'
+#>   CRAN package instead.
 if (length(np)) biocLite(np)
 ```
 
@@ -53,4 +56,4 @@ shiny::runGitHub("iris", "btmonier")
 
 ------------------------------------------------------------------------
 
-*Last updated:* 2018-07-01
+*Last updated:* 2018-11-09
