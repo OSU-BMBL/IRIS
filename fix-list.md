@@ -1,20 +1,21 @@
 # IRIS Bug Fixes
 
 ## Cankun
--   [ ] Work on MCL algorithm pipeline (*in progress*)
+-   [ ] Install `ape` package
 -   [ ] Install `Rtsne` package
 -   [ ] Install `WGCNA` package
 -   [ ] Install `MCL` package
 -   [ ] Install `kmed` package
 -   [ ] Install `flashClust` package
 -   [ ] Install `parallel` package
+-   [x] Work on MCL algorithm pipeline
 
 
 ## Brandon
--   [ ] Integrate `MCL` clustering algorithm (*in progress*)
 -   [ ] Disconnect from server single-cell data count summary - large data
 -   [ ] Color palettes for `Discovery-Driven Analysis` tab
 -   [ ] Windows 7 issues - Cankun
+-   [x] Integrate `MCL` clustering algorithm
 -   [x] Fix tutorial TOC links
 -   [x] Fix scRNA user loading bug 
 -   [x] Integrate `scRNA - 10X` option into start page
@@ -41,7 +42,7 @@
 
 
 ## Reviewers (PLOS Computational Biology)
--   [ ] Integrate new clustering methods (`MCL`) (*in progress*)
+-   [x] Integrate new clustering methods (`MCL`)
 -   [x] Integrate `scRNA - 10X` option into start page
 -   [x] Integrate new clustering methods (`WGCNA`)
 -   [x] Integrate new clustering methods (`kmed`)
