@@ -3200,12 +3200,16 @@ irisServer <- function(input, output, session) {
                 gsg <- goodSamplesGenes(datExpr, verbose = 3)
                 gsg$allOK
                 
-                # Create an object called "datTraits" that contains your trait data
+                # Create an object called "datTraits" that contains your 
+                # trait data
                 datTraits <- colData(ddsout()[[1]])
                 head(datTraits)
                 
-                # Form a data frame analogous to expression data that will hold the clinical traits.
-                table(rownames(datTraits) == rownames(datExpr)) #should return TRUE if datasets align correctly, otherwise your names are out of order
+                # Form a data frame analogous to expression data that will 
+                # hold the clinical traits.
+                # should return TRUE if datasets align correctly, otherwise your 
+                # names are out of order
+                table(rownames(datTraits) == rownames(datExpr)) 
                 A <- adjacency(t(datExpr),type="signed") # this calculates the whole network connectivity
                 k <- as.numeric(apply(A,2,sum))-1 # standardized connectivity
                 Z.k <- scale(k)
@@ -3247,7 +3251,8 @@ irisServer <- function(input, output, session) {
                 MEDiss <- 1 - cor(MEs)
                 METree <- flashClust(as.dist(MEDiss), method = "average")
                 
-                # set a threhold for merging modules. In this example we are not merging so MEDissThres=0.0
+                # set a threhold for merging modules. In this example we are 
+                # not merging so MEDissThres=0.0
                 MEDissThres <- 0.0
                 merge <- mergeCloseModules(
                     datExpr, 
@@ -3346,7 +3351,98 @@ irisServer <- function(input, output, session) {
         } else if (input$clustalg == "mcl") {
             withProgress(message = "Running MCL...", value = 0, {
                 incProgress(1/2)
+                message("Running MCL...")
+                exp_file <- dds_mat
+                row_sub = apply(exp_file, 1, function(row) all(row != 0))
                 
+                # data pre-processing replace NAs with row means
+                for (i in 1:ncol(exp_file)) {
+                    exp_file[is.na(exp_file[, i]), i] <- mean(exp_file[, i], na.rm = TRUE)
+                }
+                exp_file <- exp_file[apply(exp_file, 1, function(x) !all(x == 0)), ]  # remove rows that are all 0
+                exp_cor <- cor(t(exp_file), method = "spearman", use = "complete.obs")  # gene to gene correlation matrix
+                MCL_name <- rownames(exp_cor)  # the vertix
+                Covered <- length(MCL_name)  # the #of covered cells
+                
+                calculate_mcl <- function(i) {
+                    # main mcl function, used in apply function to speed up calculation
+                    cluster <- list()
+                    cluster <- mcl(exp_cor, addLoops = F, inflation = 50, max.iter = 500)
+                    return(cluster)
+                }
+                
+                i <- as.data.frame(seq(5))  # test mcl inflation parameter from 1 to 50
+                i <- as.data.frame(50)  # may be just set inflation=50? one iteration is about 5 minutes
+                
+                cluster_all <- apply(i, 1, calculate_mcl)
+                
+                
+                KK <- as.data.frame(do.call(rbind, lapply(cluster_all, "[[", 1)))  # extract the number of clusters
+                CAN_I <- c(which(as.numeric(as.character(KK$V1)) >= 2))  # results that has more than 5 clusters
+                tt <- as.numeric(as.character(KK$V1))
+                tt <- sort(table(tt), decreasing = T)[1]
+                Final_K <- as.numeric(names(tt))
+                
+                if (Final_K == 1) {
+                    message("Final K is 1...")
+                    matdist <- 0
+                    result <- data.frame()
+                    hc <- 0
+                } else {
+                    if (length(CAN_I) != 0) {
+                        message("Final K is NOT 1 - continuing...")
+                        MATRIX <- rep(0, Covered) %o% rep(0, Covered)
+                        for (k in 1:length(CAN_I)) {
+                            MCL_label <- cluster_all[[CAN_I[k]]]$Cluster  # record the label
+                            ClusterNum <- unique(MCL_label)  # record the number of clusters
+                            TEMP <- rep(0, Covered) %o% rep(0, Covered)
+                            temp <- rep(0, Covered) %o% rep(0, length(ClusterNum))
+                            for (n in 1:length(ClusterNum)) {
+                                index <- which(MCL_label == ClusterNum[n])
+                                temp[index, n] <- 1
+                                TEMP <- TEMP + temp[, n] %o% temp[, n]
+                            }
+                            MATRIX <- MATRIX + TEMP
+                        }
+                        MATRIX <- MATRIX/length(CAN_I)
+                        rownames(MATRIX) <- colnames(MATRIX) <- rownames(exp_cor)
+                        hc <- hclust(dist(MATRIX))
+                        memb <- cutree(hc, k = Final_K)
+                    }
+                    if (length(rownames(exp_cor)) == length(rownames(exp_cor))) {
+                        label <- memb
+                    } else {
+                        LEFT <- setdiff(names(RAW)[-1], MCL_name)
+                        LEFT_Cluster <- rep(Final_K + 1, length(LEFT))
+                        df_cell_label <- data.frame(
+                            cell = c(names(memb), LEFT),
+                            cluster = c(
+                                memb,
+                                LEFT_Cluster
+                            ), 
+                            K = rep(Final_K + 1, length(rownames(exp_cor)))
+                        )
+                        label <- df_cell_label$cluster
+                    }
+                    matdist <- dist(MATRIX)
+                    matdist <- data.matrix(matdist)
+                    result <- as.data.frame(label)
+                    result$cluster <- result$label
+                    result$gene_id <- rownames(result)
+                    result <- result[, c(3, 2)]
+                    rownames(result) <- seq_len(nrow(result))
+                }
+                
+                
+                message("Sending data to list...")
+                return(
+                    list(
+                        matdist,
+                        result,
+                        hc,
+                        Final_K
+                    )
+                )
                 incProgress(2/2)
             })
         }
@@ -3359,6 +3455,13 @@ irisServer <- function(input, output, session) {
             h5(strong("WGCNA - Sample Dendrogram"))
         } else if (input$clustalg == "kmed") {
             h5(strong("K-Medoids - Consensus Matrix Heatmap"))
+        } else if (input$clustalg == "mcl") {
+            Final_K <- clustout()[[4]]
+            if (Final_K == 1) {
+                h5(strong("MCL - Cluster Diagram - No Clusters Found!"))
+            } else {
+                h5(strong("MCL - Cluster Diagram"))
+            }
         }
     })
     
@@ -3387,6 +3490,18 @@ irisServer <- function(input, output, session) {
                 consensusfastkmed,
                 "K-Medoids Consensus Matrix Heatmap"
             )
+        } else if (input$clustalg == "mcl") {
+            validate(
+                need(input$goqc != "", "")
+            )
+            matdist <- clustout()[[1]]
+            hc <- clustout()[[3]]
+            Final_K <- clustout()[[4]]
+            if (Final_K == 1) {
+                return()
+            } else {
+                plot(as.phylo(hc), type = "fan", cex = 0.3)
+            }
         }
     })
     
@@ -3403,6 +3518,16 @@ irisServer <- function(input, output, session) {
                 "downloadclustplotK01pngimg",
                 "Download Plot (PNG)"
             )
+        } else if (input$clustalg == "mcl") {
+            Final_K <- clustout()[[4]]
+            if (Final_K == 1) {
+                return()
+            } else {
+                downloadButton(
+                    "downloadclustplotM01pngimg",
+                    "Download Plot (PNG)"
+                )
+            }
         }
     })
     
@@ -3441,6 +3566,22 @@ irisServer <- function(input, output, session) {
         }
     )
 
+    ## CLUST - download (3) - distance matrix (MCL)
+    output$downloadclustplotM01pngimg <- downloadHandler(
+        filename = function() {
+            paste("clust-mcl-cluster-diagram.png")
+        },
+        content = function(file) {
+            req(clustout())
+            matdist <- clustout()[[1]]
+            hc <- clustout()[[3]]
+            png(file, width = 800, height = 600)
+            output <- plot(as.phylo(hc), type = "fan", cex = 0.2)
+            print(output)
+            dev.off()
+        }
+    )
+    
     ## CLUST - sample dendrogram download (pdf) 1
     output$downloadclustplotW01pdf <- renderUI({
         req(clustout())
@@ -3454,6 +3595,16 @@ irisServer <- function(input, output, session) {
                 "downloadclustplotK01pdfimg",
                 "Download Plot (PDF)"
             )
+        } else if (input$clustalg == "mcl") {
+            Final_K <- clustout()[[4]]
+            if (Final_K == 1) {
+                return()
+            } else {
+                downloadButton(
+                    "downloadclustplotM01pdfimg",
+                    "Download Plot (PDF)"
+                )
+            }
         }
     })
     
@@ -3473,6 +3624,21 @@ irisServer <- function(input, output, session) {
                 colors = datColors,
                 main = "Sample Dendrogram and Module Colors"
             )
+            dev.off()
+        }
+    )
+    
+    ## CLUST - download (3) - distance matrix (MCL) - pdf
+    output$downloadclustplotM01pdfimg <- downloadHandler(
+        filename = function() {
+            paste("clust-mcl-cluster-diagram.pdf")
+        },
+        content = function(file) {
+            req(clustout())
+            matdist <- clustout()[[1]]
+            hc <- clustout()[[3]]
+            pdf(file, width = 8, height = 6)
+            plot(as.phylo(hc), type = "fan", cex = 0.2)
             dev.off()
         }
     )
@@ -3772,6 +3938,16 @@ irisServer <- function(input, output, session) {
                 "downloadclustmodK2",
                 "Download Clusters (CSV)"
             )
+        } else if (input$clustalg == "mcl") {
+            Final_K <- clustout()[[4]]
+            if (Final_K == 1) {
+                return()
+            } else {
+                downloadButton(
+                    "downloadclustmodM2",
+                    "Download Clusters (CSV)"
+                )
+            }
         } else {
             return()
         }
@@ -3788,6 +3964,17 @@ irisServer <- function(input, output, session) {
         }
     )
 
+    ## CLUST - gene module download 2
+    output$downloadclustmodM2 <- downloadHandler(
+        filename = function() {
+            paste("clust-mcl-gene-clusters.csv")
+        },
+        content = function(file) {
+            clustdf <- clustout()[[2]]
+            write.csv(clustdf, file, row.names = FALSE, col.names = TRUE)
+        }
+    )
+    
     ###################################################################
     ###################################################################
     ### SECTION 05 - BICLUSTERING ALGORITHMS (BIC)
