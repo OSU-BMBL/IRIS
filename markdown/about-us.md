@@ -22,6 +22,10 @@
 * **Dr. Anne Fennell**</br>
   Department of Agronomy, Horticulture & Plant Science</br>
   *South Dakota State University*  
+
+* **Mr. Cankun Wang**</br>
+  Bioinformatics and Mathematical Biosciences Lab</br>
+  *South Dakota State University*
 - - -
 
 <p float="left">
