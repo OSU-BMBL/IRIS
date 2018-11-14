@@ -166,7 +166,7 @@ irisServer <- function(input, output, session) {
 
     ## DATA - Data load option - gene length
     output$file3 <- renderUI({
-        if (input$examplechoice == "scrna" | input$examplechoice == "scrna10x") {
+        if (input$examplechoice == "scrna") {
             fileInput(
                 inputId = "file3",
                 label = "Submit ID lengths (CSV)",
@@ -313,7 +313,7 @@ irisServer <- function(input, output, session) {
                 design = ~ 1
             )            
 
-        } else if (input$examplechoice == "no") { # user input (normal)
+        } else if (input$examplechoice == "no" | input$examplechoice == "scrna10x") { # user input (normal)
             cts <- input$file1
             coldata <- input$file2
             cts <- as.matrix(
@@ -338,8 +338,8 @@ irisServer <- function(input, output, session) {
                 countData = cts.filt,
                 colData = coldata,
                 design = ~ 1
-            )            
-        } else if (input$examplechoice == "scrna" | input$examplechoice == "scrna10x") { # user input (scRNA)
+            )
+        } else if (input$examplechoice == "scrna") { # user input (scRNA)
             cts <- input$file1
             coldata <- input$file2
             gen_len <- input$file3
