@@ -4,13 +4,17 @@ title:
 author:
 - name: Brandon Monier
   affiliation:
-  - &id South Dakota State University
-  - Department of Biology and Microbiology
+  - Cornell University
 - name: Adam McDermaid
   affiliation: 
-  - *id
+  - &id South Dakota State University
   - &id2 Bioinformatics and Mathematical Biosciences Lab
   - &id3 Department of Mathematics and Statistics
+- name: Cankun Wang
+  affiliation:
+  - *id
+  - *id2
+  - *id3
 - name: Jing Zhao
   affiliation:
   - Population Health Group, Sanford Research
@@ -54,7 +58,7 @@ output:
 vignette: >
     %\VignetteIndexEntry{IRIS-EDA Supplementary Material}
     %\VignetteEngine{knitr::rmarkdown}
-    %\VignetteEncoding{UTF-8}          
+    %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
@@ -100,11 +104,12 @@ any missing packages:
 ```{r, eval=FALSE}
 # CRAN
 packages <- c(
-  "crosstalk", "dplyr", "DT", "gtools", "plotly", "shiny", "plyr",
-  "shinyBS", "shinycssloaders", "shinythemes", "tibble", "tidyr",
-  "Rcpp", "Hmisc", "ggplot2", "geneplotter", "locfit", "GGally", 
-  "pheatmap", "reshape2", "backports", "digest", "fields", "psych",
-  "stringr", "tools", "openxlsx"
+    "crosstalk", "dplyr", "DT", "gtools", "plotly", "shiny", "plyr",
+    "shinyBS", "shinycssloaders", "shinythemes", "tibble", "tidyr",
+    "Rcpp", "Hmisc", "ggplot2", "locfit", "GGally", "pheatmap", 
+    "reshape2", "backports", "digest", "fields", "psych", "stringr", 
+    "tools", "openxlsx", "Rtsne", "WGCNA", "flashClust", "paraellel",
+    "MCL", "kmed", "ape"
 )
 np <- packages[!(packages %in% installed.packages()[, "Package"])]
 if(length(np)) install.packages(np)
@@ -223,9 +228,16 @@ changes from `count data row sums` to `TPM`:
 
 
 The default is set to a value of `1`, however, this can be changed at the
-user's discretion. **Note (1)**: this value corresponds to which rowsums
+user's discretion. 
+
+**Note (1)**: this value corresponds to which rowsums
 (i.e. ID sums) will be filtered out if they have a value that is less than
 the user parameter.
+
+**Note (2)**: â€œFor users with 10X scRNA-Seq data or other data type with
+expected low expression across all genes, we have a submission option that
+changes default parameterizations to account for this. If submitting 10X
+scRNA data, please use the `scRNA - 10X Genomics` option.
 
 # S4: A note about input data
 IRIS-EDA requires two pieces of information for analysis. The first is an
@@ -389,8 +401,10 @@ on the file for each sample.
    further comparative analyses.*
    
    ![](img/subqc-16.png)\
-   
+
+
 # S6: Discovery-Driven Analyses
+
 1.  After examining your results on the `Submit and QC` tab, you may proceed to 
     the `Discovery-Driven Analyses` tab:
    
@@ -472,14 +486,23 @@ on the file for each sample.
     of samples were to differentiate from the others:*
 
    ![](img/prelim-09.png)\
+   
+10. t-SNE allows for visualization of results in two and three dimensions.
+    The three-dimensional figure is also interactive, allowing users to move
+    the axes to gain a better understanding of the three-dimensional layout of
+    the sample points.
 
-10. The next visualization will be under the `Heatmap` subtab. This subtab 
+   ![](img/tsne-01.png)\
+
+   ![](img/tsne-02.png)\
+
+11. The next visualization will be under the `Heatmap` subtab. This subtab 
     provides an interactive heatmap with rows representing the gene IDs and 
     columns representing sample IDs:
    
    ![](img/prelim-10.png)\
    
-11. This heatmap requires an ID cutoff to select the indicated number of gene 
+12. This heatmap requires an ID cutoff to select the indicated number of gene 
     IDs with the highest mean expression values for display. Selecting a cell
     displays a plot showing the total read counts for that specific gene ID by 
     the selected factor. *With the example data, the 20 most variable gene IDs 
@@ -493,13 +516,13 @@ on the file for each sample.
    ![](img/prelim-11.png)\
    ![](img/prelim-12.png)\
    
-12. On the next subtab (1), `Biclustering` performs a biclustering analysis 
-    using one of the selected biclustering tools (3) with a maximum bicluster size 
-    of the indicated cutoff value (2):
+13. On the next subtab (1), `Biclustering` performs a biclustering analysis 
+    using one of the selected biclustering tools (3) with a maximum bicluster 
+    size of the indicated cutoff value (2):
 
    ![](img/prelim-13.png)\
    
-13. Launching the analysis results in display of the first bicluster. 
+14. Launching the analysis results in display of the first bicluster. 
     Alternative clusters can be selected from the dropdown menu and the IDs 
     and plot for each bicluster can be downloaded using the button below the
     visualization. *With the sample data, the biclusters can help select the 
@@ -511,7 +534,42 @@ on the file for each sample.
     under the isolated gene IDs. Interpretations can be made similarly for 
     each subsequent bicluster:*
     
-   ![](img/prelim-14.png)\    
+   ![](img/prelim-14.png)\
+   
+15. The `Clustering` tab allows for users to select one of three clustering
+    methods respectively representing hierarchical, representative, and
+    graph-based clustering: Weighted Gene Co-expression Network Analysis
+    (WGCNA), k-medoids, and the Markov Clustering Algorithm (MCL). While all
+    three methods have demonstrated high performance related to module
+    detection, the default is WGCNA due to it being the best of the three.
+    Here, users should be careful with large datasets, as these methods can
+    take large amounts of time to run. Setting the variable cutoff option lower
+    will reduce the time by selecting fewer of the most differentially
+    expressed genes to use in clustering.
+    
+   ![](img/cluster-01.png)\
+   
+16. The WGCNA method generates figures related to sample and gene dendrograms,
+    as well as a topological overlap matrix based on the genes. Additionally,
+    users can download lists of the genes and samples with respective cluster
+    assignments.
+    
+   ![](img/cluster-02.png)\
+
+   ![](img/cluster-03.png)\
+
+   ![](img/cluster-04.png)\
+   
+17. The k-medoids method produces a downloadable consensus matrix heatmap.
+    Additionally, the generated clusters from this method are downloadable.
+    
+   ![](img/cluster-05.png)\
+   
+18. The MCL method generates a cluster diagram, along with downloadable cluster
+    compositions.
+    
+   ![](img/cluster-06.png)\
+
 
 # S7: Differential Gene Expression
 
@@ -698,6 +756,7 @@ on the file for each sample.
    this specific comparison (C3309 vs. OWN):* 
     
   ![](img/dge-17.png)\
+
 
 # S8: GEO Usage
 
@@ -951,7 +1010,34 @@ After you have submitted all of your information, you can download two items:
 
 
 
-# S9: References
+# S9: Using large expression matrices
+For users interested in analyzing large expression matrices, commonly
+experienced in single-cell analyses, we have proposed the following
+best-practices.
+
+First, users should locally load the IRIS-EDA tool. Using the webserver version
+with large datasets will frequently lead to disconnecting from the server due
+to time constraints. Instructions for how to run locally can be found in
+S2: Accessibility.
+
+Second, certain functionalities may either take too long to run or will not
+generate usable information. Because of this, we recommend using only the
+following functionalities within IRIS-EDA for large expression matrices:
+
+  1.  PCA
+
+  2.  MDS
+
+  3.  t-SNE
+
+  4.  biclustering with QUBIC
+
+Users with large datasets should expect significant wait times for each
+analysis, even when using the above list.
+
+
+
+# S10: References
 Hardcastle TJ, Kelly KA. baySeq: empirical Bayesian methods for identifying differential expression in sequence count data, BMC Bioinformatics 2010;11:422                                
 
 Li J, Tibshirani R. Finding consistent patterns: a nonparametric approach for identifying differential expression in RNA-Seq data, Statistical methods in medical research 2013;22:519-536
@@ -962,7 +1048,7 @@ Ritchie ME, Phipson B, Wu D et al. limma powers differential expression analyses
 
 Robinson MD, McCarthy DJ, Smyth GK. edgeR: a Bioconductor package for differential expression analysis of digital gene expression data, Bioinformatics 2010;26:139-140
 
-Tarazona S, García F, Ferrer A et al. NOIseq: a RNA-seq differential expression method robust for sequencing depth biases, EMBnet. journal 2012;17:pp. 18-19                              
+Tarazona S, Garc?a F, Ferrer A et al. NOIseq: a RNA-seq differential expression method robust for sequencing depth biases, EMBnet. journal 2012;17:pp. 18-19                              
 
 Trapnell C, Roberts A, Goff L et al. Differential gene and transcript expression analysis of RNA-seq experiments with TopHat and Cufflinks, Nat Protoc 2012;7:562-578                     
 
