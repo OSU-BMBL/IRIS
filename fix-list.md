@@ -1,6 +1,7 @@
 # IRIS Bug Fixes
 
 ## Cankun
+-   [ ] Add new data set (large scRNA) to BMBL server (*in progress*)
 -   [x] Install `ape` package
 -   [x] Install `Rtsne` package
 -   [x] Install `WGCNA` package
@@ -15,6 +16,8 @@
 -   [ ] Disconnect from server single-cell data count summary - large data
 -   [ ] Color palettes for `Discovery-Driven Analysis` tab
 -   [ ] Windows 7 issues - Cankun
+-   [x] Eliminate gene list load option from scRNA 10X selection
+-   [x] Update tutorial and supplementary file with new functionalities
 -   [x] Integrate `MCL` clustering algorithm
 -   [x] Fix tutorial TOC links
 -   [x] Fix scRNA user loading bug 
