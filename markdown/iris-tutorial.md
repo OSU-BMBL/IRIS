@@ -1094,12 +1094,22 @@ matrices:
 Users with large datasets should expect significant wait times for each
 analysis, even when using the above list.
 
+A large example dataset and corresponding condition information is available
+at http://bmbl.sdstate.edu/downloadFiles/sc_example.zip.
+This dataset consists of 2717 cells and the first 2000 genes from
+[Klein et al. 2015](https://www.ncbi.nlm.nih.gov/pubmed/26000487).
+
+
 S10: References <a id="s10-references"></a>
 ===============
 
 Hardcastle TJ, Kelly KA. baySeq: empirical Bayesian methods for
 identifying differential expression in sequence count data, BMC
 Bioinformatics 2010;11:422
+
+Klein AM, Mazutis L, Akartuna I, Tallapragada N, Veres A, Li V, Peshkin L,
+Weitz DA, Kirschner MW. Droplet barcoding for single-cell transcriptomics
+applied to embryonic stem cells. Cell 2015;161(5):1187-1201
 
 Li J, Tibshirani R. Finding consistent patterns: a nonparametric
 approach for identifying differential expression in RNA-Seq data,
