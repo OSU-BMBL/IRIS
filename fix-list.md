@@ -1,7 +1,7 @@
 # IRIS Bug Fixes
 
 ## Cankun
--   [ ] Add new data set (large scRNA) to BMBL server (*in progress*)
+-   [x] Add new data set (large scRNA) to BMBL server
 -   [x] Install `ape` package
 -   [x] Install `Rtsne` package
 -   [x] Install `WGCNA` package
