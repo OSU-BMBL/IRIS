@@ -179,7 +179,7 @@ irisServer <- function(input, output, session) {
         } else {
             return()
         }
-    })    
+    })
 
     ## DATA - Filter choice
     output$filter_choice <- renderUI({
@@ -190,7 +190,7 @@ irisServer <- function(input, output, session) {
                     "Filter cutoff (TPM \\( < n\\))"
                 ),
                 value = as.numeric(1)
-            )            
+            )
         } else if (input$examplechoice == "scrna10x") {
             textInput(
                 inputId = "prefilt",
@@ -269,7 +269,7 @@ irisServer <- function(input, output, session) {
                 countData = cts.filt,
                 colData = coldata,
                 design = ~ 1
-            )            
+            )
         } else if (input$examplechoice == "yes3") { # scRNA example
             cts <- read.csv(
                 "./data/count-data-scrna.csv",
@@ -311,7 +311,7 @@ irisServer <- function(input, output, session) {
                 countData = cts.filt,
                 colData = coldata,
                 design = ~ 1
-            )            
+            )
 
         } else if (input$examplechoice == "no" | input$examplechoice == "scrna10x") { # user input (normal)
             cts <- input$file1
@@ -380,7 +380,7 @@ irisServer <- function(input, output, session) {
                 countData = cts.filt,
                 colData = coldata,
                 design = ~ 1
-            )             
+            )
         }
 
         # Return objects for downstream analysis
@@ -957,7 +957,7 @@ irisServer <- function(input, output, session) {
             dev.off()
         }
     )
-    
+
 
 
     ## QC - Show download button - MDS (PNG)
@@ -984,7 +984,7 @@ irisServer <- function(input, output, session) {
         }
     )
 
-    
+
     ## QC - header (2) - tSNE
     output$headTSNE <- renderUI({
         if(input$goqc == 0) {
@@ -999,7 +999,7 @@ irisServer <- function(input, output, session) {
             h4("T-Distributed Stochastic Neighbor Embedding")
         }
     })
-    
+
     ## QC - select input - choose factor - tSNE
     output$tsnefact <- renderUI({
       tmp <- ddsout()[[2]]
@@ -1009,7 +1009,7 @@ irisServer <- function(input, output, session) {
         choices = colnames(tmp)
       )
     })
-    
+
     # QC - select dimensionality - tSNE
     output$tsneDim <- renderUI({
         if (input$goqc == 0) {
@@ -1023,7 +1023,7 @@ irisServer <- function(input, output, session) {
             )
         }
     })
-    
+
     ## QC - select perplexity - tSNE
     output$tsnePerp <- renderUI({
         if (input$goqc == 0) {
@@ -1075,7 +1075,7 @@ irisServer <- function(input, output, session) {
             return(list(tsneOut))
         }
     })
-        
+
     output$tsnePerpCheck <- renderUI({
         tsneOut <- tsneout()[[1]]
 
@@ -1093,11 +1093,11 @@ irisServer <- function(input, output, session) {
             return()
         }
     })
-        
+
     output$tsnePlot <- renderPlotly({
         req(tsneout())
         tsneOut <- tsneout()[[1]]
-        
+
         if (tsneOut == "na") {
             return()
         } else {
@@ -1106,12 +1106,12 @@ irisServer <- function(input, output, session) {
                 tmp <- ddstran()[[1]]
                 lab <- ddstran()[[2]]
                 coldata <- colData(tmp)
-                
+
                 colors = grDevices::rainbow(
                     length(unique(coldata[, input$tsnefact]))
                 )
                 names(colors) = unique(coldata[, input$tsnefact])
-        
+
                 tsneOutDF <- as.data.frame(tsneOut)
                 plot_ly(
                     data = tsneOutDF,
@@ -1132,12 +1132,12 @@ irisServer <- function(input, output, session) {
                 tmp <- ddstran()[[1]]
                 lab <- ddstran()[[2]]
                 coldata <- colData(tmp)
-                
+
                 colors = grDevices::rainbow(
                     length(unique(coldata[, input$tsnefact]))
                 )
                 names(colors) = unique(coldata[, input$tsnefact])
-                
+
                 tsneOutDF <- as.data.frame(tsneOut)
                 plot_ly(
                     data = tsneOutDF,
@@ -1161,7 +1161,7 @@ irisServer <- function(input, output, session) {
             }
         }
     })
-        
+
 
     ## QC - Show download button - tSNE (PDF)
     output$dlqctsnepdf <- renderUI({
@@ -1171,7 +1171,7 @@ irisServer <- function(input, output, session) {
             downloadButton("dlqctsnepdfimg", "Download Static R Plot (PDF)")
         }
     })
-    
+
     ## QC - Download plot - tSNE (PDF)
     output$dlqctsnepdfimg <- downloadHandler(
         filename =  function() {
@@ -1182,13 +1182,13 @@ irisServer <- function(input, output, session) {
             tmp <- ddstran()[[1]]
             lab <- ddstran()[[2]]
             coldata <- colData(tmp)
-            
+
             colors = grDevices::rainbow(
                 length(unique(coldata[, input$tsnefact]))
             )
             names(colors) = unique(coldata[, input$tsnefact])
             tsneOutDF <- as.data.frame(tsneOut)
-            
+
             pdf(file, width = 7, height = 6.5, onefile = FALSE) # open the pdf device
             qcTSNEPlot(
                 tsneDF = tsneOutDF,
@@ -1199,9 +1199,9 @@ irisServer <- function(input, output, session) {
             dev.off()
         }
     )
-    
-    
-    
+
+
+
     ## QC - Show download button - tsne (PNG)
     output$dlqctsnepng <- renderUI({
         if(input$goqc == 0) {
@@ -1210,7 +1210,7 @@ irisServer <- function(input, output, session) {
             downloadButton("dlqctsnepngimg", "Download Static R Plot (PNG)")
         }
     })
-    
+
     ## QC - Download plot - tsne (PNG)
     output$dlqctsnepngimg <- downloadHandler(
         filename =  function() {
@@ -1221,13 +1221,13 @@ irisServer <- function(input, output, session) {
             tmp <- ddstran()[[1]]
             lab <- ddstran()[[2]]
             coldata <- colData(tmp)
-            
+
             colors = grDevices::rainbow(
                 length(unique(coldata[, input$tsnefact]))
             )
             names(colors) = unique(coldata[, input$tsnefact])
             tsneOutDF <- as.data.frame(tsneOut)
-            
+
             png(file, width = 700, height = 650)
             p <- qcTSNEPlot(
                 tsneDF = tsneOutDF,
@@ -1239,7 +1239,7 @@ irisServer <- function(input, output, session) {
             dev.off()
         }
     )
-    
+
     output$tsneDebug <- renderPrint({
         tsneout()[[1]]
     })
@@ -2544,7 +2544,7 @@ irisServer <- function(input, output, session) {
             filtData <- filtData[complete.cases(filtData), ]
             write.csv(
                 filtData,
-                file, 
+                file,
                 row.names = FALSE
             )
         }
@@ -3106,7 +3106,7 @@ irisServer <- function(input, output, session) {
             h4("Clustering Analysis")
         }
     })
-    
+
     output$headclustwarn <- renderUI({
         if (input$goqc == 0) {
             p(
@@ -3130,7 +3130,7 @@ irisServer <- function(input, output, session) {
             )
         }
     })
-    
+
     ## BIC - input - Choose number of variable genes
     output$clustvarnumber <- renderUI({
         if (input$goqc == 0) {
@@ -3143,7 +3143,7 @@ irisServer <- function(input, output, session) {
             )
         }
     })
-    
+
     ## CLUST - input - Choose clustering algorithm
     output$clustalg <- renderUI({
         if (input$goqc == 0) {
@@ -3161,7 +3161,7 @@ irisServer <- function(input, output, session) {
             )
         }
     })
-    
+
     ## CLUST - actionbutton - submit clustering
     output$goclust <- renderUI({
         if (input$goqc == 0) {
@@ -3174,7 +3174,7 @@ irisServer <- function(input, output, session) {
             )
         }
     })
-    
+
     ## CLUST - reactive - get variable counts (WIP - very mess atm...)
     clustout <- eventReactive(input$goclust, {
         num <- input$clustvarnumber
@@ -3189,39 +3189,39 @@ irisServer <- function(input, output, session) {
             withProgress(message = "Running WGCNA...", value = 0, {
                 incProgress(1/4)
                 enableWGCNAThreads()
-                
+
                 dds_mat <- as.matrix(dds_mat)
                 gene.names <- sort(rownames(dds_mat))
-                
+
                 datExpr <- t(log2(dds_mat + 1))
-                
+
                 incProgress(2/4)
                 # Run this to check if there are gene outliers
                 gsg <- goodSamplesGenes(datExpr, verbose = 3)
                 gsg$allOK
-                
-                # Create an object called "datTraits" that contains your 
+
+                # Create an object called "datTraits" that contains your
                 # trait data
                 datTraits <- colData(ddsout()[[1]])
                 head(datTraits)
-                
-                # Form a data frame analogous to expression data that will 
+
+                # Form a data frame analogous to expression data that will
                 # hold the clinical traits.
-                # should return TRUE if datasets align correctly, otherwise your 
+                # should return TRUE if datasets align correctly, otherwise your
                 # names are out of order
-                table(rownames(datTraits) == rownames(datExpr)) 
+                table(rownames(datTraits) == rownames(datExpr))
                 A <- adjacency(t(datExpr),type="signed") # this calculates the whole network connectivity
                 k <- as.numeric(apply(A,2,sum))-1 # standardized connectivity
                 Z.k <- scale(k)
                 thresholdZ.k <- -2.5 # often -2.5
                 outlierColor <- ifelse(Z.k<thresholdZ.k,"red","black")
                 sampleTree <- flashClust(as.dist(1-A), method = "average")
-                
+
                 # Convert traits to a color representation where red indicates high values
                 traitColors <- data.frame(labels2colors(datTraits))
                 dimnames(traitColors)[[2]] <- paste(names(datTraits))
                 datColors <- data.frame(outlier = outlierColor, traitColors)
-                
+
                 incProgress(3/4)
                 # TOM analysis - (computationally expensive)
                 enableWGCNAThreads()
@@ -3230,41 +3230,41 @@ irisServer <- function(input, output, session) {
                 TOM <- TOMsimilarity(adjacency, TOMType = "signed") # specify network type
                 dissTOM <- 1 - TOM
                 geneTree <- flashClust(as.dist(dissTOM), method="average")
-                
+
                 # This sets the minimum number of genes to cluster into a module
                 minModuleSize = 30
                 dynamicMods <- cutreeDynamic(
-                    dendro = geneTree, 
-                    distM = dissTOM, 
-                    deepSplit = 2, 
-                    pamRespectsDendro = FALSE, 
+                    dendro = geneTree,
+                    distM = dissTOM,
+                    deepSplit = 2,
+                    pamRespectsDendro = FALSE,
                     minClusterSize = minModuleSize
                 )
-                
+
                 dynamicColors <- labels2colors(dynamicMods)
                 MEList <- moduleEigengenes(
-                    datExpr, 
-                    colors = dynamicColors, 
+                    datExpr,
+                    colors = dynamicColors,
                     softPower = 18
                 )
                 MEs <- MEList$eigengenes
                 MEDiss <- 1 - cor(MEs)
                 METree <- flashClust(as.dist(MEDiss), method = "average")
-                
-                # set a threhold for merging modules. In this example we are 
+
+                # set a threhold for merging modules. In this example we are
                 # not merging so MEDissThres=0.0
                 MEDissThres <- 0.0
                 merge <- mergeCloseModules(
-                    datExpr, 
-                    dynamicColors, 
-                    cutHeight = MEDissThres, 
+                    datExpr,
+                    dynamicColors,
+                    cutHeight = MEDissThres,
                     verbose = 3
                 )
-                
+
                 mergedColors <- merge$colors
                 mergedMEs <- merge$newMEs
 
-                # Set the diagonal of the dissimilarity to NA 
+                # Set the diagonal of the dissimilarity to NA
                 diag(dissTOM) = NA;
 
                 # Export modules to data frame
@@ -3276,20 +3276,20 @@ irisServer <- function(input, output, session) {
                         gene = module
                     )
                 }
-                
+
                 moddf <- data.frame(unlist(modlist))
                 moddf$module <- gsub("\\..*", "", row.names(moddf))
                 colnames(moddf)[1] <- "gene"
                 rownames(moddf) <- seq_len(nrow(moddf))
                 moddf$gene <- as.character(moddf$gene)
                 moddf$module <- as.factor(moddf$module)
-                
+
                 sampleDF <- data.frame(
                     sample = sampleTree$labels,
                     outlier = datColors$outlier,
                     cluster = datColors$Cluster
                 )
-                
+
                 return(
                     list(
                         sampleTree,
@@ -3309,20 +3309,20 @@ irisServer <- function(input, output, session) {
                 incProgress(1/2)
                 num <- as.matrix(dds_mat)
                 mrwdist <- distNumeric(num, num, method = "mrw")
-                
+
                 # Detect cores of machine
                 nclust <- parallel::detectCores() - 1
                 message("Using ", nclust, " threads...")
                 result <- fastkmed(mrwdist, ncluster = nclust, iterate = 50)
-                
+
                 # a simple and fast k-medoids function for bootstrap evaluation
                 parkboot <- function(x, nclust) {
                     res <- fastkmed(x, nclust, iterate = 50)
                     return(res$cluster)
                 }
-                
+
                 fastkmedboot <- clustboot(mrwdist, nclust = nclust, parkboot, nboot = 50)
-                
+
                 # consensus matrix
                 wardorder <- function(x, nclust) {
                     res <- fastcluster::hclust(x, method = "ward.D2")
@@ -3330,7 +3330,7 @@ irisServer <- function(input, output, session) {
                     return(member)
                 }
                 consensusfastkmed <- consensusmatrix(fastkmedboot, nclust = nclust, wardorder)
-                
+
                 # data frame generation
                 output <- data.frame(
                     gene_id = rownames(num),
@@ -3339,7 +3339,7 @@ irisServer <- function(input, output, session) {
                 rownames(output) <- seq_len(nrow(output))
                 output$gene_id <- as.character(output$gene_id)
                 output$cluster <- as.factor(output$cluster)
-                
+
                 return(
                     list(
                         consensusfastkmed,
@@ -3354,7 +3354,7 @@ irisServer <- function(input, output, session) {
                 message("Running MCL...")
                 exp_file <- dds_mat
                 row_sub = apply(exp_file, 1, function(row) all(row != 0))
-                
+
                 # data pre-processing replace NAs with row means
                 for (i in 1:ncol(exp_file)) {
                     exp_file[is.na(exp_file[, i]), i] <- mean(exp_file[, i], na.rm = TRUE)
@@ -3363,26 +3363,26 @@ irisServer <- function(input, output, session) {
                 exp_cor <- cor(t(exp_file), method = "spearman", use = "complete.obs")  # gene to gene correlation matrix
                 MCL_name <- rownames(exp_cor)  # the vertix
                 Covered <- length(MCL_name)  # the #of covered cells
-                
+
                 calculate_mcl <- function(i) {
                     # main mcl function, used in apply function to speed up calculation
                     cluster <- list()
                     cluster <- mcl(exp_cor, addLoops = F, inflation = 50, max.iter = 500)
                     return(cluster)
                 }
-                
+
                 i <- as.data.frame(seq(5))  # test mcl inflation parameter from 1 to 50
                 i <- as.data.frame(50)  # may be just set inflation=50? one iteration is about 5 minutes
-                
+
                 cluster_all <- apply(i, 1, calculate_mcl)
-                
-                
+
+
                 KK <- as.data.frame(do.call(rbind, lapply(cluster_all, "[[", 1)))  # extract the number of clusters
                 CAN_I <- c(which(as.numeric(as.character(KK$V1)) >= 2))  # results that has more than 5 clusters
                 tt <- as.numeric(as.character(KK$V1))
                 tt <- sort(table(tt), decreasing = T)[1]
                 Final_K <- as.numeric(names(tt))
-                
+
                 if (Final_K == 1) {
                     message("Final K is 1...")
                     matdist <- 0
@@ -3419,7 +3419,7 @@ irisServer <- function(input, output, session) {
                             cluster = c(
                                 memb,
                                 LEFT_Cluster
-                            ), 
+                            ),
                             K = rep(Final_K + 1, length(rownames(exp_cor)))
                         )
                         label <- df_cell_label$cluster
@@ -3432,8 +3432,8 @@ irisServer <- function(input, output, session) {
                     result <- result[, c(3, 2)]
                     rownames(result) <- seq_len(nrow(result))
                 }
-                
-                
+
+
                 message("Sending data to list...")
                 return(
                     list(
@@ -3447,8 +3447,8 @@ irisServer <- function(input, output, session) {
             })
         }
     })
-    
-    ## CLUST - head (1) - sample dendrogram 
+
+    ## CLUST - head (1) - sample dendrogram
     output$headclustplotW01 <- renderUI({
         req(clustout())
         if (input$clustalg == "wgcna") {
@@ -3464,7 +3464,7 @@ irisServer <- function(input, output, session) {
             }
         }
     })
-    
+
     ## CLUST - visualize (WGCNA) - dendrogram plots 1
     output$clustplotW01 <- renderPlot({
         req(clustout())
@@ -3504,7 +3504,7 @@ irisServer <- function(input, output, session) {
             }
         }
     })
-    
+
     ## CLUST - sample dendrogram download (PNG) 1
     output$downloadclustplotW01png <- renderUI({
         req(clustout())
@@ -3530,7 +3530,7 @@ irisServer <- function(input, output, session) {
             }
         }
     })
-    
+
     ## CLUST - sample dendrogram download (PNG) 2
     output$downloadclustplotW01pngimg <- downloadHandler(
         filename = function() {
@@ -3540,7 +3540,7 @@ irisServer <- function(input, output, session) {
             png(file, width = 800, height = 600)
             sampleTree <- clustout()[[1]]
             datColors <- clustout()[[2]]
-            
+
             plotDendroAndColors(
                 sampleTree,
                 groupLabels = names(datColors),
@@ -3550,7 +3550,7 @@ irisServer <- function(input, output, session) {
             dev.off()
         }
     )
-    
+
     ## CLUST - download (2) - consensus matrix
     output$downloadclustplotK01pngimg <- downloadHandler(
         filename = function() {
@@ -3581,7 +3581,7 @@ irisServer <- function(input, output, session) {
             dev.off()
         }
     )
-    
+
     ## CLUST - sample dendrogram download (pdf) 1
     output$downloadclustplotW01pdf <- renderUI({
         req(clustout())
@@ -3607,7 +3607,7 @@ irisServer <- function(input, output, session) {
             }
         }
     })
-    
+
     ## CLUST - sample dendrogram download (pdf) 2
     output$downloadclustplotW01pdfimg <- downloadHandler(
         filename = function() {
@@ -3617,7 +3617,7 @@ irisServer <- function(input, output, session) {
             pdf(file, width = 12, height = 8)
             sampleTree <- clustout()[[1]]
             datColors <- clustout()[[2]]
-            
+
             plotDendroAndColors(
                 sampleTree,
                 groupLabels = names(datColors),
@@ -3627,7 +3627,7 @@ irisServer <- function(input, output, session) {
             dev.off()
         }
     )
-    
+
     ## CLUST - download (3) - distance matrix (MCL) - pdf
     output$downloadclustplotM01pdfimg <- downloadHandler(
         filename = function() {
@@ -3643,7 +3643,7 @@ irisServer <- function(input, output, session) {
         }
     )
 
-    ## CLUST - head (2) - gene dendrogram 
+    ## CLUST - head (2) - gene dendrogram
     output$headclustplotW02 <- renderUI({
         req(clustout())
         if (input$clustalg == "wgcna") {
@@ -3665,12 +3665,12 @@ irisServer <- function(input, output, session) {
             mergedColors <- clustout()[[5]]
 
             plotDendroAndColors(
-                geneTree, 
-                cbind(dynamicColors, mergedColors), 
-                c("Dynamic Tree Cut", "Merged dynamic"), 
-                dendroLabels = FALSE, 
-                hang = 0.03, 
-                addGuide = TRUE, 
+                geneTree,
+                cbind(dynamicColors, mergedColors),
+                c("Dynamic Tree Cut", "Merged dynamic"),
+                dendroLabels = FALSE,
+                hang = 0.03,
+                addGuide = TRUE,
                 guideHang = 0.05,
                 main = "Gene Dendrogram and Module Colors"
             )
@@ -3678,7 +3678,7 @@ irisServer <- function(input, output, session) {
             return()
         }
     })
-    
+
     ## CLUST - gene dendrogram download (PNG) 1
     output$downloadclustplotW02png <- renderUI({
         req(clustout())
@@ -3691,7 +3691,7 @@ irisServer <- function(input, output, session) {
             return()
         }
     })
-    
+
     ## CLUST - gene dendrogram download (PNG) 2
     output$downloadclustplotW02pngimg <- downloadHandler(
         filename = function() {
@@ -3702,21 +3702,21 @@ irisServer <- function(input, output, session) {
             geneTree <- clustout()[[3]]
             dynamicColors <- clustout()[[4]]
             mergedColors <- clustout()[[5]]
-            
+
             plotDendroAndColors(
-                geneTree, 
-                cbind(dynamicColors, mergedColors), 
-                c("Dynamic Tree Cut", "Merged dynamic"), 
-                dendroLabels = FALSE, 
-                hang = 0.03, 
-                addGuide = TRUE, 
+                geneTree,
+                cbind(dynamicColors, mergedColors),
+                c("Dynamic Tree Cut", "Merged dynamic"),
+                dendroLabels = FALSE,
+                hang = 0.03,
+                addGuide = TRUE,
                 guideHang = 0.05,
                 main = "Gene Dendrogram and Module Colors"
             )
             dev.off()
         }
     )
-    
+
     ## CLUST - gene dendrogram download (pdf) 1
     output$downloadclustplotW02pdf <- renderUI({
         req(clustout())
@@ -3729,7 +3729,7 @@ irisServer <- function(input, output, session) {
             return()
         }
     })
-    
+
     ## CLUST - gene dendrogram download (pdf) 2
     output$downloadclustplotW02pdfimg <- downloadHandler(
         filename = function() {
@@ -3740,14 +3740,14 @@ irisServer <- function(input, output, session) {
             geneTree <- clustout()[[3]]
             dynamicColors <- clustout()[[4]]
             mergedColors <- clustout()[[5]]
-            
+
             plotDendroAndColors(
-                geneTree, 
-                cbind(dynamicColors, mergedColors), 
-                c("Dynamic Tree Cut", "Merged dynamic"), 
-                dendroLabels = FALSE, 
-                hang = 0.03, 
-                addGuide = TRUE, 
+                geneTree,
+                cbind(dynamicColors, mergedColors),
+                c("Dynamic Tree Cut", "Merged dynamic"),
+                dendroLabels = FALSE,
+                hang = 0.03,
+                addGuide = TRUE,
                 guideHang = 0.05,
                 main = "Gene Dendrogram and Module Colors"
             )
@@ -3755,7 +3755,7 @@ irisServer <- function(input, output, session) {
         }
     )
 
-    ## CLUST - head (3) - sample dendrogram 
+    ## CLUST - head (3) - sample dendrogram
     output$headclustplotW03 <- renderUI({
         req(clustout())
         if (input$clustalg == "wgcna") {
@@ -3764,7 +3764,7 @@ irisServer <- function(input, output, session) {
             return()
         }
     })
-    
+
     ## CLUST - visualize (WGCNA) - TOM plot
     output$clustplotW03 <- renderPlot({
         req(clustout())
@@ -3775,18 +3775,18 @@ irisServer <- function(input, output, session) {
             geneTree <- clustout()[[3]]
             dynamicColors <- clustout()[[4]]
             dissTOM <- clustout()[[6]]
-            
+
             TOMplot(
-                dissTOM^4, 
-                geneTree, 
+                dissTOM^4,
+                geneTree,
                 as.character(dynamicColors),
-                main = "TOM Plot"    
+                main = "TOM Plot"
             )
         } else {
             return()
         }
     })
-    
+
     ## CLUST - TOM plot download (PNG) 1
     output$downloadclustplotW03png <- renderUI({
         req(clustout())
@@ -3799,7 +3799,7 @@ irisServer <- function(input, output, session) {
             return()
         }
     })
-    
+
     ## CLUST - TOM plot download (PNG) 2
     output$downloadclustplotW03pngimg <- downloadHandler(
         filename = function() {
@@ -3810,17 +3810,17 @@ irisServer <- function(input, output, session) {
             geneTree <- clustout()[[3]]
             dynamicColors <- clustout()[[4]]
             dissTOM <- clustout()[[6]]
-            
+
             TOMplot(
-                dissTOM^4, 
-                geneTree, 
+                dissTOM^4,
+                geneTree,
                 as.character(dynamicColors),
-                main = "TOM Plot"    
+                main = "TOM Plot"
             )
             dev.off()
         }
     )
-    
+
     ## CLUST - TOM plot download (pdf) 1
     output$downloadclustplotW03pdf <- renderUI({
         req(clustout())
@@ -3833,7 +3833,7 @@ irisServer <- function(input, output, session) {
             return()
         }
     })
-    
+
     ## CLUST - TOM plot download (pdf) 2
     output$downloadclustplotW03pdfimg <- downloadHandler(
         filename = function() {
@@ -3844,17 +3844,17 @@ irisServer <- function(input, output, session) {
             geneTree <- clustout()[[3]]
             dynamicColors <- clustout()[[4]]
             dissTOM <- clustout()[[6]]
-            
+
             TOMplot(
-                dissTOM^4, 
-                geneTree, 
+                dissTOM^4,
+                geneTree,
                 as.character(dynamicColors),
-                main = "TOM Plot"    
+                main = "TOM Plot"
             )
             dev.off()
         }
     )
-    
+
     ## CLUST - head (4) - download gene modules
     output$headclustmoddown <- renderUI({
         req(clustout())
@@ -3864,7 +3864,7 @@ irisServer <- function(input, output, session) {
             return()
         }
     })
-    
+
     ## CLUST - gene module download 1
     output$downloadclustmod <- renderUI({
         req(clustout())
@@ -3877,7 +3877,7 @@ irisServer <- function(input, output, session) {
             return()
         }
     })
-    
+
     ## CLUST - gene module download 2
     output$downloadclustmod2 <- downloadHandler(
         filename = function() {
@@ -3888,7 +3888,7 @@ irisServer <- function(input, output, session) {
             write.csv(moddf, file, row.names = FALSE, col.names = TRUE)
         }
     )
-    
+
     ## CLUST - sample module download 1
     output$downloadclustsample <- renderUI({
         req(clustout())
@@ -3901,7 +3901,7 @@ irisServer <- function(input, output, session) {
             return()
         }
     })
-    
+
     ## CLUST - sample module download 2
     output$downloadclustsample2 <- downloadHandler(
         filename = function() {
@@ -3929,7 +3929,7 @@ irisServer <- function(input, output, session) {
             dev.off()
         }
     )
-    
+
     ## CLUST - gene module download 1
     output$downloadclustmodK <- renderUI({
         req(clustout())
@@ -3952,7 +3952,7 @@ irisServer <- function(input, output, session) {
             return()
         }
     })
-    
+
     ## CLUST - gene module download 2
     output$downloadclustmodK2 <- downloadHandler(
         filename = function() {
@@ -3974,7 +3974,7 @@ irisServer <- function(input, output, session) {
             write.csv(clustdf, file, row.names = FALSE, col.names = TRUE)
         }
     )
-    
+
     ###################################################################
     ###################################################################
     ### SECTION 05 - BICLUSTERING ALGORITHMS (BIC)
@@ -4143,8 +4143,8 @@ irisServer <- function(input, output, session) {
 
             out <- paste0(
                 "This algorithm found ", ids, " IDs amongst ", samp,
-                " samples in cluster ", clust, 
-                ". To see what IDs were found in this cluster, click on the ", 
+                " samples in cluster ", clust,
+                ". To see what IDs were found in this cluster, click on the ",
                 "'Download Cluster IDs' button at the bottom of the page."
             )
             p(paste(out))
@@ -4364,8 +4364,8 @@ irisServer <- function(input, output, session) {
                     "<b>R:</b> ", round(cor.mat, 3)
                 )
                 tooltips <- matrix(
-                    tooltips, 
-                    ncol = ncol(cor.mat), 
+                    tooltips,
+                    ncol = ncol(cor.mat),
                     byrow = FALSE
                 )
                 plot_ly(
@@ -4392,7 +4392,7 @@ irisServer <- function(input, output, session) {
             return()
         } else {
             downloadButton(
-                "dlqccorplot1pdfimg", 
+                "dlqccorplot1pdfimg",
                 "Download Static R Plot (PDF)"
             )
         }
@@ -4418,7 +4418,7 @@ irisServer <- function(input, output, session) {
             return()
         } else {
             downloadButton(
-                "dlqccorplot1pngimg", 
+                "dlqccorplot1pngimg",
                 "Download Static R Plot (PNG)"
             )
         }
@@ -4484,7 +4484,7 @@ irisServer <- function(input, output, session) {
             return()
         } else {
             downloadButton(
-                "dlqccorplot2pdfimg", 
+                "dlqccorplot2pdfimg",
                 "Download Static R Plot (PDF)"
             )
         }
@@ -4513,7 +4513,7 @@ irisServer <- function(input, output, session) {
             return()
         } else {
             downloadButton(
-                "dlqccorplot2pngimg", 
+                "dlqccorplot2pngimg",
                 "Download Static R Plot (PNG)"
             )
         }
@@ -4663,7 +4663,7 @@ irisServer <- function(input, output, session) {
                 label = "1. Title",
                 value = "",
                 width = "500px"
-            )           
+            )
         }
     })
 
@@ -4678,8 +4678,8 @@ irisServer <- function(input, output, session) {
                 width = "500px",
                 rows = 5,
                 resize = "vertical"
-            )             
-        }     
+            )
+        }
     })
 
     output$geo_xx_overall_design <- renderUI({
@@ -4731,7 +4731,7 @@ irisServer <- function(input, output, session) {
                         width = "500px"
                     )
                 )
-            )        
+            )
         }
     })
 
@@ -4756,7 +4756,7 @@ irisServer <- function(input, output, session) {
                 ),
                 value = "NA"
             )
-        }    
+        }
     })
 
 
@@ -5022,7 +5022,7 @@ irisServer <- function(input, output, session) {
                         "other" = "other"
                     ),
                     width = "500px"
-                )                
+                )
             })
 
             output[[paste0("geo_sample_description_", i)]] <- renderUI({
@@ -6596,7 +6596,7 @@ irisServer <- function(input, output, session) {
                         paste(
                             "Once you have all of your information submitted,",
                             "please click on one (<i>or more</i>) of the",
-                            "options: <ul><li><b>Download Metadata</b>", 
+                            "options: <ul><li><b>Download Metadata</b>",
                             "will return",
                             "the metadata file populated with the prior",
                             "questionnaire in an Excel file format.</li>",
@@ -6809,33 +6809,33 @@ irisServer <- function(input, output, session) {
 
     observeEvent(input$iris_flow_01, {
         updateNavbarPage(
-            session, 
-            "tab_structure", 
+            session,
+            "tab_structure",
             selected = "val1"
         )
     }, ignoreInit = TRUE)
 
     observeEvent(input$iris_flow_02, {
         updateNavbarPage(
-            session, 
-            "tab_structure", 
+            session,
+            "tab_structure",
             selected = "val2"
         )
     }, ignoreInit = TRUE)
 
     observeEvent(input$iris_flow_03, {
         updateNavbarPage(
-            session, 
-            "tab_structure", 
+            session,
+            "tab_structure",
             selected = "val3"
         )
     }, ignoreInit = TRUE)
 
     observeEvent(input$iris_flow_04, {
         updateNavbarPage(
-            session, 
-            "tab_structure", 
+            session,
+            "tab_structure",
             selected = "val4"
         )
-    }, ignoreInit = TRUE)            
+    }, ignoreInit = TRUE)
 }
