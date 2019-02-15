@@ -21,6 +21,7 @@
 * [What is an MA plot?](#maplot)
 * [What is a volcano plot?](#volplot)
 * [Where can I download a local version of the app?](#localapp)
+* [When submitting my data, I get a notification saying I have disconnected from the server.  What could be causing this issue?](#server_disconnect)
 * [References](#refs)
 
 - - -
@@ -180,6 +181,11 @@ You can download the latest (*and experimental*) version of the web application 
 if (!require("shiny")) install.packages("shiny")
 shiny::runGitHub("iris", "btmonier")
 ```
+
+<br>
+
+#### When submitting my data, I get a notification saying I have disconnected from the server.  What could be causing this issue? <a id="server_disconnect"></a>
+Disconnecting from the server sometimes occurs when the data is incorrectly formatted.  Please check that both your expression matrix and condition information are properly formatted, as described in "S4: A note about the input data" of the Tutorial.  If this is not an issue, the server may be disconnecting due to an unusually large data size.  In this case, please try using a local version of the IRIS-EDA program.  Information on running IRIS-EDA locally within R can be found in "S2: Accessibility" of the Tutorial. 
 
 <br>
 
