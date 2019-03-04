@@ -14,6 +14,26 @@ knitr::opts_chunk$set(
 http://bmbl.sdstate.edu/IRIS/
 
 
+## Citation
+
+### APA
+Monier, B., McDermaid, A., Wang, C., Zhao, J., Miller, A., Fennell, A., & Ma, Q. (2019). [IRIS-EDA: an integrated RNA-Seq interpretation system for gene expression data analysis.](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1006792) *PLoS computational biology*, 15(2), e1006792.
+
+### BibTeX
+```
+@article{monier2019iris,
+  title={IRIS-EDA: an integrated RNA-Seq interpretation system for gene expression data analysis},
+  author={Monier, Brandon and McDermaid, Adam and Wang, Cankun and Zhao, Jing and Miller, Allison and Fennell, Anne and Ma, Qin},
+  journal={PLoS computational biology},
+  volume={15},
+  number={2},
+  pages={e1006792},
+  year={2019},
+  publisher={Public Library of Science}
+}
+
+```
+
 ## Overview
 IRIS-EDA (**I**nteractive **R**NA-seq analysis and **I**nterpretation using
 **S**hiny-**E**xpression **D**ata **A**nalysis), is a web-based tool for
@@ -58,10 +78,11 @@ necessary packages from the Bioconductor repository:
 
 ```{r, evale=FALSE, message=FALSE}
 # Bioconductor
-bioc.packages <- c("DESeq2", "edgeR", "limma", "QUBIC", "geneplotter")
-np <- bioc.packages[!(bioc.packages %in% installed.packages()[,"Package"])]
-source("https://bioconductor.org/biocLite.R")
-if (length(np)) biocLite(np)
+bioc_packages <- c("DESeq2", "edgeR", "limma", "QUBIC", "geneplotter")
+np <- bioc_packages[!(bioc_packages %in% installed.packages()[,"Package"])]
+
+if (!require("BiocManager")) install.packages("BiocManager")
+if (length(np)) BiocManager::install(pkgs = np)
 ```
 
 ### Run the Shiny application

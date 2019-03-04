@@ -4,6 +4,26 @@ IRIS <img src="www/logo.svg" align="right" height="120"/>
 
 <http://bmbl.sdstate.edu/IRIS/>
 
+Citation
+--------
+
+### APA
+
+Monier, B., McDermaid, A., Wang, C., Zhao, J., Miller, A., Fennell, A., & Ma, Q. (2019). [IRIS-EDA: an integrated RNA-Seq interpretation system for gene expression data analysis.](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1006792) *PLoS computational biology*, 15(2), e1006792.
+
+### BibTeX
+
+    @article{monier2019iris,
+      title={IRIS-EDA: an integrated RNA-Seq interpretation system for gene expression data analysis},
+      author={Monier, Brandon and McDermaid, Adam and Wang, Cankun and Zhao, Jing and Miller, Allison and Fennell, Anne and Ma, Qin},
+      journal={PLoS computational biology},
+      volume={15},
+      number={2},
+      pages={e1006792},
+      year={2019},
+      publisher={Public Library of Science}
+    }
+
 Overview
 --------
 
@@ -23,8 +43,8 @@ IRIS-EDA requires several packages to operate. Run this code to get the necessar
 packages <- c(
     "crosstalk", "dplyr", "DT", "gtools", "plotly", "shiny", "plyr",
     "shinyBS", "shinycssloaders", "shinythemes", "tibble", "tidyr",
-    "Rcpp", "Hmisc", "ggplot2", "locfit", "GGally", "pheatmap", 
-    "reshape2", "backports", "digest", "fields", "psych", "stringr", 
+    "Rcpp", "Hmisc", "ggplot2", "locfit", "GGally", "pheatmap",
+    "reshape2", "backports", "digest", "fields", "psych", "stringr",
     "tools", "openxlsx", "Rtsne", "WGCNA", "flashClust", "paraellel",
     "MCL", "kmed", "ape"
 )
@@ -38,12 +58,11 @@ You will also need several Bioconductor packages. Run this code to get the neces
 
 ``` r
 # Bioconductor
-bioc.packages <- c("DESeq2", "edgeR", "limma", "QUBIC", "geneplotter")
-np <- bioc.packages[!(bioc.packages %in% installed.packages()[,"Package"])]
-source("https://bioconductor.org/biocLite.R")
-#> Warning: 'BiocInstaller' and 'biocLite()' are deprecated, use the 'BiocManager'
-#>   CRAN package instead.
-if (length(np)) biocLite(np)
+bioc_packages <- c("DESeq2", "edgeR", "limma", "QUBIC", "geneplotter")
+np <- bioc_packages[!(bioc_packages %in% installed.packages()[,"Package"])]
+
+if (!require("BiocManager")) install.packages("BiocManager")
+if (length(np)) BiocManager::install(pkgs = np)
 ```
 
 ### Run the Shiny application
@@ -56,4 +75,4 @@ shiny::runGitHub("iris", "btmonier")
 
 ------------------------------------------------------------------------
 
-*Last updated:* 2018-11-09
+*Last updated:* 2019-03-04
