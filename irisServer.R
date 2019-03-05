@@ -316,13 +316,21 @@ irisServer <- function(input, output, session) {
         } else if (input$examplechoice == "no" | input$examplechoice == "scrna10x") { # user input (normal)
             cts <- input$file1
             coldata <- input$file2
-            cts <- as.matrix(
-                read.csv(
-                    cts$datapath,
-                    header = TRUE,
-                    row.names = 1
-                )
+            cts <- read.csv(
+                cts$datapath,
+                header = TRUE,
+                row.names = NULL
             )
+            #set the first column name to 'gene_id' if missing
+            if(colnames(cts)[1] == ""){ 
+              colnames(cts)[1] == "gene_id"
+            }
+            # if there are duplicated row names, only keep the first 
+            if (length(which(duplicated.default(cts[,1]))) > 0) { 
+              cts <- cts[-which(duplicated.default(cts[,1]) == T),]
+            }
+            rownames(cts) <- cts[,1]
+            cts <- as.matrix(cts[,-1])
             coldata <- read.csv(
                 coldata$datapath,
                 header = TRUE,
@@ -346,8 +354,18 @@ irisServer <- function(input, output, session) {
             cts <- read.csv(
                 cts$datapath,
                 header = TRUE,
-                row.names = 1
+                row.names = NULL
             )
+            #set the first column name to 'gene_id' if missing
+            if(colnames(cts)[1] == ""){ 
+              colnames(cts)[1] == "gene_id"
+            }
+            # if there are duplicated row names, only keep the first 
+            if (length(which(duplicated.default(cts[,1]))) > 0) { 
+              cts <- cts[-which(duplicated.default(cts[,1]) == T),]
+            }
+            rownames(cts) <- cts[,1]
+            cts <- as.matrix(cts[,-1])
             coldata <- read.csv(
                 coldata$datapath,
                 header = TRUE,
