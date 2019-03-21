@@ -20,6 +20,7 @@ irisUI <- navbarPage(
     tab.prelim,
     tab.deg,
     tab.geo,
+    tab.bric,
     navbarMenu(
         title = "More",
         tab.tutorial,

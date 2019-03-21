@@ -6856,4 +6856,66 @@ irisServer <- function(input, output, session) {
             selected = "val4"
         )
     }, ignoreInit = TRUE)
+    ###################################################################
+    ###################################################################
+    ### SECTION 10 - BRIC ANALYSIS
+    ###################################################################
+    ###################################################################
+
+    # DATA - Data load option - submit expression matrix
+    output$bric_file1 <- renderUI({
+        if (input$bric_examplechoice == "bric_no") {
+            fileInput(
+                inputId = "bric_file1",
+                label = "Submit Expression Matrix",
+                accept = c(
+                    "text/csv",
+                    "text/comma-separated-values,text/plain",
+                    ".csv",
+                    "text/tab-separated-values"
+                )
+            )
+        } else {
+            return()
+        }
+    })
+
+    ## DEBUG ##
+    bricDebugLog <- eventReactive(input$bric_launch, {
+        if (input$bric_examplechoice == "bric_yes") {
+            path <- "data/Yan_sub.txt"
+        } else {
+            path <- input$bric_file1$datapath
+        }
+
+        out <- paste0(
+            "BRIC::qubic() parameters: ", "\n",
+            "N... ", input$bric_N, "\n",
+            "R... ", input$bric_R, "\n",
+            "F... ", input$bric_F, "\n",
+            "d... ", input$bric_d, "\n",
+            "f... ", input$bric_f, "\n",
+            "k... ", input$bric_k, "\n",
+            "c... ", input$bric_c, "\n",
+            "o... ", input$bric_o, "\n",
+            "---", "\n",
+            "Path... ", path, "\n"
+        )
+        cat(out)
+        qubic(
+            i = path,
+            N = input$bric_N,
+            R = input$bric_R,
+            F = input$bric_F,
+            d = input$bric_d,
+            f = input$bric_f,
+            k = input$bric_k,
+            c = input$bric_c,
+            o = input$bric_o
+        )
+
+    })
+    output$bric_debug <- renderPrint({
+        bricDebugLog()
+    })
 }

@@ -771,6 +771,124 @@ tab.geo <- tabPanel(
 
 
 
+# BRIC ----
+tab.bric <- tabPanel(
+    title = "BRIC",
+    fluid = TRUE,
+    icon = icon("project-diagram"),
+    sidebarLayout(
+        sidebarPanel(
+            h4("1. Submission Parameters"),
+            radioButtons(
+                inputId = "bric_examplechoice",
+                label = "How do you want to start?",
+                choices = c(
+                    "Start with an example data set (small)." = "bric_yes",
+                    "Load my own data" = "bric_no"
+                )
+            ),
+            # bsTooltip(
+            #     id = "examplechoice",
+            #     title = paste(
+            #         "Note: if you choose the big example data set or scRNA",
+            #         "example data set, analysis and visualization time will",
+            #         "be considerably longer than the small example data set."
+            #     ),
+            #     placement = "right",
+            #     options = list(container = "body")
+            # ),
+            uiOutput("bric_file1"),
+            br(),
+            h4("2. BRIC::qubic() Parameters"),
+            splitLayout(
+                radioButtons(
+                    inputId = "bric_N",
+                    label = "N",
+                    choices = c(
+                        "TRUE" = TRUE,
+                        "FALSE" = FALSE
+                    ),
+                    selected = FALSE
+                ),
+                radioButtons(
+                    inputId = "bric_R",
+                    label = "R",
+                    choices = c(
+                        "TRUE" = TRUE,
+                        "FALSE" = FALSE
+                    ),
+                    selected = FALSE
+                ),
+                radioButtons(
+                    inputId = "bric_F",
+                    label = "F",
+                    choices = c(
+                        "TRUE" = TRUE,
+                        "FALSE" = FALSE
+                    ),
+                    selected = FALSE
+                ),
+                radioButtons(
+                    inputId = "bric_d",
+                    label = "d",
+                    choices = c(
+                        "TRUE" = TRUE,
+                        "FALSE" = FALSE
+                    ),
+                    selected = FALSE
+                )
+            ),
+            splitLayout(
+                textInput(
+                    inputId = "bric_f",
+                    label = withMathJax("f"),
+                    value = 0.85
+                ),
+                textInput(
+                    inputId = "bric_k",
+                    label = "k",
+                    value = 13
+                ),
+                textInput(
+                    inputId = "bric_c",
+                    label = "c",
+                    value = 0.9
+                ),
+                textInput(
+                    inputId = "bric_o",
+                    label = "o",
+                    value = 5000
+                )
+            ),
+            # uiOutput("filter_choice"),
+            # selectInput(
+            #     inputId = "transform",
+            #     label = "Choose transformation method for counts",
+            #     choices = c(
+            #         "Normal log: log2(n + pseudocount)" = "log",
+            #         "Regularized log: rlog(n)" = "rlog",
+            #         "Variance stabilizing transform: vst(n)" = "vst",
+            #         "No transformation" = "raw"
+            #     )
+            # ),
+            br(),
+            h4("3. Launch Overview"),
+            actionButton(
+                inputId = "bric_launch",
+                "Submit",
+                icon = icon("space-shuttle")
+            ),
+            br(),
+            br()
+        ),
+        mainPanel = mainPanel(
+            verbatimTextOutput("bric_debug")
+        )
+    )
+)
+
+
+
 # Help ----
 tab.tutorial <- tabPanel(
     title = "Tutorial",
