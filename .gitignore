@@ -2,3 +2,4 @@
 *.swo
 *.Rproj
 .Rproj.*
+.Rproj.user

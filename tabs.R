@@ -799,7 +799,7 @@ tab.bric <- tabPanel(
             # ),
             uiOutput("bric_file1"),
             br(),
-            h4("2. BRIC::qubic() Parameters"),
+            h4("2. BRIC Parameters"),
             splitLayout(
                 radioButtons(
                     inputId = "bric_N",
@@ -860,6 +860,15 @@ tab.bric <- tabPanel(
                     value = 5000
                 )
             ),
+            selectInput(
+                inputId = "bric_method",
+                label = "method",
+                choices = c(
+                    "MCL",
+                    "SC"
+                ),
+                selected = "MCL"
+            ),
             # uiOutput("filter_choice"),
             # selectInput(
             #     inputId = "transform",
@@ -875,7 +884,7 @@ tab.bric <- tabPanel(
             h4("3. Launch Overview"),
             actionButton(
                 inputId = "bric_launch",
-                "Submit",
+                "Run BRIC",
                 icon = icon("space-shuttle")
             ),
             br(),

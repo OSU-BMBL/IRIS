@@ -322,11 +322,11 @@ irisServer <- function(input, output, session) {
                 row.names = NULL
             )
             #set the first column name to 'gene_id' if missing
-            if(colnames(cts)[1] == ""){ 
+            if(colnames(cts)[1] == ""){
               colnames(cts)[1] == "gene_id"
             }
-            # if there are duplicated row names, only keep the first 
-            if (length(which(duplicated.default(cts[,1]))) > 0) { 
+            # if there are duplicated row names, only keep the first
+            if (length(which(duplicated.default(cts[,1]))) > 0) {
               cts <- cts[-which(duplicated.default(cts[,1]) == T),]
             }
             rownames(cts) <- cts[,1]
@@ -357,11 +357,11 @@ irisServer <- function(input, output, session) {
                 row.names = NULL
             )
             #set the first column name to 'gene_id' if missing
-            if(colnames(cts)[1] == ""){ 
+            if(colnames(cts)[1] == ""){
               colnames(cts)[1] == "gene_id"
             }
-            # if there are duplicated row names, only keep the first 
-            if (length(which(duplicated.default(cts[,1]))) > 0) { 
+            # if there are duplicated row names, only keep the first
+            if (length(which(duplicated.default(cts[,1]))) > 0) {
               cts <- cts[-which(duplicated.default(cts[,1]) == T),]
             }
             rownames(cts) <- cts[,1]
@@ -6856,6 +6856,11 @@ irisServer <- function(input, output, session) {
             selected = "val4"
         )
     }, ignoreInit = TRUE)
+
+
+
+
+
     ###################################################################
     ###################################################################
     ### SECTION 10 - BRIC ANALYSIS
@@ -6869,9 +6874,6 @@ irisServer <- function(input, output, session) {
                 inputId = "bric_file1",
                 label = "Submit Expression Matrix",
                 accept = c(
-                    "text/csv",
-                    "text/comma-separated-values,text/plain",
-                    ".csv",
                     "text/tab-separated-values"
                 )
             )
@@ -6889,7 +6891,7 @@ irisServer <- function(input, output, session) {
         }
 
         out <- paste0(
-            "BRIC::qubic() parameters: ", "\n",
+            "BRIC::final() parameters: ", "\n",
             "N... ", input$bric_N, "\n",
             "R... ", input$bric_R, "\n",
             "F... ", input$bric_F, "\n",
@@ -6898,12 +6900,17 @@ irisServer <- function(input, output, session) {
             "k... ", input$bric_k, "\n",
             "c... ", input$bric_c, "\n",
             "o... ", input$bric_o, "\n",
+            "\n",
             "---", "\n",
-            "Path... ", path, "\n"
+            "Path..... ", path, "\n",
+            "Method... ", input$bric_method, "\n",
+            "---", "\n",
+            "\n"
         )
         cat(out)
-        qubic(
+        bric_out <- BRIC::final(
             i = path,
+            method = input$bric_method,
             N = input$bric_N,
             R = input$bric_R,
             F = input$bric_F,
@@ -6913,9 +6920,11 @@ irisServer <- function(input, output, session) {
             c = input$bric_c,
             o = input$bric_o
         )
-
+        return(data.frame(bric_out))
     })
     output$bric_debug <- renderPrint({
-        bricDebugLog()
+        withProgress(mess = "Running BRIC...", value = 1, {
+            bricDebugLog()
+        })
     })
 }
