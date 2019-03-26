@@ -11,12 +11,9 @@ packages <- c(
     "Rcpp", "Hmisc", "ggplot2", "geneplotter", "locfit", "GGally",
     "pheatmap", "reshape2", "backports", "digest", "fields", "psych",
     "DESeq2", "edgeR", "limma", "QUBIC", "stringr", "tools", "openxlsx",
-<<<<<<< HEAD
     "Rtsne", "WGCNA", "flashClust", "parallel", "MCL", "kmed", "ape"
-=======
     "Rtsne", "WGCNA", "flashClust", "parallel", "MCL", "kmed", "ape",
     "BRIC", "GO.db"
->>>>>>> 7fa74aa... Add WGCNA imports
 )
 
 lapply(packages, require, character.only = TRUE)
