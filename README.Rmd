@@ -65,7 +65,7 @@ packages <- c(
     "shinyBS", "shinycssloaders", "shinythemes", "tibble", "tidyr",
     "Rcpp", "Hmisc", "ggplot2", "locfit", "GGally", "pheatmap",
     "reshape2", "backports", "digest", "fields", "psych", "stringr",
-    "tools", "openxlsx", "Rtsne", "WGCNA", "flashClust", "paraellel",
+    "tools", "openxlsx", "Rtsne", "WGCNA", "flashClust", "parallel",
     "MCL", "kmed", "ape"
 )
 np <- packages[!(packages %in% installed.packages()[, "Package"])]
@@ -78,11 +78,11 @@ necessary packages from the Bioconductor repository:
 
 ```{r, evale=FALSE, message=FALSE}
 # Bioconductor
-bioc_packages <- c("DESeq2", "edgeR", "limma", "QUBIC", "geneplotter")
+bioc_packages <- c(
+    "DESeq2", "edgeR", "limma", "QUBIC", "geneplotter", "GO.db", "impute",
+    "preprocessCore", "AnnotationDbi"
+)
 np <- bioc_packages[!(bioc_packages %in% installed.packages()[,"Package"])]
-
-if (!require("BiocManager")) install.packages("BiocManager")
-if (length(np)) BiocManager::install(pkgs = np)
 ```
 
 ### Run the Shiny application
