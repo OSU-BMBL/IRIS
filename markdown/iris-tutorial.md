@@ -149,7 +149,7 @@ install any missing packages:
         "shinyBS", "shinycssloaders", "shinythemes", "tibble", "tidyr",
         "Rcpp", "Hmisc", "ggplot2", "locfit", "GGally", "pheatmap", 
         "reshape2", "backports", "digest", "fields", "psych", "stringr", 
-        "tools", "openxlsx", "Rtsne", "WGCNA", "flashClust", "paraellel",
+        "tools", "openxlsx", "Rtsne", "WGCNA", "flashClust", "parallel",
         "MCL", "kmed", "ape"
     )
     np <- packages[!(packages %in% installed.packages()[, "Package"])]
@@ -163,10 +163,11 @@ section, the following code will check and install any missing
 Bioconductor packages into your R library:
 
     # Bioconductor
-    bioc.packages <- c("DESeq2", "edgeR", "limma", "QUBIC")
-    np <- bioc.packages[!(bioc.packages %in% installed.packages()[,"Package"])]
-    source("https://bioconductor.org/biocLite.R")
-    if (length(np)) biocLite(np)
+    bioc_packages <- c(
+        "DESeq2", "edgeR", "limma", "QUBIC", "geneplotter", "GO.db", "impute",
+        "preprocessCore", "AnnotationDbi"
+    )
+    np <- bioc_packages[!(bioc_packages %in% installed.packages()[,"Package"])]
 
 S2.3: Run the Shiny application <a id="s2.3-run-the-shiny-application"></a>
 -------------------------------

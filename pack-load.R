@@ -12,7 +12,7 @@ packages <- c(
     "pheatmap", "reshape2", "backports", "digest", "fields", "psych",
     "DESeq2", "edgeR", "limma", "QUBIC", "stringr", "tools", "openxlsx",
     "Rtsne", "WGCNA", "flashClust", "parallel", "MCL", "kmed", "ape",
-    "BRIC"
+    "BRIC", "GO.db"
 )
 
 lapply(packages, require, character.only = TRUE)
