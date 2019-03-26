@@ -11,7 +11,6 @@ packages <- c(
     "Rcpp", "Hmisc", "ggplot2", "geneplotter", "locfit", "GGally",
     "pheatmap", "reshape2", "backports", "digest", "fields", "psych",
     "DESeq2", "edgeR", "limma", "QUBIC", "stringr", "tools", "openxlsx",
-    "Rtsne", "WGCNA", "flashClust", "parallel", "MCL", "kmed", "ape"
     "Rtsne", "WGCNA", "flashClust", "parallel", "MCL", "kmed", "ape",
     "BRIC", "GO.db"
 )
