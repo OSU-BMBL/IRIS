@@ -95,7 +95,7 @@ clustering algorithm. Run this code to get the GitHub package:
 ```{r, eval=FALSE, message=FALSE}
 # GitHub
 if (!require("devtools")) install.packages("devtools")
-devtools::install_github("zy26/BRIC")
+devtools::install_github("zy26/BRIC", force = T)
 ```
 
 ### Run the Shiny application
