@@ -2,3 +2,8 @@
 *.swo
 *.Rproj
 .Rproj.*
+
+# BRIC
+*.blocks
+*.chars
+*.rules
