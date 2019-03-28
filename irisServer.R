@@ -3144,6 +3144,26 @@ irisServer <- function(input, output, session) {
                         "In case of server timeout, consider ",
                         "downloading the IRIS source and run locally."
                     )
+                ),
+                br(),
+                br(),
+                em(
+                    paste0(
+                        "If running WGCNA, it is recommended that you ",
+                        "run a variance stabilizing transformation (vst) ",
+                        "in the initial load data component of IRIS-EDA."
+                    )
+                ),
+                br(),
+                br(),
+                em(
+                    paste0(
+                        "WGCNA runs best with a large number of samples ",
+                        "(> 80) and may not function with smaller sample ",
+                        "sizes. For those with smaller sample sizes, the ",
+                        "other cluster methods should work fine and probably ",
+                        "generate more reliable clustering results."
+                    )
                 )
             )
         }
@@ -3211,7 +3231,8 @@ irisServer <- function(input, output, session) {
                 dds_mat <- as.matrix(dds_mat)
                 gene.names <- sort(rownames(dds_mat))
 
-                datExpr <- t(log2(dds_mat + 1))
+                # datExpr <- t(log2(dds_mat + 1))
+                datExpr <- t(dds_mat)
 
                 incProgress(2/4)
                 # Run this to check if there are gene outliers
