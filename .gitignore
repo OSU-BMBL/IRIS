@@ -3,3 +3,8 @@
 *.Rproj
 .Rproj.*
 .Rproj.user
+
+# BRIC output
+*.blocks
+*.chars
+*.rules
