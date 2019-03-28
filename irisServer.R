@@ -6882,6 +6882,17 @@ irisServer <- function(input, output, session) {
         }
     })
 
+    # Display cluster number parameter
+    output$bric_celltype_number <- renderUI({
+        if (input$bric_method == "SC") {
+            textInput(
+                inputId = "bric_celltype_number",
+                label = "Specify number of cell types!"
+            )
+        } else {
+            return()
+        }
+    })
     ## DEBUG ##
     bricDebugLog <- eventReactive(input$bric_launch, {
         if (input$bric_examplechoice == "bric_yes") {
@@ -6889,17 +6900,24 @@ irisServer <- function(input, output, session) {
         } else {
             path <- input$bric_file1$datapath
         }
+        
+        if (input$bric_method == "SC") {
+            bric_K <- input$bric_celltype_number
+        } else {
+            bric_K <- NULL
+        }
 
         out <- paste0(
             "BRIC::final() parameters: ", "\n",
-            "N... ", input$bric_N, "\n",
-            "R... ", input$bric_R, "\n",
-            "F... ", input$bric_F, "\n",
-            "d... ", input$bric_d, "\n",
+            "N... ", FALSE, "\n",
+            "R... ", FALSE, "\n",
+            "F... ", FALSE, "\n",
+            "d... ", FALSE, "\n",
             "f... ", input$bric_f, "\n",
             "k... ", input$bric_k, "\n",
-            "c... ", input$bric_c, "\n",
+            "c... ", 1, "\n",
             "o... ", input$bric_o, "\n",
+            "K... ", bric_K, "\n",
             "\n",
             "---", "\n",
             "Path..... ", path, "\n",
@@ -6911,14 +6929,15 @@ irisServer <- function(input, output, session) {
         bric_out <- BRIC::final(
             i = path,
             method = input$bric_method,
-            N = input$bric_N,
-            R = input$bric_R,
-            F = input$bric_F,
-            d = input$bric_d,
+            N = FALSE,
+            R = FALSE,
+            F = FALSE,
+            d = FALSE,
             f = input$bric_f,
             k = input$bric_k,
-            c = input$bric_c,
-            o = input$bric_o
+            c = 1,
+            o = input$bric_o,
+            K = bric_K
         )
         return(data.frame(bric_out))
     })

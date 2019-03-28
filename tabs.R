@@ -787,72 +787,19 @@ tab.bric <- tabPanel(
                     "Load my own data" = "bric_no"
                 )
             ),
-            # bsTooltip(
-            #     id = "examplechoice",
-            #     title = paste(
-            #         "Note: if you choose the big example data set or scRNA",
-            #         "example data set, analysis and visualization time will",
-            #         "be considerably longer than the small example data set."
-            #     ),
-            #     placement = "right",
-            #     options = list(container = "body")
-            # ),
             uiOutput("bric_file1"),
             br(),
             h4("2. BRIC Parameters"),
             splitLayout(
-                radioButtons(
-                    inputId = "bric_N",
-                    label = "N",
-                    choices = c(
-                        "TRUE" = TRUE,
-                        "FALSE" = FALSE
-                    ),
-                    selected = FALSE
-                ),
-                radioButtons(
-                    inputId = "bric_R",
-                    label = "R",
-                    choices = c(
-                        "TRUE" = TRUE,
-                        "FALSE" = FALSE
-                    ),
-                    selected = FALSE
-                ),
-                radioButtons(
-                    inputId = "bric_F",
-                    label = "F",
-                    choices = c(
-                        "TRUE" = TRUE,
-                        "FALSE" = FALSE
-                    ),
-                    selected = FALSE
-                ),
-                radioButtons(
-                    inputId = "bric_d",
-                    label = "d",
-                    choices = c(
-                        "TRUE" = TRUE,
-                        "FALSE" = FALSE
-                    ),
-                    selected = FALSE
-                )
-            ),
-            splitLayout(
                 textInput(
                     inputId = "bric_f",
-                    label = withMathJax("f"),
+                    label = "f",
                     value = 0.85
                 ),
                 textInput(
                     inputId = "bric_k",
                     label = "k",
                     value = 13
-                ),
-                textInput(
-                    inputId = "bric_c",
-                    label = "c",
-                    value = 0.9
                 ),
                 textInput(
                     inputId = "bric_o",
@@ -862,24 +809,14 @@ tab.bric <- tabPanel(
             ),
             selectInput(
                 inputId = "bric_method",
-                label = "method",
+                label = "Clustering Method",
                 choices = c(
-                    "MCL",
-                    "SC"
+                    "Markov Clustering" = "MCL",
+                    "Spectral" = "SC"
                 ),
                 selected = "MCL"
             ),
-            # uiOutput("filter_choice"),
-            # selectInput(
-            #     inputId = "transform",
-            #     label = "Choose transformation method for counts",
-            #     choices = c(
-            #         "Normal log: log2(n + pseudocount)" = "log",
-            #         "Regularized log: rlog(n)" = "rlog",
-            #         "Variance stabilizing transform: vst(n)" = "vst",
-            #         "No transformation" = "raw"
-            #     )
-            # ),
+            uiOutput("bric_celltype_number"),
             br(),
             h4("3. Launch Overview"),
             actionButton(
