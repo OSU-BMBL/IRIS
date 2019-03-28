@@ -6893,8 +6893,9 @@ irisServer <- function(input, output, session) {
             return()
         }
     })
-    ## DEBUG ##
-    bricDebugLog <- eventReactive(input$bric_launch, {
+    
+    # Run BRIC function
+    bricOutput <- eventReactive(input$bric_launch, {
         if (input$bric_examplechoice == "bric_yes") {
             path <- "data/Yan_sub.txt"
         } else {
@@ -6903,29 +6904,12 @@ irisServer <- function(input, output, session) {
         
         if (input$bric_method == "SC") {
             bric_K <- input$bric_celltype_number
+            
         } else {
             bric_K <- NULL
         }
-
-        out <- paste0(
-            "BRIC::final() parameters: ", "\n",
-            "N... ", FALSE, "\n",
-            "R... ", FALSE, "\n",
-            "F... ", FALSE, "\n",
-            "d... ", FALSE, "\n",
-            "f... ", input$bric_f, "\n",
-            "k... ", input$bric_k, "\n",
-            "c... ", 1, "\n",
-            "o... ", input$bric_o, "\n",
-            "K... ", bric_K, "\n",
-            "\n",
-            "---", "\n",
-            "Path..... ", path, "\n",
-            "Method... ", input$bric_method, "\n",
-            "---", "\n",
-            "\n"
-        )
-        cat(out)
+        
+        # Crashes if application is restarted and console is not refreshed
         bric_out <- BRIC::final(
             i = path,
             method = input$bric_method,
@@ -6939,11 +6923,50 @@ irisServer <- function(input, output, session) {
             o = input$bric_o,
             K = bric_K
         )
-        return(data.frame(bric_out))
+
+        return(
+            data.frame(
+                "cell_id" = names(bric_out),
+                "cluster_number" = bric_out,
+                row.names = seq_along(bric_out)
+            )
+        )
     })
-    output$bric_debug <- renderPrint({
+
+    output$bric_output_table <- DT::renderDataTable({
         withProgress(mess = "Running BRIC...", value = 1, {
-            bricDebugLog()
+            bricOutput()
         })
     })
+    
+    ## DGE - Show download button (ALL)
+    output$bric_download <- renderUI({
+        validate(
+            need(
+                expr = !is.null(input$bric_launch),
+                message = ""
+            )
+        )
+        if(input$bric_launch == 0) {
+            return()
+        } else {
+            downloadButton(
+                "bric_download_data", "Download Cluster Predictions"
+            )
+        }
+    })
+
+    ## DGE - Download ALL data
+    output$bric_download_data <- downloadHandler(
+        filename = function() {
+            paste("bric_cluster_pred_", Sys.Date(), ".csv", sep = "")
+        },
+        content = function(file) {
+            write.csv(
+                bricOutput(),
+                file, 
+                row.names = FALSE
+            )
+        }
+    ) 
 }

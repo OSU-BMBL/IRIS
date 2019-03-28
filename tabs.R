@@ -817,6 +817,16 @@ tab.bric <- tabPanel(
                 selected = "MCL"
             ),
             uiOutput("bric_celltype_number"),
+            strong("Parameter definitions:"),
+            br(),
+            tags$div(
+                tags$ul(
+                    tags$li("-f : filtering overlapping blocks"),
+                    tags$li("-k : minimum column width of block"),
+                    tags$li("-o : number of blocks to report")
+                )
+            ),
+            br(),
             br(),
             h4("3. Launch Overview"),
             actionButton(
@@ -828,7 +838,10 @@ tab.bric <- tabPanel(
             br()
         ),
         mainPanel = mainPanel(
-            verbatimTextOutput("bric_debug")
+            # verbatimTextOutput("bric_debug"),
+            DT::dataTableOutput("bric_output_table"),
+            br(),
+            uiOutput("bric_download")
         )
     )
 )
