@@ -155,7 +155,7 @@ install any missing packages:
     np <- packages[!(packages %in% installed.packages()[, "Package"])]
     if(length(np)) install.packages(np)
 
-S2.2: Install Bioconductor packages <a id="s2.2-install-bioconductor-packages"></a>
+S2.2: Install Bioconductor and Devlopmental packages <a id="s2.2-install-bioconductor-packages"></a>
 -----------------------------------
 
 You will also need several Bioconductor packages. Similar to the prior
@@ -168,6 +168,16 @@ Bioconductor packages into your R library:
         "preprocessCore", "AnnotationDbi"
     )
     np <- bioc_packages[!(bioc_packages %in% installed.packages()[,"Package"])]
+    if (!require("BiocManager")) install.packages("BiocManager")
+    BiocManager::install(np)
+
+
+To run BRIC analysis, you also need to download the source code for this
+clustering algorithm. Run this code to get the GitHub package:
+
+    # GitHub
+    if (!require("devtools")) install.packages("devtools")
+    devtools::install_github("zy26/BRIC")
 
 S2.3: Run the Shiny application <a id="s2.3-run-the-shiny-application"></a>
 -------------------------------
