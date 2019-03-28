@@ -63,6 +63,18 @@ bioc_packages <- c(
     "preprocessCore", "AnnotationDbi"
 )
 np <- bioc_packages[!(bioc_packages %in% installed.packages()[,"Package"])]
+if (!require("BiocManager")) install.packages("BiocManager")
+BiocManager::install(np)
+```
+
+### Install Developmental packages
+
+To run BRIC analysis, you also need to download the source code for this clustering algorithm. Run this code to get the GitHub package:
+
+``` r
+# GitHub
+if (!require("devtools")) install.packages("devtools")
+devtools::install_github("zy26/BRIC")
 ```
 
 ### Run the Shiny application
@@ -75,4 +87,4 @@ shiny::runGitHub("iris", "btmonier")
 
 ------------------------------------------------------------------------
 
-*Last updated:* 2019-03-26
+*Last updated:* 2019-03-28
