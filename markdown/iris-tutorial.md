@@ -178,7 +178,7 @@ clustering algorithm. Run this code to get the GitHub package:
 
     # GitHub
     if (!require("devtools")) install.packages("devtools")
-    devtools::install_github("zy26/BRIC",force = T)
+    devtools::install_github("OSU-BMBL/BRIC",force = T)
 
 
 S2.3: Run the Shiny application <a id="s2.3-run-the-shiny-application"></a>
@@ -188,7 +188,7 @@ Once you have installed all of the necessary packages, you can now run
 the application locally by entering the following code into an R
 terminal:
 
-    shiny::runGitHub("iris", "btmonier")
+    shiny::runGitHub("iris", "OSU-BMBL")
 
 Typically, the link will provide an easier route to using IRIS-EDA. In
 circumstances where internet connections will be limited (such as during
@@ -197,7 +197,7 @@ will allow users to utilize IRIS-EDA without an internet connection
 later on.
 
 Installing the local application via
-[GitHub](https://github.com/btmonier/iris) will also let the user have
+[GitHub](https://github.com/OSU-BMBL/iris) will also let the user have
 access to more "developmental" versions of IRIS-EDA. Be warned though;
 using developmental versions of this application may be "cutting edge",
 however, this could potentially break various features in the

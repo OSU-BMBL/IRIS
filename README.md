@@ -74,7 +74,7 @@ To run BRIC analysis, you also need to download the source code for this cluster
 ``` r
 # GitHub
 if (!require("devtools")) install.packages("devtools")
-devtools::install_github("zy26/BRIC", force = T)
+devtools::install_github("OSU-BMBL/BRIC", force = T)
 ```
 
 ### Run the Shiny application
@@ -82,7 +82,7 @@ devtools::install_github("zy26/BRIC", force = T)
 Once you have installed all of the necessary packages, you can run this code to launch the Shiny application:
 
 ``` r
-shiny::runGitHub("iris", "btmonier")
+shiny::runGitHub("iris", "OSU-BMBL")
 ```
 
 ------------------------------------------------------------------------
