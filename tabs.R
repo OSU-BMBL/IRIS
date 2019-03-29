@@ -779,6 +779,26 @@ tab.bric <- tabPanel(
     sidebarLayout(
         sidebarPanel(
             h4("1. Submission Parameters"),
+            br(),
+            em(
+                paste0(
+                    "WARNING: If you have a large number of samples and ",
+                    "/ or data, this process can take a long time! Please ",
+                    "take this into consideration."
+                )
+            ),
+            br(),
+            br(),
+            em(
+                paste0(
+                    "In case of server problems, consider running the ",
+                    "application locally. More information can be found here:"
+                )
+            ),
+            br(),
+            code("https://github.com/OSU-BMBL/iris/"),
+            br(),
+            br(),
             radioButtons(
                 inputId = "bric_examplechoice",
                 label = "How do you want to start?",

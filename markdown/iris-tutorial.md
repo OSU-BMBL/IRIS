@@ -26,8 +26,9 @@
     -   [S8.7: Raw files](#s8.7-raw-files)
     -   [S8.8: Paired-end experiments / SOLiD data](#s8.8-paired-end-experiments-solid-data)
     -   [S8.9: Downloads](#s8.9-downloads)
--   [S9: Using large expression matrices](#s9-using-large-expression-matrices)
--   [S10: References](#s10-references)
+-   [S9: BRIC Usage](#s9-bric-usage)
+-   [S10: Using large expression matrices](#s10-using-large-expression-matrices)
+-   [S11: References](#s11-references)
 
 S1: Citation information <a id="s1-citation-information"></a>
 ========================
@@ -1078,7 +1079,66 @@ items:
 -   An Excel spreadsheet of the metadata;
 -   A ZIP file of individual sample reads as text files.
 
-S9: Using large expression matrices <a id="s9-using-large-expression-matrices"></a>
+S9: BRIC Usage <a id="s9-bric-usage"></a>
+===================================
+
+The IRIS platform can also run the BRIC clustering algorithm. This integration
+is based off of the initial `C` implementation of the algorithm.
+
+BRIC is a novel biclustering method for the detection of the repertoire of 
+active gene regulatory signals(GRSs) within each single cell, based on which, 
+we annotate the type and/or physiological state of each cell.
+
+For more details, please refer to the [tutorial](http://htmlpreview.github.io/?https://github.com/zy26/BRIC/blob/master/vignette/BRIC_Rpackage.html).
+
+To begin your analyses with BRIC, simply click on the `BRIC` tab on the upper
+part of the application:
+
+<img src="../vignettes/img/bric-01.png">
+
+Next, you will be given a series of options and inputs. First, you can either
+enter your own data or work around with an example data set.
+
+The input to BRIC is a single-cell RNA-seq expression matrix:
+
+* Rows correspond to genes and columns correspond to samples (cells).
+* Expression units: the preferred expression values are **RPKM/FPKM/CPM**. 
+* **The data file needs to be be tab delimited.**
+
+Once data has been submitted, you can alter the values of three BRIC parameters:
+
+* `-f` : filtering overlapping blocks
+* `-k` : minimum column width of block
+* `-o` : number of blocks to report
+
+Additionally, there are two clustering options:
+
+* [Markov Clustering](https://micans.org/mcl/)
+* [Spectral Clustering](https://en.wikipedia.org/wiki/Spectral_clustering)
+
+If you specify spectral clustering, an additional parameter will be displayed.
+This is the number of cell types your data contains. **If you are using
+spectral clustering, you will need to enter the correct number of cell types!**
+
+After you have entered the parameters, click the `Run BRIC` button:
+
+<img src="../vignettes/img/bric-02.png">
+
+This will start the BRIC analysis. **If you have a large number of samples,
+this process can take a long time! Please consider this when running BRIC.**
+
+Once the analysis has completed, a table of predicted cell clusters will be
+displayed:
+
+<img src="../vignettes/img/bric-03.png">
+
+These predicted cell clusters can also be downloaded as a CSV file by clicking
+on the `Download Cluster Predictions` button:
+
+<img src="../vignettes/img/bric-04.png">
+
+
+S10: Using large expression matrices <a id="s10-using-large-expression-matrices"></a>
 ===================================
 
 For users interested in analyzing large expression matrices, commonly
@@ -1112,7 +1172,7 @@ This dataset consists of 2717 cells and the first 2000 genes from
 [Klein et al. 2015](https://www.ncbi.nlm.nih.gov/pubmed/26000487).
 
 
-S10: References <a id="s10-references"></a>
+S11: References <a id="s11-references"></a>
 ===============
 
 Hardcastle TJ, Kelly KA. baySeq: empirical Bayesian methods for
