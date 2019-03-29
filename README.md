@@ -74,7 +74,7 @@ To run BRIC analysis, you also need to download the source code for this cluster
 ``` r
 # GitHub
 if (!require("devtools")) install.packages("devtools")
-devtools::install_github("zy26/BRIC")
+devtools::install_github("zy26/BRIC", force = T)
 ```
 
 ### Run the Shiny application
@@ -87,4 +87,4 @@ shiny::runGitHub("iris", "btmonier")
 
 ------------------------------------------------------------------------
 
-*Last updated:* 2019-03-28
+*Last updated:* 2019-03-29
