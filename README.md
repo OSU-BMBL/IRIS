@@ -63,7 +63,6 @@ bioc_packages <- c(
     "preprocessCore", "AnnotationDbi"
 )
 np <- bioc_packages[!(bioc_packages %in% installed.packages()[,"Package"])]
-
 if (!require("BiocManager")) install.packages("BiocManager")
 BiocManager::install(np)
 ```
