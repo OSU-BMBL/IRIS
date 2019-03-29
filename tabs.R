@@ -771,6 +771,83 @@ tab.geo <- tabPanel(
 
 
 
+# BRIC ----
+tab.bric <- tabPanel(
+    title = "BRIC",
+    fluid = TRUE,
+    icon = icon("project-diagram"),
+    sidebarLayout(
+        sidebarPanel(
+            h4("1. Submission Parameters"),
+            radioButtons(
+                inputId = "bric_examplechoice",
+                label = "How do you want to start?",
+                choices = c(
+                    "Start with an example data set (small)." = "bric_yes",
+                    "Load my own data" = "bric_no"
+                )
+            ),
+            uiOutput("bric_file1"),
+            br(),
+            h4("2. BRIC Parameters"),
+            splitLayout(
+                textInput(
+                    inputId = "bric_f",
+                    label = "f",
+                    value = 0.85
+                ),
+                textInput(
+                    inputId = "bric_k",
+                    label = "k",
+                    value = 13
+                ),
+                textInput(
+                    inputId = "bric_o",
+                    label = "o",
+                    value = 5000
+                )
+            ),
+            selectInput(
+                inputId = "bric_method",
+                label = "Clustering Method",
+                choices = c(
+                    "Markov Clustering" = "MCL",
+                    "Spectral" = "SC"
+                ),
+                selected = "MCL"
+            ),
+            uiOutput("bric_celltype_number"),
+            strong("Parameter definitions:"),
+            br(),
+            tags$div(
+                tags$ul(
+                    tags$li("-f : filtering overlapping blocks"),
+                    tags$li("-k : minimum column width of block"),
+                    tags$li("-o : number of blocks to report")
+                )
+            ),
+            br(),
+            br(),
+            h4("3. Launch Overview"),
+            actionButton(
+                inputId = "bric_launch",
+                "Run BRIC",
+                icon = icon("space-shuttle")
+            ),
+            br(),
+            br()
+        ),
+        mainPanel = mainPanel(
+            # verbatimTextOutput("bric_debug"),
+            DT::dataTableOutput("bric_output_table"),
+            br(),
+            uiOutput("bric_download")
+        )
+    )
+)
+
+
+
 # Help ----
 tab.tutorial <- tabPanel(
     title = "Tutorial",

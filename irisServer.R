@@ -322,11 +322,11 @@ irisServer <- function(input, output, session) {
                 row.names = NULL
             )
             #set the first column name to 'gene_id' if missing
-            if(colnames(cts)[1] == ""){ 
+            if(colnames(cts)[1] == ""){
               colnames(cts)[1] == "gene_id"
             }
-            # if there are duplicated row names, only keep the first 
-            if (length(which(duplicated.default(cts[,1]))) > 0) { 
+            # if there are duplicated row names, only keep the first
+            if (length(which(duplicated.default(cts[,1]))) > 0) {
               cts <- cts[-which(duplicated.default(cts[,1]) == T),]
             }
             rownames(cts) <- cts[,1]
@@ -357,11 +357,11 @@ irisServer <- function(input, output, session) {
                 row.names = NULL
             )
             #set the first column name to 'gene_id' if missing
-            if(colnames(cts)[1] == ""){ 
+            if(colnames(cts)[1] == ""){
               colnames(cts)[1] == "gene_id"
             }
-            # if there are duplicated row names, only keep the first 
-            if (length(which(duplicated.default(cts[,1]))) > 0) { 
+            # if there are duplicated row names, only keep the first
+            if (length(which(duplicated.default(cts[,1]))) > 0) {
               cts <- cts[-which(duplicated.default(cts[,1]) == T),]
             }
             rownames(cts) <- cts[,1]
@@ -3144,6 +3144,26 @@ irisServer <- function(input, output, session) {
                         "In case of server timeout, consider ",
                         "downloading the IRIS source and run locally."
                     )
+                ),
+                br(),
+                br(),
+                em(
+                    paste0(
+                        "If running WGCNA, it is recommended that you ",
+                        "run a variance stabilizing transformation (vst) ",
+                        "in the initial load data component of IRIS-EDA."
+                    )
+                ),
+                br(),
+                br(),
+                em(
+                    paste0(
+                        "WGCNA runs best with a large number of samples ",
+                        "(> 80) and may not function with smaller sample ",
+                        "sizes. For those with smaller sample sizes, the ",
+                        "other cluster methods should work fine and probably ",
+                        "generate more reliable clustering results."
+                    )
                 )
             )
         }
@@ -3211,7 +3231,8 @@ irisServer <- function(input, output, session) {
                 dds_mat <- as.matrix(dds_mat)
                 gene.names <- sort(rownames(dds_mat))
 
-                datExpr <- t(log2(dds_mat + 1))
+                # datExpr <- t(log2(dds_mat + 1))
+                datExpr <- t(dds_mat)
 
                 incProgress(2/4)
                 # Run this to check if there are gene outliers
@@ -6856,4 +6877,117 @@ irisServer <- function(input, output, session) {
             selected = "val4"
         )
     }, ignoreInit = TRUE)
+
+
+
+
+
+    ###################################################################
+    ###################################################################
+    ### SECTION 10 - BRIC ANALYSIS
+    ###################################################################
+    ###################################################################
+
+    # DATA - Data load option - submit expression matrix
+    output$bric_file1 <- renderUI({
+        if (input$bric_examplechoice == "bric_no") {
+            fileInput(
+                inputId = "bric_file1",
+                label = "Submit Expression Matrix",
+                accept = c(
+                    "text/tab-separated-values"
+                )
+            )
+        } else {
+            return()
+        }
+    })
+
+    # Display cluster number parameter
+    output$bric_celltype_number <- renderUI({
+        if (input$bric_method == "SC") {
+            textInput(
+                inputId = "bric_celltype_number",
+                label = "Specify number of cell types!"
+            )
+        } else {
+            return()
+        }
+    })
+    
+    # Run BRIC function
+    bricOutput <- eventReactive(input$bric_launch, {
+        if (input$bric_examplechoice == "bric_yes") {
+            path <- "data/Yan_sub.txt"
+        } else {
+            path <- input$bric_file1$datapath
+        }
+        
+        if (input$bric_method == "SC") {
+            bric_K <- input$bric_celltype_number
+            
+        } else {
+            bric_K <- NULL
+        }
+        
+        # Crashes if application is restarted and console is not refreshed
+        bric_out <- BRIC::final(
+            i = path,
+            method = input$bric_method,
+            N = FALSE,
+            R = FALSE,
+            F = FALSE,
+            d = FALSE,
+            f = input$bric_f,
+            k = input$bric_k,
+            c = 1,
+            o = input$bric_o,
+            K = bric_K
+        )
+
+        return(
+            data.frame(
+                "cell_id" = names(bric_out),
+                "cluster_number" = bric_out,
+                row.names = seq_along(bric_out)
+            )
+        )
+    })
+
+    output$bric_output_table <- DT::renderDataTable({
+        withProgress(mess = "Running BRIC...", value = 1, {
+            bricOutput()
+        })
+    })
+    
+    ## DGE - Show download button (ALL)
+    output$bric_download <- renderUI({
+        validate(
+            need(
+                expr = !is.null(input$bric_launch),
+                message = ""
+            )
+        )
+        if(input$bric_launch == 0) {
+            return()
+        } else {
+            downloadButton(
+                "bric_download_data", "Download Cluster Predictions"
+            )
+        }
+    })
+
+    ## DGE - Download ALL data
+    output$bric_download_data <- downloadHandler(
+        filename = function() {
+            paste("bric_cluster_pred_", Sys.Date(), ".csv", sep = "")
+        },
+        content = function(file) {
+            write.csv(
+                bricOutput(),
+                file, 
+                row.names = FALSE
+            )
+        }
+    ) 
 }

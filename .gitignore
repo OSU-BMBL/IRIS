@@ -2,8 +2,9 @@
 *.swo
 *.Rproj
 .Rproj.*
+.Rproj.user
 
-# BRIC
+# BRIC output
 *.blocks
 *.chars
 *.rules
