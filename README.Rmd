@@ -94,7 +94,7 @@ clustering algorithm. Run this code to get the GitHub package:
 ```{r, eval=FALSE, message=FALSE}
 # GitHub
 if (!require("devtools")) install.packages("devtools")
-devtools::install_github("zy26/BRIC", force = T)
+devtools::install_github("OSU-BMBL/BRIC", force = T)
 ```
 
 ### Run the Shiny application
@@ -102,7 +102,7 @@ Once you have installed all of the necessary packages, you can run this code
 to launch the Shiny application:
 
 ```{r, eval=FALSE}
-shiny::runGitHub("iris", "btmonier")
+shiny::runGitHub("iris", "OSU-BMBL")
 ```
 
 - - -
