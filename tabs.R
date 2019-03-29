@@ -132,6 +132,8 @@ tab.submit <- tabPanel(
                     "Confused? Consider reading the tutorial under: "
                 )
             ),
+            br(),
+            br(),
             code("More -> Tutorial"),
             h4("1. Submission Parameters"),
             radioButtons(
@@ -796,6 +798,7 @@ tab.bric <- tabPanel(
                 )
             ),
             br(),
+            br(),
             code("https://github.com/OSU-BMBL/iris/"),
             br(),
             br(),
@@ -854,6 +857,17 @@ tab.bric <- tabPanel(
                 "Run BRIC",
                 icon = icon("space-shuttle")
             ),
+            br(),
+            br(),
+            em(
+                paste0(
+                    "More information about the source code for this ",
+                    "algorithm can be found at the following link:"
+                )
+            ),
+            br(),
+            br(),
+            code("https://github.com/OSU-BMBL/BRIC"),
             br(),
             br()
         ),
