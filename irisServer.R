@@ -115,7 +115,7 @@
 
 # Change file upload size to 30 MB and sanitize errors
 options(
-    shiny.maxRequestSize = 30 * 1024^2,
+    shiny.maxRequestSize = 50 * 1024^2,
     shiny.sanitize.errors = TRUE
 )
 
