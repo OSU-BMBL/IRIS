@@ -195,6 +195,7 @@ tab.submit <- tabPanel(
             tabsetPanel(
                 tabPanel(
                     title = "File Summary",
+                    uiOutput("cts_warn"),
                     uiOutput("filesummarycts"),
                     verbatimTextOutput("fileoutputcts"),
                     uiOutput("filesummarycoldata"),
