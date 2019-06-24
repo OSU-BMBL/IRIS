@@ -235,6 +235,7 @@ irisServer <- function(input, output, session) {
                 header = TRUE,
                 row.names = 1
             )
+            ## Add check for "raw counts"
             cols <- colnames(coldata)
             coldata[cols] <- lapply(coldata[cols], factor)
             cts <- cts[, rownames(coldata)]
@@ -246,6 +247,7 @@ irisServer <- function(input, output, session) {
                 colData = coldata,
                 design = ~ 1
             )
+            cts_raw_check <- "pass"
         } else if (input$examplechoice == "yes2") { # Big example
             cts <- as.matrix(
                 read.csv(
@@ -270,6 +272,7 @@ irisServer <- function(input, output, session) {
                 colData = coldata,
                 design = ~ 1
             )
+            cts_raw_check <- "pass"
         } else if (input$examplechoice == "yes3") { # scRNA example
             cts <- read.csv(
                 "./data/count-data-scrna.csv",
@@ -312,6 +315,7 @@ irisServer <- function(input, output, session) {
                 colData = coldata,
                 design = ~ 1
             )
+            cts_raw_check <- "pass"
 
         } else if (input$examplechoice == "no" | input$examplechoice == "scrna10x") { # user input (normal)
             cts <- input$file1
@@ -321,16 +325,27 @@ irisServer <- function(input, output, session) {
                 header = TRUE,
                 row.names = NULL
             )
-            #set the first column name to 'gene_id' if missing
+
+            # Set the first column name to 'gene_id' if missing
             if(colnames(cts)[1] == ""){
-              colnames(cts)[1] == "gene_id"
+                colnames(cts)[1] == "gene_id"
             }
-            # if there are duplicated row names, only keep the first
+
+            # If there are duplicated row names, only keep the first
             if (length(which(duplicated.default(cts[,1]))) > 0) {
-              cts <- cts[-which(duplicated.default(cts[,1]) == T),]
+                cts <- cts[-which(duplicated.default(cts[,1]) == T),]
             }
             rownames(cts) <- cts[,1]
             cts <- as.matrix(cts[,-1])
+
+            if (!is.integer(cts)) {
+                warning("Not raw counts - rounding object...")
+                cts <- round(cts, 0)
+                cts_raw_check <- "fail"
+            } else {
+                cts_raw_check <- "pass"
+            }
+
             coldata <- read.csv(
                 coldata$datapath,
                 header = TRUE,
@@ -347,6 +362,7 @@ irisServer <- function(input, output, session) {
                 colData = coldata,
                 design = ~ 1
             )
+
         } else if (input$examplechoice == "scrna") { # user input (scRNA)
             cts <- input$file1
             coldata <- input$file2
@@ -366,6 +382,15 @@ irisServer <- function(input, output, session) {
             }
             rownames(cts) <- cts[,1]
             cts <- as.matrix(cts[,-1])
+
+            if (!is.integer(cts)) {
+                warning("Not raw counts - rounding object...")
+                cts <- round(cts, 0)
+                cts_raw_check <- "fail"
+            } else {
+                cts_raw_check <- "pass"
+            }
+
             coldata <- read.csv(
                 coldata$datapath,
                 header = TRUE,
@@ -402,7 +427,7 @@ irisServer <- function(input, output, session) {
         }
 
         # Return objects for downstream analysis
-        return(list(dds, coldata, cts.filt, cts))
+        return(list(dds, coldata, cts.filt, cts, cts_raw_check))
     })
 
     ## QC - reactive - data transformation
@@ -463,6 +488,30 @@ irisServer <- function(input, output, session) {
             return()
         } else {
             h4("Number of IDs (post-filtration)")
+        }
+    })
+
+
+    ## Raw data warn output
+    output$cts_warn <- renderUI({
+        if(input$goqc == 0) {
+            return()
+        } else {
+            if (ddsout()[[5]] == "fail") {
+                p(
+                    br(),
+                    em(
+                        paste0(
+                            "Your count data does not contain raw reads ",
+                            "(i.e. whole numbers). You will not be able to ",
+                            "run any further analyses!"
+                        )
+                    ),
+                    style = "color:red"
+                )
+            } else {
+                return()
+            }
         }
     })
 
@@ -6914,7 +6963,7 @@ irisServer <- function(input, output, session) {
             return()
         }
     })
-    
+
     # Run BRIC function
     bricOutput <- eventReactive(input$bric_launch, {
         if (input$bric_examplechoice == "bric_yes") {
@@ -6922,14 +6971,14 @@ irisServer <- function(input, output, session) {
         } else {
             path <- input$bric_file1$datapath
         }
-        
+
         if (input$bric_method == "SC") {
             bric_K <- input$bric_celltype_number
-            
+
         } else {
             bric_K <- NULL
         }
-        
+
         # Crashes if application is restarted and console is not refreshed
         bric_out <- BRIC::final(
             i = path,
@@ -6959,7 +7008,7 @@ irisServer <- function(input, output, session) {
             bricOutput()
         })
     })
-    
+
     ## DGE - Show download button (ALL)
     output$bric_download <- renderUI({
         validate(
@@ -6985,9 +7034,9 @@ irisServer <- function(input, output, session) {
         content = function(file) {
             write.csv(
                 bricOutput(),
-                file, 
+                file,
                 row.names = FALSE
             )
         }
-    ) 
+    )
 }
