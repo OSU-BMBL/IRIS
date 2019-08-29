@@ -2,11 +2,11 @@
 # Title:         IRIS - Package Loader
 # Author:        Brandon Monier
 # Created:       2018-03-14 at 17:02:31
-# Last Modified: 2018-11-08 at 20:00:50
+# Last Modified: 2019-08-29 at 10:01:05
 #---------------------------------------------------------------------
 
 packages <- c(
-    "crosstalk", "dplyr", "DT", "gtools", "plotly", "shiny", "plyr",
+    "crosstalk", "plyr", "DT", "gtools", "plotly", "shiny", "dplyr",
     "shinyBS", "shinycssloaders", "shinythemes", "tibble", "tidyr",
     "Rcpp", "Hmisc", "ggplot2", "geneplotter", "locfit", "GGally",
     "pheatmap", "reshape2", "backports", "digest", "fields", "psych",
