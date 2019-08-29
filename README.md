@@ -2,7 +2,9 @@
 IRIS <img src="www/logo.svg" align="right" height="120"/>
 =========================================================
 
-<http://bmbl.sdstate.edu/IRIS/>
+<https://bmbls.bmi.osumc.edu/IRIS/>
+
+Alternate server: <http://bmbl.sdstate.edu/IRIS/>
 
 Citation
 --------
@@ -87,4 +89,4 @@ shiny::runGitHub("iris", "OSU-BMBL")
 
 ------------------------------------------------------------------------
 
-*Last updated:* 2019-03-29
+*Last updated:* 2019-08-29
