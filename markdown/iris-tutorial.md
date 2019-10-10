@@ -133,7 +133,7 @@ S2: Accessibility <a id="s2-accessibility"></a>
 =================
 
 IRIS-EDA can be freely accessed directly through this
-[link](http://bmbl.sdstate.edu/IRIS/) or through R using the following
+[link](https://bmbls.bmi.osumc.edu/IRIS/) or through R using the following
 code in the proceeding sections.
 
 S2.1: Install CRAN packages <a id="s2.1-install-cran-packages"></a>
@@ -202,7 +202,7 @@ access to more "developmental" versions of IRIS-EDA. Be warned though;
 using developmental versions of this application may be "cutting edge",
 however, this could potentially break various features in the
 application. Therefore, using the server
-(<http://bmbl.sdstate.edu/IRIS/>) will provide a more "stable",
+(<https://bmbls.bmi.osumc.edu/IRIS/>) will provide a more "stable",
 peer-reviewed release of the application.
 
 S3: Single-cell RNA-seq <a id="s3-single-cell-rna-seq"></a>
