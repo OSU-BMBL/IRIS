@@ -36,7 +36,7 @@ tool has an R-based application (*R-based*).
 
 # S2: Accessibility 
 IRIS-EDA can be freely accessed directly through this
-[link](http://bmbl.sdstate.edu/IRIS/) or through R using the following code
+[link](https://bmbls.bmi.osumc.edu/IRIS/) or through R using the following code
 in the proceeding sections.
 
 ## S2.1: Install CRAN packages
@@ -90,7 +90,7 @@ Installing the local application via
 access to more "developmental" versions of IRIS-EDA. Be warned though; 
 using developmental versions of this application may be "cutting edge", 
 however, this could potentially break various features in the application. 
-Therefore, using the server (<http://bmbl.sdstate.edu/IRIS/>) will provide a 
+Therefore, using the server (<https://bmbls.bmi.osumc.edu/IRIS/>) will provide a 
 more "stable", peer-reviewed release of the application.
 
 # S3: Single-cell RNA-seq
