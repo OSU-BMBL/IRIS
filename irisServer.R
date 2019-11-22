@@ -357,6 +357,7 @@ irisServer <- function(input, output, session) {
             n <- input$prefilt
             n <- as.numeric(n)
             cts.filt <- cts[rowSums(cts) > n, ]
+            cts.filt <- na.omit(cts.filt)
             dds <- DESeqDataSetFromMatrix(
                 countData = cts.filt,
                 colData = coldata,
