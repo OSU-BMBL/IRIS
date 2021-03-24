@@ -4,6 +4,8 @@ IRIS <img src="www/logo.svg" align="right" height="120"/>
 
 <https://bmbls.bmi.osumc.edu/IRIS/>
 
+Alternative server:
+<http://bmbl.sdstate.edu/IRIS/>
 
 Citation
 --------
